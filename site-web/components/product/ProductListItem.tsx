@@ -1,0 +1,83 @@
+"use client";
+
+import Image from "next/image";
+import Link from "next/link";
+import { Plus } from "lucide-react";
+import type { NiveauAlerteStock, PalierPrixB2B, Produit } from "@/lib/types/entities";
+import { StockBadge } from "./StockBadge";
+import { BoutonFavori } from "./BoutonFavori";
+import { Etoiles } from "./Etoiles";
+import { useSessionStore, estClientB2BVerifie } from "@/lib/store/session-store";
+import { useCartStore } from "@/lib/store/cart-store";
+import { useAvisStore } from "@/lib/store/avis-store";
+import { trouverPalierApplicable } from "@/lib/business-rules/bareme-b2b";
+import { calculerAvisPublies } from "@/lib/services/avis";
+
+// ECR-01-002/ECR-02-001 — variante « vue liste » de ProductCard (bascule grille/liste, Raffinement Design).
+interface ProductListItemProps {
+  produit: Produit;
+  niveauStock: NiveauAlerteStock;
+  paliers: PalierPrixB2B[];
+}
+
+export function ProductListItem({ produit, niveauStock, paliers }: ProductListItemProps) {
+  const session = useSessionStore((s) => s.session);
+  const estB2B = estClientB2BVerifie(session);
+  const palierDepart = estB2B && paliers.length > 0 ? trouverPalierApplicable(paliers, 1) : undefined;
+  const prixAffiche = palierDepart ? palierDepart.prix_unitaire : produit.prix_public;
+
+  const tousLesAvis = useAvisStore((s) => s.avis);
+  const { moyenne, nombre } = calculerAvisPublies(tousLesAvis, produit.id);
+
+  const ajouterLigne = useCartStore((s) => s.ajouterLigne);
+
+  return (
+    <Link
+      href={`/produit/${produit.slug}`}
+      className="group flex items-center gap-4 rounded-xl border border-bordure bg-background p-3 transition-shadow hover:shadow-md"
+    >
+      <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg bg-fond">
+        {produit.images[0] ? (
+          <Image src={produit.images[0]} alt={produit.nom} fill className="object-cover" sizes="80px" />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center text-center text-[10px] text-texte-secondaire">
+            Image à venir
+          </div>
+        )}
+      </div>
+
+      <div className="min-w-0 flex-1">
+        <h3 className="truncate font-titres text-sm font-semibold text-texte-principal">{produit.nom}</h3>
+        {nombre > 0 && moyenne !== undefined && (
+          <div className="mt-1 flex items-center gap-1.5">
+            <Etoiles note={Math.round(moyenne)} taille={12} />
+            <span className="text-xs text-texte-secondaire">({nombre})</span>
+          </div>
+        )}
+        <div className="mt-1">
+          <StockBadge niveau={niveauStock} />
+        </div>
+      </div>
+
+      <div className="flex shrink-0 items-center gap-2">
+        <p className="font-titres text-base font-bold text-primaire">
+          {palierDepart && "À partir de "}${prixAffiche.toFixed(2)}
+        </p>
+        <BoutonFavori produitId={produit.id} className="static h-9 w-9" />
+        <button
+          type="button"
+          aria-label="Ajouter au panier"
+          disabled={niveauStock === "rupture"}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            ajouterLigne(produit.id, 1);
+          }}
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primaire text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          <Plus size={18} />
+        </button>
+      </div>
+    </Link>
+  );
+}

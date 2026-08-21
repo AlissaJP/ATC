@@ -1,0 +1,9 @@
+# Configuration locale de l'outil (non liée au contenu du projet)
+.claude/
+
+# Logs de serveur de développement laissés par des sessions locales
+site-web/next-dev*.log
+
+# OS
+.DS_Store
+Thumbs.db

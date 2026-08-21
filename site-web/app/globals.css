@@ -1,0 +1,69 @@
+@import "tailwindcss";
+
+/* Design tokens — Cahier 7 (UX/UI), section 2. Palette mesurée sur le logo officiel ATC (décision actée n°39). */
+:root {
+  --color-primaire: #014dab; /* Bleu ATC */
+  --color-primaire-clair: #018dde; /* Bleu électrique */
+  --color-accent: #fe4028; /* Orange-rouge ATC — CTA uniquement */
+
+  --color-succes: #2e7d32;
+  --color-avertissement: #f57c00; /* Alerte stock <= 40% */
+  --color-danger: #d32f2f; /* Alerte stock <= 15%, erreurs */
+
+  --color-fond: #f7f8fa;
+  --color-bordure: #e1e4e8;
+  --color-texte-secondaire: #6b7280;
+  --color-texte-principal: #1f2937;
+
+  --background: #ffffff;
+  --foreground: var(--color-texte-principal);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-primaire: var(--color-primaire);
+  --color-primaire-clair: var(--color-primaire-clair);
+  --color-accent: var(--color-accent);
+  --color-succes: var(--color-succes);
+  --color-avertissement: var(--color-avertissement);
+  --color-danger: var(--color-danger);
+  --color-fond: var(--color-fond);
+  --color-bordure: var(--color-bordure);
+  --color-texte-secondaire: var(--color-texte-secondaire);
+  --color-texte-principal: var(--color-texte-principal);
+
+  /* Paire Montserrat + General Sans (demande explicite) — cf. commentaire dans app/layout.tsx. */
+  --font-titres: var(--font-montserrat), -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-corps: var(--font-general-sans), -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  /* Grille et espacement — Cahier 7 section 2.3 (unité de base 8px, valeurs Tailwind par défaut déjà en base 4 -> alignées) */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 1024px;
+}
+
+body {
+  background: var(--color-fond);
+  color: var(--color-texte-principal);
+  font-family: var(--font-corps);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-titres);
+}
+
+/* Accessibilité — Cahier 7 section 8 : contour de focus jamais supprimé */
+:focus-visible {
+  outline: 2px solid var(--color-primaire-clair);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
