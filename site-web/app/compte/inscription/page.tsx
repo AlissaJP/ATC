@@ -15,7 +15,7 @@ export default function InscriptionPage() {
 
       <div className="mt-8 flex flex-col gap-4">
         <Link
-          href="/compte/inscription-particulier"
+          href="/compte/connexion?mode=inscription"
           className="flex items-center gap-4 rounded-xl border border-bordure bg-background p-5 transition-colors hover:border-primaire"
         >
           <User size={28} className="shrink-0 text-primaire-clair" />

@@ -1,15 +1,22 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { ArrowRightCircle, PackageCheck } from "lucide-react";
 import { StatutCommandeBadge } from "@/components/commande/StatutCommandeBadge";
 import { useCommandeStore } from "@/lib/store/commande-store";
 import { utilisateurs } from "@/lib/mock-data/utilisateurs";
-import type { Commande } from "@/lib/types/entities";
+import type { Commande, StatutCommande } from "@/lib/types/entities";
 
 function nomClient(utilisateurId: string): string {
   return utilisateurs.find((u) => u.id === utilisateurId)?.nom ?? "Client";
 }
+
+const FILTRES: { valeur: StatutCommande | "tous"; label: string }[] = [
+  { valeur: "en_preparation", label: "En préparation" },
+  { valeur: "prete_retrait", label: "Prêtes pour retrait" },
+  { valeur: "retiree", label: "Retirées" },
+  { valeur: "tous", label: "Toutes" },
+];
 
 // RG-05-001 — statut de commande et retrait (décision actée n°27) : en_preparation → prete_retrait →
 // retiree. Aucune étape de livraison.
@@ -52,22 +59,46 @@ function LigneCommande({ commande }: { commande: Commande }) {
   );
 }
 
-export function GestionCommandes() {
+// filtreInitial : reçu de la page (Server Component, lit searchParams) pour les raccourcis de la
+// navigation latérale (Section Administration, Raffinement Design — En préparation/Prêtes/Retirées).
+export function GestionCommandes({ filtreInitial = "tous" }: { filtreInitial?: StatutCommande | "tous" }) {
   const commandes = useCommandeStore((s) => s.commandes);
+  const [filtre, setFiltre] = useState<StatutCommande | "tous">(filtreInitial);
+
   const triees = useMemo(
-    () => [...commandes].sort((a, b) => new Date(b.date_creation).getTime() - new Date(a.date_creation).getTime()),
-    [commandes]
+    () =>
+      [...commandes]
+        .filter((c) => filtre === "tous" || c.statut === filtre)
+        .sort((a, b) => new Date(b.date_creation).getTime() - new Date(a.date_creation).getTime()),
+    [commandes, filtre]
   );
 
-  if (triees.length === 0) {
-    return <p className="text-sm text-texte-secondaire">Aucune commande pour le moment.</p>;
-  }
-
   return (
-    <div className="flex flex-col gap-3">
-      {triees.map((c) => (
-        <LigneCommande key={c.id} commande={c} />
-      ))}
+    <div>
+      <div className="mb-4 flex flex-wrap gap-2">
+        {FILTRES.map((f) => (
+          <button
+            key={f.valeur}
+            type="button"
+            onClick={() => setFiltre(f.valeur)}
+            className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
+              filtre === f.valeur ? "bg-primaire text-white" : "bg-fond text-texte-secondaire"
+            }`}
+          >
+            {f.label}
+          </button>
+        ))}
+      </div>
+
+      {triees.length === 0 ? (
+        <p className="text-sm text-texte-secondaire">Aucune commande dans ce filtre.</p>
+      ) : (
+        <div className="flex flex-col gap-3">
+          {triees.map((c) => (
+            <LigneCommande key={c.id} commande={c} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

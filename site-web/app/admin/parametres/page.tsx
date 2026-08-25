@@ -41,7 +41,7 @@ export default function AdminParametresPage() {
 
       <GardeRoleAdmin rolesAutorises={["general"]}>
         <div className="flex flex-col gap-6">
-          <form onSubmit={soumettre} className="rounded-xl border border-bordure bg-background p-5">
+          <form id="taux-change" onSubmit={soumettre} className="scroll-mt-24 rounded-xl border border-bordure bg-background p-5">
             <p className="mb-3 font-titres text-sm font-semibold text-texte-principal">Taux de change</p>
             <label className="block text-sm">
               <span className="text-texte-secondaire">1 USD =</span>
@@ -69,7 +69,7 @@ export default function AdminParametresPage() {
             </button>
           </form>
 
-          <div className="rounded-xl border border-bordure bg-background p-5">
+          <div id="langues" className="scroll-mt-24 rounded-xl border border-bordure bg-background p-5">
             <p className="mb-1 font-titres text-sm font-semibold text-texte-principal">Langues actives</p>
             <p className="mb-3 text-xs text-texte-secondaire">
               Langues proposées dans le sélecteur de langue du site (français toujours par défaut — RG-14-001).

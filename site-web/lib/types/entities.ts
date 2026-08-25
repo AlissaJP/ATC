@@ -257,6 +257,21 @@ export interface Favori {
   produit_id: string;
 }
 
+// RAFF-MOYENS-PAIEMENT — Moyens de paiement enregistrés (Espace Client + réutilisation à l'écran de
+// paiement, ECR-06-001). RG-06-001 : uniquement MonCash, carte, PayPal — jamais de virement. Sécurité
+// (Cahier 8 §7) : aucune donnée de carte complète stockée, seuls les 4 derniers chiffres et la date
+// d'expiration sont conservés pour l'affichage.
+export type TypeMoyenPaiementEnregistre = "carte" | "moncash" | "paypal";
+
+export interface MoyenPaiementEnregistre {
+  id: string;
+  utilisateur_id: string;
+  type: TypeMoyenPaiementEnregistre;
+  libelle: string; // ex. "Carte •••• 1234", "MonCash — •••• 5678", "PayPal connecté"
+  info_secondaire?: string; // ex. "Expire 06/2027", "Numéro enregistré", "j***@exemple.com"
+  par_defaut: boolean;
+}
+
 export interface LogAudit {
   id: string;
   administrateur_id: string;

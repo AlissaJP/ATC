@@ -37,17 +37,17 @@ Ce fichier persiste d'une session à l'autre. Reprendre à la première case non
 
 ## Nouvelle sous-section — Moyens de paiement enregistrés (`RAFF-MOYENS-PAIEMENT`)
 
-- [ ] Espace Client — liste des moyens de paiement enregistrés — ✅ Validé
-- [ ] Réutilisation à l'écran de paiement (ECR-06-001) — ✅ Validé (même section source)
+- [x] Espace Client — liste des moyens de paiement enregistrés — ✅ Validé
+- [x] Réutilisation à l'écran de paiement (ECR-06-001) — ✅ Validé (même section source)
 
 ## Page — Connexion / Inscription Particulier (B2C) (`RAFF-CONNEXION-SOCIALE`)
 
-- [ ] Écran connexion/inscription à deux modes + connexion sociale (Google/Facebook/Apple) — ✅ Validé
+- [x] Écran connexion/inscription à deux modes + connexion sociale (Google/Facebook/Apple) — ✅ Validé
 
 ## Section Administration (back-office)
 
-- [ ] Navigation latérale — structure complète avec sous-éléments (groupes VENTES/CLIENTS/SUPPORT/CONTENU/PILOTAGE) — ✅ Validé
-- [ ] Page — Tableau de bord administrateur (ECR-12-001) — ✅ Validé
+- [x] Navigation latérale — structure complète avec sous-éléments (groupes VENTES/CLIENTS/SUPPORT/CONTENU/PILOTAGE) — ✅ Validé
+- [x] Page — Tableau de bord administrateur (ECR-12-001) — ✅ Validé
 
 ---
 

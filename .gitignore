@@ -3,6 +3,7 @@
 
 # Logs de serveur de développement laissés par des sessions locales
 site-web/next-dev*.log
+site-web/dev-server.log
 
 # OS
 .DS_Store

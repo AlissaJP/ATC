@@ -8,6 +8,7 @@ import { GardeClient } from "@/components/compte/GardeClient";
 import { useComptesStore } from "@/lib/store/comptes-store";
 import { CarnetAdresses } from "@/components/compte/CarnetAdresses";
 import { CompleterDossier } from "@/components/compte/CompleterDossier";
+import { MoyensPaiement } from "@/components/compte/MoyensPaiement";
 
 const LIBELLES_STATUT: Record<string, { label: string; classe: string }> = {
   valide: { label: "Entreprise — B2B vérifié", classe: "bg-succes/10 text-succes" },
@@ -91,6 +92,13 @@ export default function TableauDeBordPage() {
 
             <div className="mt-6">
               <CarnetAdresses utilisateurId={session.utilisateur_id} />
+            </div>
+
+            <div className="mt-8">
+              <h2 className="mb-3 font-titres text-lg font-semibold text-texte-principal">
+                Moyens de paiement enregistrés
+              </h2>
+              <MoyensPaiement utilisateurId={session.utilisateur_id} />
             </div>
           </main>
         );

@@ -17,10 +17,12 @@ const LIBELLES_STATUT: Record<StatutValidationEntreprise, { label: string; class
   complement_demande: { label: "Complément demandé", classe: "bg-primaire-clair/10 text-primaire-clair" },
 };
 
-export function GestionClients() {
+// filtreInitial : reçu de la page (Server Component, lit searchParams) pour le raccourci « Particuliers »
+// de la navigation latérale (Section Administration, Raffinement Design — sous-élément de « Clients »).
+export function GestionClients({ filtreInitial = "tous" }: { filtreInitial?: TypeCompte | "tous" }) {
   const utilisateursDynamiques = useComptesStore((s) => s.utilisateurs);
   const profilsDynamiques = useComptesStore((s) => s.profilsEntreprise);
-  const [filtre, setFiltre] = useState<TypeCompte | "tous">("tous");
+  const [filtre, setFiltre] = useState<TypeCompte | "tous">(filtreInitial);
   const [recherche, setRecherche] = useState("");
 
   const tousLesUtilisateurs = useMemo(() => [...utilisateursSeed, ...utilisateursDynamiques], [utilisateursDynamiques]);

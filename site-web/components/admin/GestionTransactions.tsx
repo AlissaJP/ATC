@@ -29,13 +29,15 @@ function nomClient(utilisateurId: string | undefined, utilisateursDynamiques: ty
   );
 }
 
-export function GestionTransactions() {
+// filtreInitial : reçu de la page (Server Component, lit searchParams) pour les raccourcis « Paiements »
+// de la navigation latérale (Section Administration, Raffinement Design — Tous/MonCash/Carte/PayPal).
+export function GestionTransactions({ filtreInitial = "tous" }: { filtreInitial?: MethodePaiement | "tous" }) {
   const paiements = useFactureStore((s) => s.paiements);
   const facturesProForma = useFactureStore((s) => s.facturesProForma);
   const devis = useDevisStore((s) => s.devis);
   const commandes = useCommandeStore((s) => s.commandes);
   const utilisateursDynamiques = useComptesStore((s) => s.utilisateurs);
-  const [filtre, setFiltre] = useState<MethodePaiement | "tous">("tous");
+  const [filtre, setFiltre] = useState<MethodePaiement | "tous">(filtreInitial);
 
   const utilisateurDuPaiement = (p: Paiement): string | undefined => {
     if (p.devis_id) return devis.find((d) => d.id === p.devis_id)?.utilisateur_id;

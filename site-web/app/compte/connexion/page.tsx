@@ -1,25 +1,46 @@
 "use client";
 
-// Connexion. Décision actée n°41 : comptes techniques réels non disponibles, développement en
-// sandbox — le formulaire est fonctionnel (email retrouvé parmi les comptes existants) mais
-// n'effectue aucune vérification de mot de passe réelle. Un accès rapide aux comptes de test reste
-// disponible en dessous pour explorer la plateforme sans créer de compte.
-import { useState } from "react";
+// Connexion / Inscription Particulier — écran unique à deux modes (structure : Raffinement Design,
+// RAFF-CONNEXION-SOCIALE, validé). Décision actée n°41 : comptes techniques réels non disponibles,
+// développement en sandbox — les formulaires sont fonctionnels (email retrouvé parmi les comptes
+// existants pour la connexion ; création réelle en mémoire pour l'inscription) mais sans vérification
+// de mot de passe réelle. Un accès rapide aux comptes de test reste disponible en dessous. Le parcours
+// Entreprise garde son propre écran dédié (ECR-08-001, /compte/inscription-entreprise) — la connexion
+// sociale ne s'y applique pas (décision du doc de raffinement).
+import { Suspense, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Building2, ChevronDown, ShieldCheck, User } from "lucide-react";
 import { useSessionStore } from "@/lib/store/session-store";
+import { useComptesStore } from "@/lib/store/comptes-store";
 import { trouverAdministrateurConnexion, trouverProfilEntrepriseCombine, trouverUtilisateurConnexion } from "@/lib/services/comptes";
 import { utilisateurs as utilisateursSeed } from "@/lib/mock-data/utilisateurs";
 import { administrateurs } from "@/lib/mock-data/administrateurs";
+import { ConnexionSociale } from "@/components/compte/ConnexionSociale";
+
+type Mode = "connexion" | "inscription";
 
 export default function ConnexionPage() {
+  return (
+    <Suspense fallback={null}>
+      <ConnexionContenu />
+    </Suspense>
+  );
+}
+
+function ConnexionContenu() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const modeInitial: Mode = searchParams.get("mode") === "inscription" ? "inscription" : "connexion";
+
   const connecterClient = useSessionStore((s) => s.connecterClient);
   const connecterAdmin = useSessionStore((s) => s.connecterAdmin);
+  const inscrireParticulier = useComptesStore((s) => s.inscrireParticulier);
 
+  const [mode, setMode] = useState<Mode>(modeInitial);
   const [email, setEmail] = useState("");
   const [motDePasse, setMotDePasse] = useState("");
+  const [nom, setNom] = useState("");
   const [erreur, setErreur] = useState<string | null>(null);
   const [comptesDemoOuverts, setComptesDemoOuverts] = useState(false);
 
@@ -79,45 +100,152 @@ export default function ConnexionPage() {
     router.push("/");
   }
 
+  function soumettreInscription(e: React.FormEvent) {
+    e.preventDefault();
+    if (!motDePasse) {
+      setErreur("Veuillez saisir un mot de passe.");
+      return;
+    }
+    const utilisateur = inscrireParticulier(nom, email);
+    connecterClient({
+      type: "client",
+      utilisateur_id: utilisateur.id,
+      nom: utilisateur.nom,
+      type_compte: "particulier",
+    });
+    router.push("/");
+  }
+
   return (
     <main className="mx-auto w-full max-w-md px-4 py-12 md:px-6">
-      <h1 className="font-titres text-2xl font-bold text-texte-principal">Connexion</h1>
-      <p className="mt-2 text-sm text-texte-secondaire">
-        Pas encore de compte ?{" "}
-        <Link href="/compte/inscription" className="font-medium text-primaire hover:underline">
-          Créer un compte
-        </Link>
-      </p>
-
-      <form onSubmit={soumettreConnexion} className="mt-6 flex flex-col gap-4">
-        <label className="block text-sm">
-          <span className="text-texte-secondaire">Email</span>
-          <input
-            type="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-bordure px-3 py-2.5 text-texte-principal focus:outline-none focus:ring-2 focus:ring-primaire-clair"
-          />
-        </label>
-        <label className="block text-sm">
-          <span className="text-texte-secondaire">Mot de passe</span>
-          <input
-            type="password"
-            required
-            value={motDePasse}
-            onChange={(e) => setMotDePasse(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-bordure px-3 py-2.5 text-texte-principal focus:outline-none focus:ring-2 focus:ring-primaire-clair"
-          />
-        </label>
-        {erreur && <p className="text-sm font-medium text-danger">{erreur}</p>}
+      <div className="flex rounded-lg border border-bordure p-1 text-sm font-semibold">
         <button
-          type="submit"
-          className="mt-1 rounded-lg bg-primaire px-5 py-2.5 text-sm font-semibold text-white hover:opacity-90"
+          type="button"
+          onClick={() => setMode("connexion")}
+          className={`flex-1 rounded-md py-2 transition-colors ${
+            mode === "connexion" ? "bg-primaire text-white" : "text-texte-secondaire hover:text-texte-principal"
+          }`}
         >
           Se connecter
         </button>
-      </form>
+        <button
+          type="button"
+          onClick={() => setMode("inscription")}
+          className={`flex-1 rounded-md py-2 transition-colors ${
+            mode === "inscription" ? "bg-primaire text-white" : "text-texte-secondaire hover:text-texte-principal"
+          }`}
+        >
+          Créer un compte
+        </button>
+      </div>
+
+      {mode === "connexion" ? (
+        <>
+          <h1 className="mt-8 font-titres text-2xl font-bold text-texte-principal">Connexion</h1>
+          <form onSubmit={soumettreConnexion} className="mt-6 flex flex-col gap-4">
+            <label className="block text-sm">
+              <span className="text-texte-secondaire">Email</span>
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="mt-1 w-full rounded-lg border border-bordure px-3 py-2.5 text-texte-principal focus:outline-none focus:ring-2 focus:ring-primaire-clair"
+              />
+            </label>
+            <label className="block text-sm">
+              <span className="text-texte-secondaire">Mot de passe</span>
+              <input
+                type="password"
+                required
+                value={motDePasse}
+                onChange={(e) => setMotDePasse(e.target.value)}
+                className="mt-1 w-full rounded-lg border border-bordure px-3 py-2.5 text-texte-principal focus:outline-none focus:ring-2 focus:ring-primaire-clair"
+              />
+            </label>
+            {erreur && <p className="text-sm font-medium text-danger">{erreur}</p>}
+            <button
+              type="submit"
+              className="mt-1 rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-white hover:opacity-90"
+            >
+              Se connecter
+            </button>
+            <Link href="/compte/mot-de-passe-oublie" className="text-center text-sm font-medium text-primaire hover:underline">
+              Mot de passe oublié ?
+            </Link>
+          </form>
+
+          <div className="mt-6">
+            <ConnexionSociale />
+          </div>
+
+          <p className="mt-6 text-center text-sm text-texte-secondaire">
+            Pas encore de compte ?{" "}
+            <button type="button" onClick={() => setMode("inscription")} className="font-medium text-primaire hover:underline">
+              Créer un compte
+            </button>
+          </p>
+        </>
+      ) : (
+        <>
+          <h1 className="mt-8 font-titres text-2xl font-bold text-texte-principal">Créer un compte</h1>
+          <p className="mt-2 text-sm text-texte-secondaire">
+            Compte professionnel ?{" "}
+            <Link href="/compte/inscription-entreprise" className="font-medium text-primaire hover:underline">
+              Inscription Entreprise
+            </Link>
+          </p>
+          <form onSubmit={soumettreInscription} className="mt-6 flex flex-col gap-4">
+            <label className="block text-sm">
+              <span className="text-texte-secondaire">Nom complet</span>
+              <input
+                required
+                value={nom}
+                onChange={(e) => setNom(e.target.value)}
+                className="mt-1 w-full rounded-lg border border-bordure px-3 py-2.5 text-texte-principal focus:outline-none focus:ring-2 focus:ring-primaire-clair"
+              />
+            </label>
+            <label className="block text-sm">
+              <span className="text-texte-secondaire">Email</span>
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="mt-1 w-full rounded-lg border border-bordure px-3 py-2.5 text-texte-principal focus:outline-none focus:ring-2 focus:ring-primaire-clair"
+              />
+            </label>
+            <label className="block text-sm">
+              <span className="text-texte-secondaire">Mot de passe</span>
+              <input
+                type="password"
+                required
+                value={motDePasse}
+                onChange={(e) => setMotDePasse(e.target.value)}
+                className="mt-1 w-full rounded-lg border border-bordure px-3 py-2.5 text-texte-principal focus:outline-none focus:ring-2 focus:ring-primaire-clair"
+              />
+            </label>
+            {erreur && <p className="text-sm font-medium text-danger">{erreur}</p>}
+            <button
+              type="submit"
+              className="mt-1 rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-white hover:opacity-90"
+            >
+              Créer mon compte
+            </button>
+          </form>
+
+          <div className="mt-6">
+            <ConnexionSociale />
+          </div>
+
+          <p className="mt-6 text-center text-sm text-texte-secondaire">
+            Déjà un compte ?{" "}
+            <button type="button" onClick={() => setMode("connexion")} className="font-medium text-primaire hover:underline">
+              Se connecter
+            </button>
+          </p>
+        </>
+      )}
 
       <div className="mt-10 border-t border-bordure pt-4">
         <button

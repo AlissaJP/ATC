@@ -10,9 +10,11 @@ import type {
   Adresse,
   DocumentEntreprise,
   Favori,
+  MoyenPaiementEnregistre,
   ProfilEntreprise,
   StatutValidationEntreprise,
   TypeDocumentEntreprise,
+  TypeMoyenPaiementEnregistre,
   Utilisateur,
 } from "@/lib/types/entities";
 
@@ -42,6 +44,7 @@ interface ComptesState {
   documentsEntreprise: DocumentEntreprise[];
   adresses: Adresse[];
   favoris: Favori[];
+  moyensPaiement: MoyenPaiementEnregistre[];
 
   inscrireParticulier: (nom: string, email: string, telephone?: string) => Utilisateur;
   inscrireEntreprise: (donnees: InscriptionEntrepriseInput, documents: DocumentTeleverse[]) => ProfilEntreprise;
@@ -54,6 +57,16 @@ interface ComptesState {
   retirerAdresse: (adresseId: string) => void;
 
   basculerFavori: (utilisateurId: string, produitId: string) => void;
+
+  ajouterMoyenPaiement: (
+    utilisateurId: string,
+    type: TypeMoyenPaiementEnregistre,
+    libelle: string,
+    infoSecondaire?: string
+  ) => void;
+  modifierMoyenPaiement: (moyenId: string, libelle: string, infoSecondaire?: string) => void;
+  definirMoyenPaiementParDefaut: (utilisateurId: string, moyenId: string) => void;
+  retirerMoyenPaiement: (moyenId: string) => void;
 }
 
 let compteurId = 0;
@@ -72,6 +85,37 @@ function avecProfilAdopte(profils: ProfilEntreprise[], profilId: string): Profil
   return depuisSeed ? [...profils, depuisSeed] : profils;
 }
 
+// RAFF-MOYENS-PAIEMENT — jeu de démonstration pour le compte de test « Particulier » (décision actée
+// n°42, même logique que les avis/devis/commandes déjà seedés) : les 3 moyens réels d'ATC, carte par défaut.
+function seedMoyensPaiement(): MoyenPaiementEnregistre[] {
+  return [
+    {
+      id: "moyen-seed-carte",
+      utilisateur_id: "user-particulier-1",
+      type: "carte",
+      libelle: "Carte •••• 1234",
+      info_secondaire: "Expire 06/2027",
+      par_defaut: true,
+    },
+    {
+      id: "moyen-seed-moncash",
+      utilisateur_id: "user-particulier-1",
+      type: "moncash",
+      libelle: "MonCash — •••• 5678",
+      info_secondaire: "Numéro enregistré",
+      par_defaut: false,
+    },
+    {
+      id: "moyen-seed-paypal",
+      utilisateur_id: "user-particulier-1",
+      type: "paypal",
+      libelle: "PayPal connecté",
+      info_secondaire: "j***@exemple.com",
+      par_defaut: false,
+    },
+  ];
+}
+
 export const useComptesStore = create<ComptesState>()(
   persist(
     (set) => ({
@@ -80,6 +124,7 @@ export const useComptesStore = create<ComptesState>()(
       documentsEntreprise: [],
       adresses: [],
       favoris: [],
+      moyensPaiement: seedMoyensPaiement(),
 
       inscrireParticulier: (nom, email, telephone) => {
         const utilisateur: Utilisateur = {
@@ -192,6 +237,41 @@ export const useComptesStore = create<ComptesState>()(
             favoris: [...state.favoris, { id: idUnique("favori"), utilisateur_id: utilisateurId, produit_id: produitId }],
           };
         }),
+
+      ajouterMoyenPaiement: (utilisateurId, type, libelle, infoSecondaire) =>
+        set((state) => {
+          const premierMoyen = !state.moyensPaiement.some((m) => m.utilisateur_id === utilisateurId);
+          return {
+            moyensPaiement: [
+              ...state.moyensPaiement,
+              {
+                id: idUnique("moyen"),
+                utilisateur_id: utilisateurId,
+                type,
+                libelle,
+                info_secondaire: infoSecondaire,
+                par_defaut: premierMoyen,
+              },
+            ],
+          };
+        }),
+
+      modifierMoyenPaiement: (moyenId, libelle, infoSecondaire) =>
+        set((state) => ({
+          moyensPaiement: state.moyensPaiement.map((m) =>
+            m.id === moyenId ? { ...m, libelle, info_secondaire: infoSecondaire } : m
+          ),
+        })),
+
+      definirMoyenPaiementParDefaut: (utilisateurId, moyenId) =>
+        set((state) => ({
+          moyensPaiement: state.moyensPaiement.map((m) =>
+            m.utilisateur_id === utilisateurId ? { ...m, par_defaut: m.id === moyenId } : m
+          ),
+        })),
+
+      retirerMoyenPaiement: (moyenId) =>
+        set((state) => ({ moyensPaiement: state.moyensPaiement.filter((m) => m.id !== moyenId) })),
     }),
     { name: "atc-comptes" }
   )

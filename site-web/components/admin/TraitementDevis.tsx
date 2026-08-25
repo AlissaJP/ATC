@@ -120,40 +120,59 @@ function LigneReponseDevis({ devis }: { devis: Devis }) {
   );
 }
 
-export function TraitementDevis() {
+type FiltreDevis = "en_attente" | "repondu" | "resolu" | "tous";
+
+const FILTRES: { valeur: FiltreDevis; label: string }[] = [
+  { valeur: "en_attente", label: "En attente" },
+  { valeur: "repondu", label: "Répondus" },
+  { valeur: "resolu", label: "Acceptés / Expirés" },
+  { valeur: "tous", label: "Tous" },
+];
+
+// filtreInitial : reçu de la page (Server Component, lit searchParams) pour les raccourcis de la
+// navigation latérale (Section Administration, Raffinement Design). "resolu" regroupe les statuts
+// terminaux (accepté, refusé, expiré, converti) — le doc ne nomme que "Acceptés / Expirés" pour ce
+// 3ᵉ regroupement, seul bucket restant pour les statuts non couverts par les deux premiers.
+export function TraitementDevis({ filtreInitial = "en_attente" }: { filtreInitial?: FiltreDevis }) {
   const devis = useDevisStore((s) => s.devis);
-  const enAttente = [...devis]
-    .filter((d) => d.statut === "en_attente")
-    .sort((a, b) => new Date(a.date_creation).getTime() - new Date(b.date_creation).getTime());
-  const traites = [...devis]
-    .filter((d) => d.statut !== "en_attente")
-    .sort((a, b) => new Date(b.date_creation).getTime() - new Date(a.date_creation).getTime());
+  const [filtre, setFiltre] = useState<FiltreDevis>(filtreInitial);
+
+  const filtres = useMemo(() => {
+    return [...devis]
+      .filter((d) => {
+        if (filtre === "tous") return true;
+        if (filtre === "resolu") return !["en_attente", "repondu"].includes(d.statut);
+        return d.statut === filtre;
+      })
+      .sort((a, b) => new Date(b.date_creation).getTime() - new Date(a.date_creation).getTime());
+  }, [devis, filtre]);
 
   return (
-    <div className="flex flex-col gap-10">
-      <section>
-        <h2 className="mb-4 font-titres text-lg font-semibold text-texte-principal">
-          Devis en attente ({enAttente.length})
-        </h2>
-        {enAttente.length === 0 ? (
-          <p className="text-sm text-texte-secondaire">Aucun devis en attente de traitement.</p>
-        ) : (
-          <div className="flex flex-col gap-3">
-            {enAttente.map((d) => (
-              <LigneReponseDevis key={d.id} devis={d} />
-            ))}
-          </div>
-        )}
-      </section>
+    <div>
+      <div className="mb-4 flex flex-wrap gap-2">
+        {FILTRES.map((f) => (
+          <button
+            key={f.valeur}
+            type="button"
+            onClick={() => setFiltre(f.valeur)}
+            className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
+              filtre === f.valeur ? "bg-primaire text-white" : "bg-fond text-texte-secondaire"
+            }`}
+          >
+            {f.label}
+          </button>
+        ))}
+      </div>
 
-      <section>
-        <h2 className="mb-4 font-titres text-lg font-semibold text-texte-principal">Devis traités</h2>
+      {filtres.length === 0 ? (
+        <p className="text-sm text-texte-secondaire">Aucun devis dans ce filtre.</p>
+      ) : (
         <div className="flex flex-col gap-3">
-          {traites.map((d) => (
+          {filtres.map((d) => (
             <LigneReponseDevis key={d.id} devis={d} />
           ))}
         </div>
-      </section>
+      )}
     </div>
   );
 }

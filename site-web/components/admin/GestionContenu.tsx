@@ -31,9 +31,16 @@ const ONGLET_LEGAL: { slug: SlugPageLegale; label: string }[] = [
   { slug: "mentions-legales", label: "Mentions légales" },
 ];
 
-export function GestionContenu({ questionsFAQ, pagesLegales, categories }: GestionContenuProps) {
+// ongletInitial : reçu de la page (Server Component, lit searchParams) pour les raccourcis « FAQ » /
+// « Mentions légales & CGV » de la navigation latérale (Section Administration, Raffinement Design).
+export function GestionContenu({
+  questionsFAQ,
+  pagesLegales,
+  categories,
+  ongletInitial = "faq",
+}: GestionContenuProps & { ongletInitial?: "faq" | SlugPageLegale }) {
   const router = useRouter();
-  const [onglet, setOnglet] = useState<"faq" | SlugPageLegale>("faq");
+  const [onglet, setOnglet] = useState<"faq" | SlugPageLegale>(ongletInitial);
   const pageLegaleActive = pagesLegales.find((p) => p.slug === onglet);
 
   return (

@@ -6,6 +6,7 @@
 import Link from "next/link";
 import { useSessionStore } from "@/lib/store/session-store";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
+import { AdminTopBar } from "@/components/admin/AdminTopBar";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = useSessionStore((s) => s.session);
@@ -29,14 +30,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <div className="flex flex-1 flex-col">
-      <div className="border-b border-bordure bg-fond px-4 py-3 md:px-6">
-        <p className="text-sm text-texte-secondaire">
-          Back-office ATC — <span className="font-medium text-texte-principal">{session.administrateur.nom}</span>{" "}
-          ({session.administrateur.role === "general" ? "Administrateur Général" : "Agent SAV"})
-        </p>
+      <div className="print:hidden">
+        <AdminTopBar administrateur={session.administrateur} />
       </div>
       <div className="flex flex-1 flex-col md:flex-row">
-        <AdminSidebar role={session.administrateur.role} />
+        <div className="print:hidden">
+          <AdminSidebar role={session.administrateur.role} />
+        </div>
         <div className="flex-1">{children}</div>
       </div>
     </div>

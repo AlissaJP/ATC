@@ -13,34 +13,16 @@ import { useCommandeStore } from "@/lib/store/commande-store";
 import { useDevisStore } from "@/lib/store/devis-store";
 import { produits } from "@/lib/mock-data/produits";
 import { categories } from "@/lib/mock-data/categories";
-import type { Categorie } from "@/lib/types/entities";
-
-function categorieRacine(categorieId: string): Categorie | undefined {
-  const categorie = categories.find((c) => c.id === categorieId);
-  if (!categorie) return undefined;
-  if (!categorie.parent_id) return categorie;
-  return categories.find((c) => c.id === categorie.parent_id) ?? categorie;
-}
+import { calculerVentesParCategorie } from "@/lib/business-rules/ventes-categorie";
 
 export function Statistiques() {
   const lignesCommande = useCommandeStore((s) => s.lignesCommande);
   const devis = useDevisStore((s) => s.devis);
 
-  const ventesParCategorie = useMemo(() => {
-    const totaux = new Map<string, number>();
-    for (const ligne of lignesCommande) {
-      const produit = produits.find((p) => p.id === ligne.produit_id);
-      if (!produit) continue;
-      const racine = categorieRacine(produit.categorie_id);
-      if (!racine) continue;
-      const montant = ligne.prix_unitaire_applique * ligne.quantite;
-      totaux.set(racine.nom, (totaux.get(racine.nom) ?? 0) + montant);
-    }
-    return categories
-      .filter((c) => !c.parent_id)
-      .map((c) => ({ nom: c.nom, montant: totaux.get(c.nom) ?? 0 }))
-      .sort((a, b) => b.montant - a.montant);
-  }, [lignesCommande]);
+  const ventesParCategorie = useMemo(
+    () => calculerVentesParCategorie(lignesCommande, produits, categories),
+    [lignesCommande]
+  );
 
   const maxVente = Math.max(1, ...ventesParCategorie.map((v) => v.montant));
   const totalVentes = ventesParCategorie.reduce((s, v) => s + v.montant, 0);

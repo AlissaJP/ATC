@@ -10,6 +10,7 @@ import { useFactureStore } from "@/lib/store/facture-store";
 import { useParametresStore } from "@/lib/store/parametres-store";
 import { convertirUsdVersHtg } from "@/lib/business-rules/change-htg";
 import { calculerFacture } from "@/lib/business-rules/taxe";
+import { MoyensPaiement } from "@/components/compte/MoyensPaiement";
 import type { MethodePaiement } from "@/lib/types/entities";
 
 // ECR-06-001 — Paiement, réutilisé pour un devis accepté (Phase 3) ou une commande panier (Phase 4).
@@ -206,7 +207,16 @@ export function EcranPaiement({ contexte }: { contexte: ContextePaiement }) {
           Dont taxe ({(detailTaxe.taux_taxe * 100).toFixed(0)} %) : ${detailTaxe.montant_taxe.toFixed(2)}
         </p>
 
-        <div className="mt-6 grid gap-3">
+        <div className="mt-6">
+          <MoyensPaiement
+            utilisateurId={session.utilisateur_id}
+            mode="selection"
+            methodeSelectionnee={methode}
+            onSelectionner={setMethode}
+          />
+        </div>
+
+        <div className="grid gap-3">
           {MOYENS.map(({ id, label, icone: Icone }) => (
             <button
               key={id}
