@@ -19,8 +19,8 @@ export function BlocDevenirPro() {
     <section className="grid gap-8 overflow-hidden rounded-2xl border border-bordure bg-fond md:grid-cols-2">
       <div className="relative order-2 hidden min-h-[280px] md:order-1 md:block">
         <Image
-          src="/images/energie-solaire/energie-15.webp"
-          alt="Installation de panneaux solaires par l'équipe ATC, vue panoramique"
+          src="/images/entreprise/devenir-client-professionnel.webp"
+          alt="Équipe professionnelle analysant ses données de vente et d'achat en réunion"
           fill
           className="object-cover"
           sizes="50vw"
