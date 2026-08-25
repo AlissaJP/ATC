@@ -1,6 +1,5 @@
 {
   "nav": {
-    "electronique": "Electrónica",
     "energieSolaire": "Energía Solar",
     "securite": "Seguridad",
     "climatisation": "Climatización",
@@ -8,8 +7,7 @@
     "devenirPro": "Convertirse en Cliente Empresarial",
     "recherche": "Buscar un producto...",
     "compte": "Mi Cuenta",
-    "panier": "Carrito",
-    "espaceEntreprise": "Espacio Empresarial"
+    "panier": "Carrito"
   },
   "accueil": {
     "heroAccroche": "Energía Solar · Instalación Incluida",
@@ -19,7 +17,6 @@
     "categoriesPhares": "Nuestros Universos de Productos",
     "categorieDecouvrir": "Descubrir",
     "categorieEnergieAccroche": "Paneles, baterías, instalación completa",
-    "categorieElectroniqueAccroche": "Computadoras, monitores, conectividad",
     "categorieSecuriteAccroche": "Cámaras y timbres inteligentes",
     "categorieClimatisationAccroche": "Confort térmico para cada espacio",
     "blocProTitre": "Convertirse en Cliente Empresarial",
@@ -52,7 +49,7 @@
     "baremeB2B": "Precios Empresariales"
   },
   "footer": {
-    "description": "ATC (Alpha Tech Center) — Energía solar, electrónica, seguridad y climatización, en Haití y para la diáspora.",
+    "description": "ATC (Alpha Tech Center) — Energía solar, seguridad y climatización, en Haití y para la diáspora.",
     "colonneEntreprise": "EMPRESA",
     "colonneAide": "AYUDA",
     "colonneNewsletter": "BOLETÍN",
@@ -86,7 +83,7 @@
     "bannerTitre": "Acerca de ATC",
     "bannerTagline": "Hacemos de la energía solar, la electricidad y la climatización su confort.",
     "missionTitre": "Nuestra Misión",
-    "missionTexte": "Con sede en Haití, ATC acompaña a particulares y empresas en sus proyectos de energía solar, electrónica, seguridad y climatización — con una exigencia: una instalación realizada de principio a fin por nuestro propio equipo técnico.",
+    "missionTexte": "Con sede en Haití, ATC acompaña a particulares y empresas en sus proyectos de energía solar, seguridad y climatización — con una exigencia: una instalación realizada de principio a fin por nuestro propio equipo técnico.",
     "valeursTitre": "Nuestros Valores",
     "valeur1Titre": "Calidad",
     "valeur1Texte": "Productos seleccionados y garantizados, nunca equipo usado.",

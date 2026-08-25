@@ -1,7 +1,7 @@
 "use client";
 
 // ECR-12-001 — Widget compact « Ventes par catégorie » du tableau de bord (remplace « Traffic Sources »
-// de la référence ClarityUI) : même structure visuelle que Statistiques.tsx, avec les 4 vraies catégories ATC.
+// de la référence ClarityUI) : même structure visuelle que Statistiques.tsx, avec les vraies catégories ATC.
 import { useMemo } from "react";
 import { useCommandeStore } from "@/lib/store/commande-store";
 import { produits } from "@/lib/mock-data/produits";

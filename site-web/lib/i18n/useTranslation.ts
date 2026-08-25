@@ -19,7 +19,7 @@ function obtenirValeur(dictionnaire: Dictionnaire, cle: string): string {
   return typeof valeur === "string" ? valeur : cle;
 }
 
-/** Hook de traduction — clé pointée, ex. t("nav.electronique"). RG-14-001. */
+/** Hook de traduction — clé pointée, ex. t("nav.securite"). RG-14-001. */
 export function useTranslation() {
   const langue = useLocaleStore((s) => s.langue);
   const definirLangue = useLocaleStore((s) => s.definirLangue);

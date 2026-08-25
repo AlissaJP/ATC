@@ -17,8 +17,18 @@ import { useSessionStore } from "@/lib/store/session-store";
 
 const categoriesPrincipales = categories.filter((c) => !c.parent_id);
 
+// Ordre de navigation validé (Raffinement Design) : Énergies solaires, Packages solaires, Climatisation,
+// Sécurité — Électronique retirée du catalogue (l'entreprise ne vend plus cette gamme). L'ordre est fixé
+// explicitement ici plutôt que dérivé de l'ordre de lib/mock-data/categories.ts, car Packages (qui n'est
+// pas une catégorie du catalogue) s'intercale entre Énergies solaires et Climatisation.
+const slugEnergieSolaire = categoriesPrincipales.find((c) => c.slug === "energie-solaire");
+const slugClimatisation = categoriesPrincipales.find((c) => c.slug === "climatisation");
+const slugSecurite = categoriesPrincipales.find((c) => c.slug === "securite");
+
 // Section 1.1 (Raffinement Design, validé) — en-tête à deux niveaux : barre utilitaire (logo, langue,
-// compte, recherche, panier) puis navigation par catégories avec le lien Espace Entreprise à l'extrémité droite.
+// compte, recherche, panier) puis navigation par catégories. Le lien "Espace Entreprise" a été retiré du
+// header (Raffinement Design) — la page /compte/inscription-entreprise reste accessible depuis la page
+// d'inscription, le bloc "Devenir client professionnel" de l'accueil et le pied de page.
 // Sur les pages catégorie/recherche (ECR-01-002/ECR-02-001), la recherche s'affiche en version étendue
 // et pré-remplie au lieu de la simple icône ; l'icône Favoris n'apparaît que pour un client connecté (BF-08-004).
 export function Header() {
@@ -121,31 +131,37 @@ export function Header() {
 
       {/* Niveau 2 — navigation par catégories, sur le fond de la page (non fixée), pas sur le blanc de l'en-tête */}
       <nav className="hidden bg-fond py-2.5 md:block print:hidden" aria-label="Catégories">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 md:px-6">
-          <div className="flex items-center gap-6">
-            {categoriesPrincipales.map((cat) => (
-              <Link
-                key={cat.id}
-                href={`/categorie/${cat.slug}`}
-                className="font-titres text-base font-semibold text-texte-principal transition-colors hover:text-primaire"
-              >
-                {t(`nav.${cat.slug === "energie-solaire" ? "energieSolaire" : cat.slug}`)}
-              </Link>
-            ))}
+        <div className="mx-auto flex max-w-7xl items-center gap-6 px-4 md:px-6">
+          {slugEnergieSolaire && (
             <Link
-              href="/packages"
-              className="font-titres text-base font-semibold text-primaire-clair transition-colors hover:text-primaire"
+              href={`/categorie/${slugEnergieSolaire.slug}`}
+              className="font-titres text-base font-semibold text-texte-principal transition-colors hover:text-primaire"
             >
-              {t("nav.packages")}
+              {t("nav.energieSolaire")}
             </Link>
-          </div>
-
+          )}
           <Link
-            href="/compte/inscription-entreprise"
-            className="font-titres text-base font-semibold text-texte-principal transition-colors hover:text-primaire"
+            href="/packages"
+            className="font-titres text-base font-semibold text-primaire-clair transition-colors hover:text-primaire"
           >
-            {t("nav.espaceEntreprise")}
+            {t("nav.packages")}
           </Link>
+          {slugClimatisation && (
+            <Link
+              href={`/categorie/${slugClimatisation.slug}`}
+              className="font-titres text-base font-semibold text-texte-principal transition-colors hover:text-primaire"
+            >
+              {t("nav.climatisation")}
+            </Link>
+          )}
+          {slugSecurite && (
+            <Link
+              href={`/categorie/${slugSecurite.slug}`}
+              className="font-titres text-base font-semibold text-texte-principal transition-colors hover:text-primaire"
+            >
+              {t("nav.securite")}
+            </Link>
+          )}
         </div>
       </nav>
 
@@ -156,17 +172,17 @@ export function Header() {
         >
           <SearchBar className="mb-3 w-full" onNavigate={() => setMenuOuvert(false)} />
           <ul className="flex flex-col gap-1">
-            {categoriesPrincipales.map((cat) => (
-              <li key={cat.id}>
+            {slugEnergieSolaire && (
+              <li>
                 <Link
-                  href={`/categorie/${cat.slug}`}
+                  href={`/categorie/${slugEnergieSolaire.slug}`}
                   className="block rounded-lg px-3 py-3 font-titres text-base font-semibold text-texte-principal hover:bg-fond"
                   onClick={() => setMenuOuvert(false)}
                 >
-                  {t(`nav.${cat.slug === "energie-solaire" ? "energieSolaire" : cat.slug}`)}
+                  {t("nav.energieSolaire")}
                 </Link>
               </li>
-            ))}
+            )}
             <li>
               <Link
                 href="/packages"
@@ -176,15 +192,28 @@ export function Header() {
                 {t("nav.packages")}
               </Link>
             </li>
-            <li>
-              <Link
-                href="/compte/inscription-entreprise"
-                className="block rounded-lg px-3 py-3 font-titres text-base font-semibold text-texte-principal hover:bg-fond"
-                onClick={() => setMenuOuvert(false)}
-              >
-                {t("nav.espaceEntreprise")}
-              </Link>
-            </li>
+            {slugClimatisation && (
+              <li>
+                <Link
+                  href={`/categorie/${slugClimatisation.slug}`}
+                  className="block rounded-lg px-3 py-3 font-titres text-base font-semibold text-texte-principal hover:bg-fond"
+                  onClick={() => setMenuOuvert(false)}
+                >
+                  {t("nav.climatisation")}
+                </Link>
+              </li>
+            )}
+            {slugSecurite && (
+              <li>
+                <Link
+                  href={`/categorie/${slugSecurite.slug}`}
+                  className="block rounded-lg px-3 py-3 font-titres text-base font-semibold text-texte-principal hover:bg-fond"
+                  onClick={() => setMenuOuvert(false)}
+                >
+                  {t("nav.securite")}
+                </Link>
+              </li>
+            )}
           </ul>
         </nav>
       )}

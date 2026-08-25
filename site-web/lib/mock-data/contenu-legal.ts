@@ -56,7 +56,7 @@ export const pagesLegales: PageLegale[] = [
         id: "cgv-6",
         titre: "6. Garanties",
         corps:
-          "Les durées de garantie constructeur varient par catégorie de produit : 24 mois pour l'énergie solaire (panneaux, batteries, régulateurs, accessoires), 12 mois pour l'électronique, la sécurité et la climatisation. Le détail est indiqué sur chaque fiche produit.",
+          "Les durées de garantie constructeur varient par catégorie de produit : 24 mois pour l'énergie solaire (panneaux, batteries, régulateurs, accessoires), 12 mois pour la sécurité et la climatisation. Le détail est indiqué sur chaque fiche produit.",
       },
       {
         id: "cgv-7",
@@ -116,7 +116,7 @@ export const pagesLegales: PageLegale[] = [
         id: "mentions-1",
         titre: "1. Éditeur du site",
         corps:
-          "Le site ATC (Alpha Tech Center) est édité par Alpha Tech Center, distributeur d'électronique, d'énergie solaire, de matériel de sécurité et de climatisation en Haïti. Coordonnées complètes disponibles auprès de notre support (page Contact).",
+          "Le site ATC (Alpha Tech Center) est édité par Alpha Tech Center, distributeur d'énergie solaire, de matériel de sécurité et de climatisation en Haïti. Coordonnées complètes disponibles auprès de notre support (page Contact).",
       },
       {
         id: "mentions-2",

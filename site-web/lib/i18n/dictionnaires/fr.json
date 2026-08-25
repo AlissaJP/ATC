@@ -1,15 +1,13 @@
 {
   "nav": {
-    "electronique": "Électronique",
-    "energieSolaire": "Énergie solaire",
+    "energieSolaire": "Énergies solaires",
     "securite": "Sécurité",
     "climatisation": "Climatisation",
     "packages": "Packages solaires",
     "devenirPro": "Devenir client professionnel",
     "recherche": "Rechercher un produit...",
     "compte": "Mon compte",
-    "panier": "Panier",
-    "espaceEntreprise": "Espace Entreprise"
+    "panier": "Panier"
   },
   "accueil": {
     "heroAccroche": "Énergie solaire · Installation incluse",
@@ -19,7 +17,6 @@
     "categoriesPhares": "Nos univers produits",
     "categorieDecouvrir": "Découvrir",
     "categorieEnergieAccroche": "Panneaux, batteries, installation complète",
-    "categorieElectroniqueAccroche": "Ordinateurs, moniteurs, connectivité",
     "categorieSecuriteAccroche": "Caméras et sonnettes connectées",
     "categorieClimatisationAccroche": "Confort thermique pour chaque espace",
     "blocProTitre": "Devenir client professionnel",
@@ -52,7 +49,7 @@
     "baremeB2B": "Barème professionnel"
   },
   "footer": {
-    "description": "ATC (Alpha Tech Center) — Énergie solaire, électronique, sécurité et climatisation, en Haïti et pour la diaspora.",
+    "description": "ATC (Alpha Tech Center) — Énergie solaire, sécurité et climatisation, en Haïti et pour la diaspora.",
     "colonneEntreprise": "ENTREPRISE",
     "colonneAide": "AIDE",
     "colonneNewsletter": "NEWSLETTER",
@@ -86,7 +83,7 @@
     "bannerTitre": "À propos d'ATC",
     "bannerTagline": "Nous faisons de l'énergie solaire, de l'électricité et de la climatisation votre confort.",
     "missionTitre": "Notre mission",
-    "missionTexte": "Basée en Haïti, ATC accompagne particuliers et entreprises dans leurs projets d'énergie solaire, d'électronique, de sécurité et de climatisation — avec une exigence : une installation réalisée par notre propre équipe technique, de bout en bout.",
+    "missionTexte": "Basée en Haïti, ATC accompagne particuliers et entreprises dans leurs projets d'énergie solaire, de sécurité et de climatisation — avec une exigence : une installation réalisée par notre propre équipe technique, de bout en bout.",
     "valeursTitre": "Nos valeurs",
     "valeur1Titre": "Qualité",
     "valeur1Texte": "Des produits sélectionnés et garantis, jamais de matériel d'occasion.",

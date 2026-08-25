@@ -19,12 +19,6 @@ export const stock: Stock[] = [
   { produit_id: "prod-climatiseur-split-12000", stock_actuel: 45, stock_reference: 100 },
   { produit_id: "prod-climatiseur-split-18000", stock_actuel: 18, stock_reference: 100 },
   { produit_id: "prod-climatiseur-tgm", stock_actuel: 0, stock_reference: 100 },
-  { produit_id: "prod-moniteur-hp-24", stock_actuel: 30, stock_reference: 100 },
-  { produit_id: "prod-moniteur-dell-27", stock_actuel: 22, stock_reference: 100 },
-  { produit_id: "prod-ordinateur-portable-hp", stock_actuel: 90, stock_reference: 100 },
-  { produit_id: "prod-ordinateur-portable-toshiba", stock_actuel: 8, stock_reference: 100 },
-  { produit_id: "prod-ordinateur-bureau-dell", stock_actuel: 60, stock_reference: 100 },
-  { produit_id: "prod-starlink-kit", stock_actuel: 0, stock_reference: 100 },
 ];
 
 export function trouverStockParProduit(produitId: string): Stock | undefined {

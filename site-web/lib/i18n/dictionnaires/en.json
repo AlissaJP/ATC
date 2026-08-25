@@ -1,6 +1,5 @@
 {
   "nav": {
-    "electronique": "Electronics",
     "energieSolaire": "Solar Energy",
     "securite": "Security",
     "climatisation": "Air Conditioning",
@@ -8,8 +7,7 @@
     "devenirPro": "Become a Business Customer",
     "recherche": "Search for a product...",
     "compte": "My Account",
-    "panier": "Cart",
-    "espaceEntreprise": "Business Area"
+    "panier": "Cart"
   },
   "accueil": {
     "heroAccroche": "Solar Energy · Installation Included",
@@ -19,7 +17,6 @@
     "categoriesPhares": "Our Product Universes",
     "categorieDecouvrir": "Discover",
     "categorieEnergieAccroche": "Panels, batteries, full installation",
-    "categorieElectroniqueAccroche": "Computers, monitors, connectivity",
     "categorieSecuriteAccroche": "Cameras and smart doorbells",
     "categorieClimatisationAccroche": "Comfort for every space",
     "blocProTitre": "Become a Business Customer",
@@ -52,7 +49,7 @@
     "baremeB2B": "Business Pricing"
   },
   "footer": {
-    "description": "ATC (Alpha Tech Center) — Solar energy, electronics, security, and air conditioning, in Haiti and for the diaspora.",
+    "description": "ATC (Alpha Tech Center) — Solar energy, security, and air conditioning, in Haiti and for the diaspora.",
     "colonneEntreprise": "COMPANY",
     "colonneAide": "HELP",
     "colonneNewsletter": "NEWSLETTER",
@@ -86,7 +83,7 @@
     "bannerTitre": "About ATC",
     "bannerTagline": "We turn solar energy, electricity, and air conditioning into your comfort.",
     "missionTitre": "Our Mission",
-    "missionTexte": "Based in Haiti, ATC supports individuals and businesses in their solar energy, electronics, security, and air conditioning projects — with one requirement: an installation carried out end-to-end by our own technical team.",
+    "missionTexte": "Based in Haiti, ATC supports individuals and businesses in their solar energy, security, and air conditioning projects — with one requirement: an installation carried out end-to-end by our own technical team.",
     "valeursTitre": "Our Values",
     "valeur1Titre": "Quality",
     "valeur1Texte": "Selected, guaranteed products — never used equipment.",

@@ -21,7 +21,7 @@ const montserrat = Montserrat({
 export const metadata: Metadata = {
   title: "ATC — Alpha Tech Center",
   description:
-    "Électronique, énergie solaire, sécurité et climatisation en Haïti — vente au détail et professionnelle.",
+    "Énergie solaire, sécurité et climatisation en Haïti — vente au détail et professionnelle.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

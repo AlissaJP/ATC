@@ -2,7 +2,6 @@
 import type { Categorie } from "@/lib/types/entities";
 
 export const categories: Categorie[] = [
-  { id: "cat-electronique", slug: "electronique", nom: "Électronique" },
   { id: "cat-energie-solaire", slug: "energie-solaire", nom: "Énergie solaire" },
   { id: "cat-panneaux", slug: "panneaux-solaires", nom: "Panneaux solaires", parent_id: "cat-energie-solaire" },
   { id: "cat-batteries", slug: "batteries", nom: "Batteries", parent_id: "cat-energie-solaire" },

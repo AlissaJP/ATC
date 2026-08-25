@@ -31,7 +31,7 @@ export const questionsFAQ: QuestionFAQ[] = [
     id: "faq-garantie",
     question: "Quelle est la durée de garantie de mes produits ?",
     reponse:
-      "Elle varie par catégorie : 24 mois pour l'énergie solaire, 12 mois pour l'électronique, la sécurité et la climatisation. Le détail est indiqué sur chaque fiche produit.",
+      "Elle varie par catégorie : 24 mois pour l'énergie solaire, 12 mois pour la sécurité et la climatisation. Le détail est indiqué sur chaque fiche produit.",
   },
   {
     id: "faq-devis-validite",

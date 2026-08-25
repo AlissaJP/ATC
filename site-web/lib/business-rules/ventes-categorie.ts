@@ -1,4 +1,5 @@
-// BF-15-001 — Ventes par catégorie (4 catégories racines ATC). Logique partagée entre Statistiques
+// BF-15-001 — Ventes par catégorie (3 catégories racines ATC : Énergie solaire, Sécurité, Climatisation
+// — Électronique retirée du catalogue, l'entreprise ne vend plus cette gamme). Logique partagée entre Statistiques
 // (back-office) et le widget du tableau de bord administrateur (ECR-12-001, même structure visuelle).
 import type { Categorie, LigneCommande, Produit } from "@/lib/types/entities";
 

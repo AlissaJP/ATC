@@ -2,7 +2,6 @@
 import type { Garantie } from "@/lib/types/entities";
 
 export const garanties: Garantie[] = [
-  { categorie_id: "cat-electronique", duree_mois: 12 },
   { categorie_id: "cat-energie-solaire", duree_mois: 24 },
   { categorie_id: "cat-panneaux", duree_mois: 24 },
   { categorie_id: "cat-batteries", duree_mois: 24 },
