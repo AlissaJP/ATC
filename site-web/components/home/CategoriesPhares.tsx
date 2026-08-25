@@ -1,71 +1,81 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { useTranslation } from "@/lib/i18n/useTranslation";
+import { ProductCard } from "@/components/product/ProductCard";
+import { categories } from "@/lib/mock-data/categories";
+import type { ProduitEnrichi } from "@/lib/services/catalogue";
 
-// BF-01-008 — Mise en avant des catégories phares (structure : Raffinement Design Section 1.2, validé).
-// Réutilise les clés de traduction "nav.*" (components/layout/Header.tsx) puisqu'il s'agit des mêmes catégories.
-const CARTES = [
-  {
-    slug: "energie-solaire",
-    cleTraduction: "nav.energieSolaire",
-    cleAccroche: "accueil.categorieEnergieAccroche",
-    // energie-06.webp (suggestion initiale) montre en réalité une batterie de marque tierce non liée
-    // à ATC — écarté (même famille de problème que l'Axe 2 du rapport d'audit) ; energie-17 est propre.
-    image: "/images/energie-solaire/energie-17.webp",
-  },
-  {
-    slug: "securite",
-    cleTraduction: "nav.securite",
-    cleAccroche: "accueil.categorieSecuriteAccroche",
-    // produit-isole-01.webp (suggestion initiale) est le visuel taché identifié à l'Axe 2 (marque tierce
-    // "SMART+" + bandeau marketing) — remplacé par produit-isole-03.webp, déjà retenu comme alternative
-    // propre pour ce même produit dans lib/mock-data/produits.ts.
-    image: "/images/securite/camera-ptz-solaire-produit-isole-produit-isole-03.webp",
-  },
-  {
-    slug: "climatisation",
-    cleTraduction: "nav.climatisation",
-    cleAccroche: "accueil.categorieClimatisationAccroche",
-    image: "/images/climatisation/climatisation-07-recadre.webp",
-  },
+// BF-01-008 — Mise en avant des catégories phares (structure : Raffinement Design Section 1.2, validé ;
+// approfondissement demandé — intro par catégorie + produits en extérieur + bouton "Voir tous").
+// Sous-catégories affichées en tags uniquement pour Énergie solaire, seule catégorie ayant une vraie
+// structure de sous-catégories dans lib/mock-data/categories.ts (Sécurité et Climatisation n'ont que 3
+// produits chacune, sans axe de regroupement propre et cohérent dans leurs specifications — un tag
+// décoratif sans filtre réel aurait été trompeur, cf. "si pertinent" dans la demande).
+const BLOCS = [
+  { slug: "energie-solaire", cleTraduction: "nav.energieSolaire", cleIntro: "accueil.introEnergieSolaire" },
+  { slug: "securite", cleTraduction: "nav.securite", cleIntro: "accueil.introSecurite" },
+  { slug: "climatisation", cleTraduction: "nav.climatisation", cleIntro: "accueil.introClimatisation" },
 ] as const;
 
-export function CategoriesPhares() {
+const sousCategoriesEnergieSolaire = categories.filter((c) => c.parent_id === "cat-energie-solaire");
+
+export function CategoriesPhares({
+  produitsParCategorie,
+}: {
+  produitsParCategorie: Record<string, ProduitEnrichi[]>;
+}) {
   const { t } = useTranslation();
 
   return (
-    <section>
-      <h2 className="mb-6 font-titres text-2xl font-bold text-texte-principal">{t("accueil.categoriesPhares")}</h2>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
-        {CARTES.map((cat, index) => (
-          <Link
-            key={cat.slug}
-            href={`/categorie/${cat.slug}`}
-            className="group relative aspect-[4/3] overflow-hidden rounded-xl bg-fond"
-          >
-            <Image
-              src={cat.image}
-              alt={t(cat.cleTraduction)}
-              fill
-              priority={index === 0}
-              className="object-cover object-top transition-transform duration-200 group-hover:scale-[1.02]"
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-texte-principal/80 via-texte-principal/10 to-transparent" />
-            <div className="absolute inset-x-0 bottom-0 p-4">
-              <p className="font-titres text-sm font-semibold text-white sm:text-base">{t(cat.cleTraduction)}</p>
-              <p className="mt-0.5 text-xs text-white/80 sm:text-sm">{t(cat.cleAccroche)}</p>
-              <span className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-white transition-transform group-hover:translate-x-0.5">
-                {t("accueil.categorieDecouvrir")}
-                <ArrowRight size={13} />
-              </span>
+    <section className="flex flex-col gap-12">
+      <h2 className="font-titres text-2xl font-bold text-texte-principal">{t("accueil.categoriesPhares")}</h2>
+
+      {BLOCS.map((bloc) => {
+        const produits = produitsParCategorie[bloc.slug] ?? [];
+        if (produits.length === 0) return null;
+        const nomCategorie = t(bloc.cleTraduction);
+
+        return (
+          <div key={bloc.slug}>
+            <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <Link href={`/categorie/${bloc.slug}`} className="hover:text-primaire">
+                  <h3 className="font-titres text-xl font-bold text-texte-principal sm:text-2xl">{nomCategorie}</h3>
+                </Link>
+                <p className="mt-1.5 max-w-2xl text-sm text-texte-secondaire">{t(bloc.cleIntro)}</p>
+                {bloc.slug === "energie-solaire" && sousCategoriesEnergieSolaire.length > 0 && (
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {sousCategoriesEnergieSolaire.map((sc) => (
+                      <Link
+                        key={sc.id}
+                        href={`/categorie/${sc.slug}`}
+                        className="rounded-full border border-bordure px-3 py-1 text-xs font-medium text-texte-principal transition-colors hover:border-primaire hover:text-primaire"
+                      >
+                        {sc.nom}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <Link
+                href={`/categorie/${bloc.slug}`}
+                className="inline-flex shrink-0 items-center gap-1.5 self-start rounded-lg border border-bordure px-4 py-2 text-sm font-semibold text-texte-principal transition-colors hover:border-primaire hover:text-primaire sm:self-auto"
+              >
+                {t("accueil.voirTousLesProduits")} {nomCategorie}
+                <ArrowRight size={15} />
+              </Link>
             </div>
-          </Link>
-        ))}
-      </div>
+
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-7">
+              {produits.map(({ produit, niveauStock, paliers }) => (
+                <ProductCard key={produit.id} produit={produit} niveauStock={niveauStock} paliers={paliers} />
+              ))}
+            </div>
+          </div>
+        );
+      })}
     </section>
   );
 }
