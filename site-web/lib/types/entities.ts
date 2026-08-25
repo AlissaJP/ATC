@@ -225,6 +225,19 @@ export interface AvisClient {
   date_creation: string;
 }
 
+// Témoignage de confiance affiché sur l'accueil (Raffinement Design, section "Avis clients") — distinct
+// d'AvisClient (avis par produit, soumis par un utilisateur réel et modéré via RG-12-002). Contenu mock
+// de démonstration (décision actée n°42), structure pensée pour être remplacée par une vraie table
+// "reviews"/"testimonials" (Cahier 8) sans changer l'interface consommée par l'UI.
+export interface TemoignageClient {
+  id: string;
+  nom: string; // nom complet ou initiales, au choix pour la confidentialité
+  note: number; // 1 à 5
+  commentaire: string;
+  localisation?: string; // ville en Haïti ou pays de la diaspora
+  photo?: string;
+}
+
 export type StatutTicketSAV = "ouvert" | "en_cours" | "resolu" | "ferme";
 
 export interface TicketSAV {

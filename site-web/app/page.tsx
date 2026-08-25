@@ -6,6 +6,7 @@ import { BanniereSolaire } from "@/components/home/BanniereSolaire";
 import { CategoriesPhares } from "@/components/home/CategoriesPhares";
 import { BlocDevenirPro } from "@/components/home/BlocDevenirPro";
 import { BlocReassurance } from "@/components/home/BlocReassurance";
+import { AvisClientsAccueil } from "@/components/home/AvisClientsAccueil";
 import { BlocChiffresCles } from "@/components/home/BlocChiffresCles";
 import { listerProduitsEnrichis } from "@/lib/services/catalogue";
 
@@ -27,6 +28,7 @@ export default async function AccueilPage() {
       <CategoriesPhares produitsParCategorie={produitsParCategorie} />
       <BlocDevenirPro />
       <BlocReassurance />
+      <AvisClientsAccueil />
       <BlocChiffresCles />
     </main>
   );
