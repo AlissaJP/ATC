@@ -3,3 +3,8 @@
 // d'ATC avant mise en production.
 export const WHATSAPP_NUMERO_AFFICHE = "+509 2222 0000";
 export const WHATSAPP_LIEN = "https://wa.me/50922220000";
+
+// Message pré-rempli optionnel (paramètre ?text=) — Raffinement Design, bandeau support WhatsApp cliquable.
+export function lienWhatsApp(message?: string): string {
+  return message ? `${WHATSAPP_LIEN}?text=${encodeURIComponent(message)}` : WHATSAPP_LIEN;
+}
