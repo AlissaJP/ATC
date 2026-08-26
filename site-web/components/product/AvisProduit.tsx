@@ -90,12 +90,14 @@ export function AvisProduit({ produitId }: { produitId: string }) {
         </div>
       ) : (
         <>
-          {/* Synthèse — 2 colonnes desktop, empilée sur mobile */}
-          <div className="grid gap-8 border-b border-bordure pb-10 md:grid-cols-[minmax(0,220px)_1fr] md:gap-6">
+          {/* Synthèse — carte à 2 colonnes desktop, empilée sur mobile (Raffinement Design, même habillage
+              que le résumé un temps affiché sur l'accueil avant d'être déplacé ici : une moyenne agrégée
+              n'a de sens que par produit, pas mélangée entre produits différents comme sur l'accueil). */}
+          <div className="mb-10 grid gap-8 rounded-2xl border border-bordure bg-background p-6 sm:p-8 md:grid-cols-[minmax(0,220px)_1fr] md:gap-10">
             <div>
               <div className="flex items-center gap-2">
-                <Etoiles note={Math.round(moyenne ?? 0)} taille={20} />
-                <span className="font-titres text-lg font-bold text-texte-principal">
+                <Etoiles note={Math.round(moyenne ?? 0)} taille={22} />
+                <span className="font-titres text-2xl font-bold text-texte-principal">
                   {moyenne?.toFixed(1)} sur 5
                 </span>
               </div>
@@ -107,7 +109,7 @@ export function AvisProduit({ produitId }: { produitId: string }) {
                   <span className="w-16 shrink-0 whitespace-nowrap text-texte-secondaire">{n} étoile{n > 1 ? "s" : ""}</span>
                   <div className="h-2 flex-1 overflow-hidden rounded-full bg-fond">
                     <div
-                      className="h-full rounded-full bg-avertissement"
+                      className="h-full rounded-full bg-accent"
                       style={{ width: `${avisPublies.length > 0 ? (nombre / avisPublies.length) * 100 : 0}%` }}
                     />
                   </div>
