@@ -13,7 +13,9 @@ import type { ProduitEnrichi } from "@/lib/services/catalogue";
 // chargé côté serveur en un seul appel pour permettre le filtrage/tri déjà en place ci-dessous (entièrement
 // côté client, existant avant ce correctif) ; c'est donc le RENDU qui est paginé (une seule page de
 // résultats montée dans le DOM à la fois), pas la requête de données elle-même.
-const PRODUITS_PAR_PAGE = 12;
+// 6 plutôt que 12 : la plus grande catégorie de ce catalogue de démonstration (Énergies solaires) compte
+// 8 produits — un seuil de 12 ne déclencherait jamais la pagination avec un jeu de données aussi réduit.
+const PRODUITS_PAR_PAGE = 6;
 
 // ECR-01-002 / ECR-02-001 (template partagé, Raffinement Design) — Panneau de filtres (marque,
 // caractéristiques techniques dynamiques par catégorie, prix, disponible en package, disponibilité —
