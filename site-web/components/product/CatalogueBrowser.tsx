@@ -403,32 +403,44 @@ export function CatalogueBrowser({ produits }: { produits: ProduitEnrichi[] }) {
         )}
       </div>
 
-      {filtresOuverts && (
-        <div className="fixed inset-0 z-50 lg:hidden">
-          <button
-            type="button"
-            aria-label="Fermer les filtres"
-            className="absolute inset-0 bg-texte-principal/40"
-            onClick={() => setFiltresOuverts(false)}
-          />
-          <div className="absolute inset-x-0 bottom-0 max-h-[80vh] overflow-y-auto rounded-t-2xl bg-background p-6">
-            <div className="mb-4 flex items-center justify-between">
-              <p className="font-titres text-base font-semibold text-texte-principal">Filtres</p>
-              <button type="button" aria-label="Fermer" onClick={() => setFiltresOuverts(false)}>
-                <X size={22} />
-              </button>
-            </div>
-            {contenuFiltres}
-            <button
+      <AnimatePresence>
+        {filtresOuverts && (
+          <div className="fixed inset-0 z-50 lg:hidden">
+            <motion.button
               type="button"
-              className="mt-6 w-full rounded-lg bg-primaire py-3 text-sm font-semibold text-white"
+              aria-label="Fermer les filtres"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="absolute inset-0 bg-texte-principal/40"
               onClick={() => setFiltresOuverts(false)}
+            />
+            <motion.div
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ duration: 0.25, ease: "easeOut" }}
+              className="absolute inset-x-0 bottom-0 max-h-[80vh] overflow-y-auto rounded-t-2xl bg-background p-6"
             >
-              Voir {resultats.length} résultat(s)
-            </button>
+              <div className="mb-4 flex items-center justify-between">
+                <p className="font-titres text-base font-semibold text-texte-principal">Filtres</p>
+                <button type="button" aria-label="Fermer" onClick={() => setFiltresOuverts(false)}>
+                  <X size={22} />
+                </button>
+              </div>
+              {contenuFiltres}
+              <button
+                type="button"
+                className="mt-6 w-full rounded-lg bg-primaire py-3 text-sm font-semibold text-white"
+                onClick={() => setFiltresOuverts(false)}
+              >
+                Voir {resultats.length} résultat(s)
+              </button>
+            </motion.div>
           </div>
-        </div>
-      )}
+        )}
+      </AnimatePresence>
     </div>
   );
 }

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { AnimatePresence, motion } from "framer-motion";
 import { LayoutDashboard, LifeBuoy, LogOut, User } from "lucide-react";
 import { useSessionStore } from "@/lib/store/session-store";
 import { useTranslation } from "@/lib/i18n/useTranslation";
@@ -42,10 +43,16 @@ export function CompteMenu() {
         {libelle && <span className="hidden max-w-24 truncate text-sm font-medium sm:inline">{libelle}</span>}
       </button>
 
-      {ouvert && (
-        <>
-          <div className="fixed inset-0 z-10" onClick={() => setOuvert(false)} />
-          <div className="absolute right-0 z-20 mt-1 w-56 overflow-hidden rounded-lg border border-bordure bg-background shadow-lg">
+      <AnimatePresence>
+        {ouvert && (
+          <>
+            <div className="fixed inset-0 z-10" onClick={() => setOuvert(false)} />
+            <motion.div
+              initial={{ opacity: 0, y: -6, scale: 0.97 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -6, scale: 0.97 }}
+              transition={{ duration: 0.15, ease: "easeOut" }}
+              className="absolute right-0 z-20 mt-1 w-56 overflow-hidden rounded-lg border border-bordure bg-background shadow-lg">
             {!session && (
               <div className="flex flex-col gap-2 p-3">
                 <Link
@@ -142,9 +149,10 @@ export function CompteMenu() {
                 </button>
               </>
             )}
-          </div>
-        </>
-      )}
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { motion } from "framer-motion";
 import { X } from "lucide-react";
 
 // Notification (toast) — Cahier 7 §4. Auto-fermeture après `dureeMs`, action optionnelle (ex. Annuler).
@@ -23,9 +24,12 @@ export function Toast({
   }, [onFermer, dureeMs]);
 
   return (
-    <div
+    <motion.div
       role="status"
-      className="fixed bottom-4 left-1/2 z-50 flex -translate-x-1/2 items-center gap-3 rounded-lg bg-texte-principal px-4 py-3 text-sm text-white shadow-lg"
+      initial={{ opacity: 0, y: 12, x: "-50%" }}
+      animate={{ opacity: 1, y: 0, x: "-50%" }}
+      transition={{ duration: 0.2, ease: "easeOut" }}
+      className="fixed bottom-4 left-1/2 z-50 flex items-center gap-3 rounded-lg bg-texte-principal px-4 py-3 text-sm text-white shadow-lg"
     >
       <span>{message}</span>
       {actionLabel && onAction && (
@@ -56,6 +60,6 @@ export function Toast({
       >
         <X size={16} />
       </button>
-    </div>
+    </motion.div>
   );
 }

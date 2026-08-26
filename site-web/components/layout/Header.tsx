@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Fragment, Suspense, useState } from "react";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { Heart, Menu, Search, ShoppingCart, X } from "lucide-react";
 import { LogoMark } from "@/components/ui/LogoMark";
 import { LanguageSelector } from "@/components/layout/LanguageSelector";
@@ -103,14 +103,22 @@ export function Header() {
                 >
                   <Search size={22} />
                 </button>
-                {rechercheOuverte && (
-                  <>
-                    <div className="fixed inset-0 z-10" onClick={() => setRechercheOuverte(false)} />
-                    <div className="absolute right-0 z-20 mt-2 w-80">
-                      <SearchBar autoFocus onNavigate={() => setRechercheOuverte(false)} />
-                    </div>
-                  </>
-                )}
+                <AnimatePresence>
+                  {rechercheOuverte && (
+                    <>
+                      <div className="fixed inset-0 z-10" onClick={() => setRechercheOuverte(false)} />
+                      <motion.div
+                        initial={{ opacity: 0, y: -6, scale: 0.97 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -6, scale: 0.97 }}
+                        transition={{ duration: 0.15, ease: "easeOut" }}
+                        className="absolute right-0 z-20 mt-2 w-80"
+                      >
+                        <SearchBar autoFocus onNavigate={() => setRechercheOuverte(false)} />
+                      </motion.div>
+                    </>
+                  )}
+                </AnimatePresence>
               </div>
             )}
 
@@ -176,11 +184,17 @@ export function Header() {
         </div>
       </nav>
 
-      {menuOuvert && (
-        <nav
-          className="border-t border-bordure bg-background px-4 py-4 md:hidden print:hidden"
-          aria-label="Catégories (mobile)"
-        >
+      <AnimatePresence>
+        {menuOuvert && (
+          <motion.nav
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="overflow-hidden border-t border-bordure bg-background md:hidden print:hidden"
+            aria-label="Catégories (mobile)"
+          >
+          <div className="px-4 py-4">
           <SearchBar className="mb-3 w-full" onNavigate={() => setMenuOuvert(false)} />
           <ul className="flex flex-col gap-1">
             {slugEnergieSolaire && (
@@ -226,8 +240,10 @@ export function Header() {
               </li>
             )}
           </ul>
-        </nav>
-      )}
+          </div>
+          </motion.nav>
+        )}
+      </AnimatePresence>
     </Fragment>
   );
 }
