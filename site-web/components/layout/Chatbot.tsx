@@ -17,7 +17,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { Bot, MessageCircleQuestion, Send, X } from "lucide-react";
+import { Bot, Send, X } from "lucide-react";
 import { questionsFAQ, type QuestionFAQ } from "@/lib/mock-data/faq";
 import { lienWhatsApp } from "@/lib/constants/contact";
 
@@ -54,7 +54,6 @@ function trouverMeilleureReponse(saisie: string): QuestionFAQ | undefined {
   return meilleur?.faq;
 }
 
-const SUGGESTIONS_IDS = ["faq-paiement", "faq-garantie", "faq-b2b", "faq-retrait"];
 const DELAI_REPONSE_MS = 700;
 
 interface Message {
@@ -164,7 +163,7 @@ export function Chatbot() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 16, scale: 0.96 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="fixed bottom-[92px] right-5 z-30 flex h-[min(88vh,34rem)] w-[min(22rem,calc(100vw-2.5rem))] flex-col overflow-hidden rounded-2xl border border-bordure bg-background shadow-2xl print:hidden sm:h-[min(80vh,32rem)] sm:w-[23.75rem]"
+            className="fixed bottom-[92px] right-5 z-30 flex h-[min(70vh,24rem)] w-[min(18rem,calc(100vw-2.5rem))] flex-col overflow-hidden rounded-2xl border border-bordure bg-background shadow-2xl print:hidden sm:h-[min(65vh,25rem)] sm:w-80"
           >
             <div className="flex items-center gap-2.5 bg-gradient-to-r from-primaire to-primaire-clair px-4 py-3">
               <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/15">
@@ -219,29 +218,6 @@ export function Chatbot() {
                 </div>
               )}
 
-              {messages.length === 1 && !enTrainDecrire && (
-                <div className="flex flex-col gap-2">
-                  <p className="flex items-center gap-1.5 text-xs font-medium text-texte-secondaire">
-                    <MessageCircleQuestion size={13} /> Questions fréquentes
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {SUGGESTIONS_IDS.map((id) => {
-                      const faq = questionsFAQ.find((q) => q.id === id);
-                      if (!faq) return null;
-                      return (
-                        <button
-                          key={id}
-                          type="button"
-                          onClick={() => poserQuestion(faq.question)}
-                          className="rounded-full border border-bordure px-3 py-1.5 text-xs font-medium text-texte-principal transition-colors hover:border-primaire hover:text-primaire"
-                        >
-                          {faq.question}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
               <div ref={finDesMessagesRef} />
             </div>
 
