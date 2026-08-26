@@ -5,7 +5,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useTranslation } from "@/lib/i18n/useTranslation";
 import { useSessionStore, estClientB2BVerifie } from "@/lib/store/session-store";
-import { ParallaxImage } from "@/components/ui/ParallaxImage";
 
 const AVANTAGES = [
   "Barème de prix par palier de quantité",
@@ -45,15 +44,13 @@ export function BlocDevenirPro() {
   return (
     <section className="grid gap-8 overflow-hidden rounded-2xl border border-bordure bg-fond md:grid-cols-2">
       <div className="relative order-2 hidden min-h-[280px] md:order-1 md:block">
-        <ParallaxImage amplitude={20}>
-          <Image
-            src="/images/entreprise/devenir-client-professionnel.webp"
-            alt="Équipe professionnelle analysant ses données de vente et d'achat en réunion"
-            fill
-            className="object-cover"
-            sizes="50vw"
-          />
-        </ParallaxImage>
+        <Image
+          src="/images/entreprise/devenir-client-professionnel.webp"
+          alt="Équipe professionnelle analysant ses données de vente et d'achat en réunion"
+          fill
+          className="object-cover"
+          sizes="50vw"
+        />
       </div>
       <div className="order-1 flex flex-col justify-center p-6 sm:p-10 md:order-2">
         <h2 className="mt-2 font-titres text-2xl font-bold text-texte-principal md:text-3xl">
