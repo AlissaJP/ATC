@@ -15,7 +15,7 @@ export default function FavorisPage() {
   const tousLesFavoris = useComptesStore((s) => s.favoris);
 
   return (
-    <GardeClient>
+    <GardeClient message="Connectez-vous pour consulter vos favoris.">
       {(session) => {
         const idsFavoris = new Set(
           tousLesFavoris.filter((f) => f.utilisateur_id === session.utilisateur_id).map((f) => f.produit_id)

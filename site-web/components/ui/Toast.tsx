@@ -31,7 +31,11 @@ export function Toast({
       {actionLabel && onAction && (
         <button
           type="button"
-          onClick={() => {
+          onClick={(e) => {
+            // Le toast peut être monté à l'intérieur d'un <Link> englobant (ProductCard, ProductListItem)
+            // — sans ça, un clic ici déclencherait aussi la navigation native/le routage du parent.
+            e.preventDefault();
+            e.stopPropagation();
             onAction();
             onFermer();
           }}
@@ -40,7 +44,16 @@ export function Toast({
           {actionLabel}
         </button>
       )}
-      <button type="button" aria-label="Fermer" onClick={onFermer} className="text-white/70 hover:text-white">
+      <button
+        type="button"
+        aria-label="Fermer"
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          onFermer();
+        }}
+        className="text-white/70 hover:text-white"
+      >
         <X size={16} />
       </button>
     </div>

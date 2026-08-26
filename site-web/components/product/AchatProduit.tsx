@@ -10,6 +10,8 @@ import { useSessionStore, estClientB2BVerifie } from "@/lib/store/session-store"
 import { useCartStore } from "@/lib/store/cart-store";
 import { usePackageDraftStore } from "@/lib/store/package-draft-store";
 import { trouverPalierApplicable } from "@/lib/business-rules/bareme-b2b";
+import { useGardeClient } from "@/lib/hooks/useGardeClient";
+import { Toast } from "@/components/ui/Toast";
 
 interface AchatProduitProps {
   produit: Produit;
@@ -26,6 +28,7 @@ export function AchatProduit({ produit, niveauStock, paliers, stockActuel }: Ach
   const estB2B = estClientB2BVerifie(session);
   const ajouterLigne = useCartStore((s) => s.ajouterLigne);
   const ajouterAuPackage = usePackageDraftStore((s) => s.ajouterProduit);
+  const { executerSiConnecte, messageToast, fermerToast, allerALaConnexion } = useGardeClient();
 
   const [quantite, setQuantite] = useState(1);
   const [confirmationVisible, setConfirmationVisible] = useState(false);
@@ -43,9 +46,11 @@ export function AchatProduit({ produit, niveauStock, paliers, stockActuel }: Ach
 
   function gererAjoutPanier() {
     if (rupture) return;
-    ajouterLigne(produit.id, quantite);
-    setConfirmationVisible(true);
-    setTimeout(() => setConfirmationVisible(false), 1500);
+    executerSiConnecte(() => {
+      ajouterLigne(produit.id, quantite);
+      setConfirmationVisible(true);
+      setTimeout(() => setConfirmationVisible(false), 1500);
+    }, "Connectez-vous pour ajouter ce produit à votre panier.");
   }
 
   function gererAjoutPackage() {
@@ -148,6 +153,10 @@ export function AchatProduit({ produit, niveauStock, paliers, stockActuel }: Ach
           </button>
         )}
       </div>
+
+      {messageToast && (
+        <Toast message={messageToast} actionLabel="Se connecter" onAction={allerALaConnexion} onFermer={fermerToast} />
+      )}
     </div>
   );
 }

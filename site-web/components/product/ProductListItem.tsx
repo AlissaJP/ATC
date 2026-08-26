@@ -12,6 +12,8 @@ import { useCartStore } from "@/lib/store/cart-store";
 import { useAvisStore } from "@/lib/store/avis-store";
 import { trouverPalierApplicable } from "@/lib/business-rules/bareme-b2b";
 import { calculerAvisPublies } from "@/lib/services/avis";
+import { useGardeClient } from "@/lib/hooks/useGardeClient";
+import { Toast } from "@/components/ui/Toast";
 
 // ECR-01-002/ECR-02-001 — variante « vue liste » de ProductCard (bascule grille/liste, Raffinement Design).
 interface ProductListItemProps {
@@ -30,6 +32,7 @@ export function ProductListItem({ produit, niveauStock, paliers }: ProductListIt
   const { moyenne, nombre } = calculerAvisPublies(tousLesAvis, produit.id);
 
   const ajouterLigne = useCartStore((s) => s.ajouterLigne);
+  const { executerSiConnecte, messageToast, fermerToast, allerALaConnexion } = useGardeClient();
 
   return (
     <Link
@@ -71,13 +74,19 @@ export function ProductListItem({ produit, niveauStock, paliers }: ProductListIt
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            ajouterLigne(produit.id, 1);
+            executerSiConnecte(
+              () => ajouterLigne(produit.id, 1),
+              "Connectez-vous pour ajouter ce produit à votre panier."
+            );
           }}
           className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primaire text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
         >
           <Plus size={18} />
         </button>
       </div>
+      {messageToast && (
+        <Toast message={messageToast} actionLabel="Se connecter" onAction={allerALaConnexion} onFermer={fermerToast} />
+      )}
     </Link>
   );
 }
