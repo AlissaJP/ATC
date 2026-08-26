@@ -1,11 +1,19 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState, useEffect } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { LayoutGrid, List, SlidersHorizontal, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, LayoutGrid, List, SlidersHorizontal, X } from "lucide-react";
 import { ProductCard } from "./ProductCard";
 import { ProductListItem } from "./ProductListItem";
 import type { ProduitEnrichi } from "@/lib/services/catalogue";
+
+// Raffinement Design (#24) — pagination du résultat filtré. Sans backend réel dans cette démo (décision
+// actée n°41, pas de NestJS/PostgreSQL) le catalogue complet de la catégorie est déjà nécessairement
+// chargé côté serveur en un seul appel pour permettre le filtrage/tri déjà en place ci-dessous (entièrement
+// côté client, existant avant ce correctif) ; c'est donc le RENDU qui est paginé (une seule page de
+// résultats montée dans le DOM à la fois), pas la requête de données elle-même.
+const PRODUITS_PAR_PAGE = 12;
 
 // ECR-01-002 / ECR-02-001 (template partagé, Raffinement Design) — Panneau de filtres (marque,
 // caractéristiques techniques dynamiques par catégorie, prix, disponible en package, disponibilité —
@@ -52,6 +60,12 @@ function valeursDistinctes(produits: ProduitEnrichi[], cle: string): string[] {
 }
 
 export function CatalogueBrowser({ produits }: { produits: ProduitEnrichi[] }) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const resultatsRef = useRef<HTMLDivElement>(null);
+  const estMontageInitial = useRef(true);
+
   const [filtresOuverts, setFiltresOuverts] = useState(false);
   const [marques, setMarques] = useState<string[]>([]);
   const [specsSelectionnees, setSpecsSelectionnees] = useState<Record<string, string[]>>({});
@@ -100,6 +114,40 @@ export function CatalogueBrowser({ produits }: { produits: ProduitEnrichi[] }) {
 
     return liste;
   }, [produits, marques, specsSelectionnees, uniquementPackage, uniquementEnStock, prixMax, tri]);
+
+  // Pagination — état reflété dans l'URL (?page=N) pour permettre le partage de lien direct et la
+  // navigation avant/arrière du navigateur (useSearchParams est réactif à ces deux cas dans l'App Router).
+  const pageDemandee = Number(searchParams.get("page")) || 1;
+  const totalPages = Math.max(1, Math.ceil(resultats.length / PRODUITS_PAR_PAGE));
+  const pageActuelle = Math.min(Math.max(1, pageDemandee), totalPages);
+  const resultatsPage = useMemo(
+    () => resultats.slice((pageActuelle - 1) * PRODUITS_PAR_PAGE, pageActuelle * PRODUITS_PAR_PAGE),
+    [resultats, pageActuelle]
+  );
+
+  // Un changement de filtre/tri doit toujours ramener à la page 1 du nouveau résultat, plutôt que de
+  // rester sur un numéro de page qui pourrait ne plus rien afficher de pertinent. Effet légitime ici
+  // (synchronisation avec l'URL, un système externe à React) — pas déclenché au montage initial, pour ne
+  // pas écraser un lien direct vers ?page=2. eslint-disable : router/pathname sont stables entre rendus
+  // dans l'App Router, et pageDemandee ne doit volontairement pas redéclencher cet effet (seul un
+  // changement de filtre doit ramener à la page 1, pas une navigation de page elle-même).
+  useEffect(() => {
+    if (estMontageInitial.current) {
+      estMontageInitial.current = false;
+      return;
+    }
+    if (pageDemandee !== 1) router.replace(pathname, { scroll: false });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [marques, specsSelectionnees, uniquementPackage, uniquementEnStock, prixMax, tri]);
+
+  function allerALaPage(n: number) {
+    const params = new URLSearchParams(searchParams.toString());
+    if (n <= 1) params.delete("page");
+    else params.set("page", String(n));
+    const requete = params.toString();
+    router.push(requete ? `${pathname}?${requete}` : pathname, { scroll: false });
+    resultatsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
 
   function basculer(liste: string[], valeur: string, setter: (v: string[]) => void) {
     setter(liste.includes(valeur) ? liste.filter((v) => v !== valeur) : [...liste, valeur]);
@@ -228,7 +276,7 @@ export function CatalogueBrowser({ produits }: { produits: ProduitEnrichi[] }) {
     <div className="grid gap-8 lg:grid-cols-[240px_1fr]">
       <aside className="hidden lg:block">{contenuFiltres}</aside>
 
-      <div>
+      <div ref={resultatsRef}>
         <div className="mb-4 flex items-center justify-between gap-3">
           <button
             type="button"
@@ -299,19 +347,57 @@ export function CatalogueBrowser({ produits }: { produits: ProduitEnrichi[] }) {
             >
               {vue === "grille" ? (
                 <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-4">
-                  {resultats.map(({ produit, niveauStock, paliers }) => (
+                  {resultatsPage.map(({ produit, niveauStock, paliers }) => (
                     <ProductCard key={produit.id} produit={produit} niveauStock={niveauStock} paliers={paliers} />
                   ))}
                 </div>
               ) : (
                 <div className="flex flex-col gap-3">
-                  {resultats.map(({ produit, niveauStock, paliers }) => (
+                  {resultatsPage.map(({ produit, niveauStock, paliers }) => (
                     <ProductListItem key={produit.id} produit={produit} niveauStock={niveauStock} paliers={paliers} />
                   ))}
                 </div>
               )}
             </motion.div>
           </AnimatePresence>
+        )}
+
+        {totalPages > 1 && (
+          <nav aria-label="Pagination des produits" className="mt-8 flex items-center justify-center gap-1">
+            <button
+              type="button"
+              aria-label="Page précédente"
+              disabled={pageActuelle === 1}
+              onClick={() => allerALaPage(pageActuelle - 1)}
+              className="flex h-9 w-9 items-center justify-center rounded-lg border border-bordure text-texte-principal disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              <ChevronLeft size={16} />
+            </button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
+              <button
+                key={n}
+                type="button"
+                aria-current={n === pageActuelle ? "page" : undefined}
+                onClick={() => allerALaPage(n)}
+                className={`flex h-9 w-9 items-center justify-center rounded-lg text-sm font-medium ${
+                  n === pageActuelle
+                    ? "bg-primaire text-white"
+                    : "border border-bordure text-texte-principal hover:border-primaire hover:text-primaire"
+                }`}
+              >
+                {n}
+              </button>
+            ))}
+            <button
+              type="button"
+              aria-label="Page suivante"
+              disabled={pageActuelle === totalPages}
+              onClick={() => allerALaPage(pageActuelle + 1)}
+              className="flex h-9 w-9 items-center justify-center rounded-lg border border-bordure text-texte-principal disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              <ChevronRight size={16} />
+            </button>
+          </nav>
         )}
       </div>
 

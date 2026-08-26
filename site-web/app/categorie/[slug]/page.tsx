@@ -1,4 +1,5 @@
 // ECR-01-002 — Page catégorie / liste produits. BF-01-001, BF-01-003, BF-02-002/003/004, RG-03-001/002/004.
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { CatalogueBrowser } from "@/components/product/CatalogueBrowser";
@@ -31,7 +32,9 @@ export default async function CategoriePage(props: PageProps<"/categorie/[slug]"
       <h1 className="mb-6 font-titres text-2xl font-bold text-texte-principal md:text-3xl">
         {produits.length} produit{produits.length !== 1 ? "s" : ""} dans {categorie.nom}
       </h1>
-      <CatalogueBrowser produits={produits} />
+      <Suspense fallback={null}>
+        <CatalogueBrowser produits={produits} />
+      </Suspense>
     </main>
   );
 }

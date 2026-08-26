@@ -1,5 +1,6 @@
 // ECR-02-001 — Résultats de recherche complets, prolonge les suggestions de l'en-tête. Gabarit
 // partagé avec la page catégorie (ECR-01-002) via CatalogueBrowser — Raffinement Design.
+import { Suspense } from "react";
 import { CatalogueBrowser } from "@/components/product/CatalogueBrowser";
 import { rechercherProduits } from "@/lib/services/recherche";
 import { obtenirNiveauAlerteStock } from "@/lib/services/stock";
@@ -34,7 +35,9 @@ export default async function RecherchePage(props: PageProps<"/recherche">) {
           </p>
         </div>
       ) : (
-        <CatalogueBrowser produits={resultats} />
+        <Suspense fallback={null}>
+          <CatalogueBrowser produits={resultats} />
+        </Suspense>
       )}
     </main>
   );
