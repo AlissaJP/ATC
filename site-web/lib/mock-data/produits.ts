@@ -162,11 +162,29 @@ export const produits: Produit[] = [
     // ci-dessus plutôt qu'en critère de filtrage.
     specifications: { alimentation: "Secteur" },
   },
+  // Caméra PTZ standard — 3 SKU distincts par résolution (Raffinement Design, sélecteur de résolution
+  // ECR-03-001) : chacun a son propre prix et son propre stock (lib/mock-data/stock.ts), pas une simple
+  // variante d'affichage. `variante_resolution.groupe` identique sur les 3 relie le sélecteur.
+  {
+    id: "prod-camera-ptz-standard-1080p",
+    slug: "camera-ptz-standard-1080p",
+    nom: "Caméra PTZ standard 1080p",
+    description: "Caméra de surveillance motorisée (Pan-Tilt-Zoom) en définition 1080p, avec suivi automatique et vision nocturne.",
+    categorie_id: "cat-securite",
+    marque_id: "marque-securvision",
+    prix_public: 99,
+    eligible_b2b: true,
+    eligible_package: false,
+    statut_publication: "publié",
+    images: [],
+    specifications: { alimentation: "Secteur" },
+    variante_resolution: { groupe: "camera-ptz-standard", resolution: "1080p" },
+  },
   {
     id: "prod-camera-ptz-standard",
     slug: "camera-ptz-standard",
-    nom: "Caméra PTZ standard",
-    description: "Caméra de surveillance motorisée (Pan-Tilt-Zoom) en définition 3 MP, avec suivi automatique et vision nocturne.",
+    nom: "Caméra PTZ standard 2K",
+    description: "Caméra de surveillance motorisée (Pan-Tilt-Zoom) en définition 2K, avec suivi automatique et vision nocturne.",
     categorie_id: "cat-securite",
     marque_id: "marque-securvision",
     prix_public: 145,
@@ -177,6 +195,22 @@ export const produits: Produit[] = [
     // anglais + badges Tuya/Smart Life tiers) — placeholder "Image à venir" (Audit Axe 2).
     images: [],
     specifications: { alimentation: "Secteur" },
+    variante_resolution: { groupe: "camera-ptz-standard", resolution: "2K" },
+  },
+  {
+    id: "prod-camera-ptz-standard-4k",
+    slug: "camera-ptz-standard-4k",
+    nom: "Caméra PTZ standard 4K",
+    description: "Caméra de surveillance motorisée (Pan-Tilt-Zoom) en définition 4K, avec suivi automatique et vision nocturne.",
+    categorie_id: "cat-securite",
+    marque_id: "marque-securvision",
+    prix_public: 199,
+    eligible_b2b: true,
+    eligible_package: false,
+    statut_publication: "publié",
+    images: [],
+    specifications: { alimentation: "Secteur" },
+    variante_resolution: { groupe: "camera-ptz-standard", resolution: "4K" },
   },
   {
     id: "prod-camera-ptz-solaire",

@@ -5,7 +5,7 @@ import { GalerieImages } from "@/components/product/GalerieImages";
 import { AchatProduit } from "@/components/product/AchatProduit";
 import { ProduitsAssocies } from "@/components/product/ProduitsAssocies";
 import { AvisProduit } from "@/components/product/AvisProduit";
-import { obtenirProduitEnrichiParSlug, listerProduitsEnrichisParIds } from "@/lib/services/catalogue";
+import { obtenirProduitEnrichiParSlug, listerProduitsEnrichisParIds, listerVariantesResolution } from "@/lib/services/catalogue";
 import { obtenirStock } from "@/lib/services/stock";
 import { listerCategories } from "@/lib/services/produits";
 import { trouverGarantieParCategorie } from "@/lib/mock-data/garanties";
@@ -17,11 +17,14 @@ export default async function ProduitPage(props: PageProps<"/produit/[slug]">) {
   if (!resultat) notFound();
 
   const { produit, niveauStock, paliers, marque } = resultat;
-  const [stock, categories, produitsAssocies] = await Promise.all([
+  const [stock, categories, produitsAssocies, variantesResolutionBrutes] = await Promise.all([
     obtenirStock(produit.id),
     listerCategories(),
     listerProduitsEnrichisParIds(produit.accessoires_compatibles_ids ?? []),
+    produit.variante_resolution ? listerVariantesResolution(produit.variante_resolution.groupe) : Promise.resolve([]),
   ]);
+  // Sélecteur affiché uniquement si au moins 2 résolutions existent réellement pour ce produit.
+  const variantesResolution = variantesResolutionBrutes.length > 1 ? variantesResolutionBrutes : undefined;
 
   const categorie = categories.find((c) => c.id === produit.categorie_id);
   const categorieParente = categorie?.parent_id ? categories.find((c) => c.id === categorie.parent_id) : undefined;
@@ -53,6 +56,7 @@ export default async function ProduitPage(props: PageProps<"/produit/[slug]">) {
               niveauStock={niveauStock}
               paliers={paliers}
               stockActuel={stock?.stock_actuel ?? 0}
+              variantesResolution={variantesResolution}
             />
           </div>
 

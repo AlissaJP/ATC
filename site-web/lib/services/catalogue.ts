@@ -40,3 +40,21 @@ export async function listerProduitsEnrichisParIds(ids: string[]): Promise<Produ
   const produits = ids.map((id) => tous.find((p) => p.id === id)).filter((p): p is Produit => Boolean(p));
   return Promise.all(produits.map(enrichir));
 }
+
+const ORDRE_RESOLUTIONS = ["1080p", "2K", "4K"];
+
+// Raffinement Design — sélecteur de résolution (fiche produit) : chaque résolution est un SKU (Produit)
+// à part entière (lib/mock-data/produits.ts, champ variante_resolution), pas une variante virtuelle.
+export async function listerVariantesResolution(groupe: string): Promise<ProduitEnrichi[]> {
+  const tous = await listerProduits();
+  const membres = tous.filter((p) => p.variante_resolution?.groupe === groupe);
+  const enrichis = await Promise.all(membres.map(enrichir));
+  return enrichis.sort((a, b) => {
+    const ra = a.produit.variante_resolution?.resolution ?? "";
+    const rb = b.produit.variante_resolution?.resolution ?? "";
+    const ia = ORDRE_RESOLUTIONS.indexOf(ra);
+    const ib = ORDRE_RESOLUTIONS.indexOf(rb);
+    if (ia !== -1 && ib !== -1) return ia - ib;
+    return ra.localeCompare(rb);
+  });
+}

@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Check, Minus, Package, Plus, ShoppingCart } from "lucide-react";
 import type { NiveauAlerteStock, PalierPrixB2B, Produit } from "@/lib/types/entities";
+import type { ProduitEnrichi } from "@/lib/services/catalogue";
 import { StockBadge } from "./StockBadge";
 import { BoutonFavori } from "./BoutonFavori";
 import { useSessionStore, estClientB2BVerifie } from "@/lib/store/session-store";
@@ -18,11 +19,14 @@ interface AchatProduitProps {
   niveauStock: NiveauAlerteStock;
   paliers: PalierPrixB2B[];
   stockActuel: number;
+  // Raffinement Design — sélecteur de résolution : chaque entrée est un SKU (Produit) distinct, jamais
+  // fourni si le produit n'a qu'une seule résolution (cf. app/produit/[slug]/page.tsx).
+  variantesResolution?: ProduitEnrichi[];
 }
 
 // ECR-03-001 — Prix + barème B2B (RG-03-001, RG-03-004), sélection de quantité en temps réel,
 // boutons « Ajouter au panier » / « Ajouter au package personnalisé » visuellement distincts (Cahier 7 §3).
-export function AchatProduit({ produit, niveauStock, paliers, stockActuel }: AchatProduitProps) {
+export function AchatProduit({ produit, niveauStock, paliers, stockActuel, variantesResolution }: AchatProduitProps) {
   const router = useRouter();
   const session = useSessionStore((s) => s.session);
   const estB2B = estClientB2BVerifie(session);
@@ -62,6 +66,35 @@ export function AchatProduit({ produit, niveauStock, paliers, stockActuel }: Ach
 
   return (
     <div className="flex flex-col gap-5">
+      {variantesResolution && (
+        <div>
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-texte-secondaire">Résolution</p>
+          <div className="flex flex-wrap gap-2">
+            {variantesResolution.map(({ produit: variante, niveauStock: niveauVariante }) => {
+              const actif = variante.id === produit.id;
+              return (
+                <button
+                  key={variante.id}
+                  type="button"
+                  disabled={actif}
+                  onClick={() => router.push(`/produit/${variante.slug}`)}
+                  className={`rounded-lg border px-3 py-2 text-sm font-medium transition-colors ${
+                    actif
+                      ? "border-primaire bg-primaire/5 text-primaire"
+                      : niveauVariante === "rupture"
+                        ? "border-bordure text-texte-secondaire opacity-50"
+                        : "border-bordure text-texte-principal hover:border-primaire hover:text-primaire"
+                  }`}
+                >
+                  {variante.variante_resolution?.resolution}
+                  {niveauVariante === "rupture" && !actif && " — rupture"}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       <div className="flex items-center gap-3">
         <p className="font-titres text-2xl font-bold text-primaire md:text-3xl">
           ${prixUnitaire.toFixed(2)}
