@@ -68,6 +68,7 @@
   },
   "compte": {
     "seConnecter": "Log in",
+    "sInscrire": "Sign up",
     "monCompte": "My Account",
     "mesDevis": "My Quotes",
     "mesCommandes": "My Orders",

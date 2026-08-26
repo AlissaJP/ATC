@@ -34,13 +34,22 @@ export function CompteMenu() {
           <div className="fixed inset-0 z-10" onClick={() => setOuvert(false)} />
           <div className="absolute right-0 z-20 mt-1 w-56 overflow-hidden rounded-lg border border-bordure bg-background shadow-lg">
             {!session && (
-              <Link
-                href="/compte/connexion"
-                className="block px-4 py-3 text-sm font-medium text-primaire hover:bg-fond"
-                onClick={() => setOuvert(false)}
-              >
-                {t("compte.seConnecter")}
-              </Link>
+              <div className="flex flex-col gap-2 p-3">
+                <Link
+                  href="/compte/connexion"
+                  className="rounded-lg bg-primaire px-4 py-2.5 text-center text-sm font-semibold text-white hover:opacity-90"
+                  onClick={() => setOuvert(false)}
+                >
+                  {t("compte.seConnecter")}
+                </Link>
+                <Link
+                  href="/compte/inscription"
+                  className="rounded-lg border border-bordure px-4 py-2.5 text-center text-sm font-semibold text-texte-principal hover:border-primaire hover:text-primaire"
+                  onClick={() => setOuvert(false)}
+                >
+                  {t("compte.sInscrire")}
+                </Link>
+              </div>
             )}
 
             {session?.type === "client" && (
