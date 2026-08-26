@@ -28,12 +28,15 @@ export function MoyensPaiement({
   utilisateurId,
   mode = "gestion",
   methodeSelectionnee,
+  moyenSelectionneId,
   onSelectionner,
 }: {
   utilisateurId: string;
   mode?: "gestion" | "selection";
   methodeSelectionnee?: TypeMoyenPaiementEnregistre | null;
-  onSelectionner?: (type: TypeMoyenPaiementEnregistre) => void;
+  // Identifiant du moyen enregistré actif (distinct d'une carte saisie manuellement) — Raffinement Design.
+  moyenSelectionneId?: string | null;
+  onSelectionner?: (type: TypeMoyenPaiementEnregistre, moyenId: string) => void;
 }) {
   const tousLesMoyens = useComptesStore((s) => s.moyensPaiement);
   const ajouterMoyenPaiement = useComptesStore((s) => s.ajouterMoyenPaiement);
@@ -56,12 +59,12 @@ export function MoyensPaiement({
         </p>
         {moyens.map((moyen) => {
           const Icone = ICONES[moyen.type];
-          const selectionne = methodeSelectionnee === moyen.type;
+          const selectionne = methodeSelectionnee === moyen.type && moyenSelectionneId === moyen.id;
           return (
             <button
               key={moyen.id}
               type="button"
-              onClick={() => onSelectionner?.(moyen.type)}
+              onClick={() => onSelectionner?.(moyen.type, moyen.id)}
               className={`flex items-center gap-3 rounded-lg border-2 px-4 py-3 text-left transition-colors ${
                 selectionne ? "border-primaire bg-primaire/5" : "border-bordure hover:border-primaire-clair"
               }`}

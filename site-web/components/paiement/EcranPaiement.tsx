@@ -11,7 +11,11 @@ import { useParametresStore } from "@/lib/store/parametres-store";
 import { convertirUsdVersHtg } from "@/lib/business-rules/change-htg";
 import { calculerFacture } from "@/lib/business-rules/taxe";
 import { MoyensPaiement } from "@/components/compte/MoyensPaiement";
+import { FormulaireNouvelleCarte, carteValide, type DonneesCarte } from "@/components/paiement/FormulaireNouvelleCarte";
+import { useComptesStore } from "@/lib/store/comptes-store";
 import type { MethodePaiement } from "@/lib/types/entities";
+
+const CARTE_VIDE: DonneesCarte = { numero: "", expiration: "", cvv: "", titulaire: "", enregistrer: false };
 
 // ECR-06-001 — Paiement, réutilisé pour un devis accepté (Phase 3) ou une commande panier (Phase 4).
 // RG-06-001 (moyens acceptés, jamais virement), RG-06-003/004 (conversion MonCash au taux interne,
@@ -59,8 +63,15 @@ export function EcranPaiement({ contexte }: { contexte: ContextePaiement }) {
   );
 
   const tauxActuel = useParametresStore((s) => s.taux_change_htg_usd);
+  const ajouterMoyenPaiement = useComptesStore((s) => s.ajouterMoyenPaiement);
+  const tousLesMoyensPaiement = useComptesStore((s) => s.moyensPaiement);
 
   const [methode, setMethode] = useState<MethodePaiement | null>(null);
+  // null = carte saisie manuellement (nouvelle carte) ; sinon id du moyen enregistré utilisé — Raffinement
+  // Design : la commande doit être réglée avec la carte effectivement choisie, jamais silencieusement
+  // reportée sur une carte enregistrée par défaut.
+  const [carteMoyenId, setCarteMoyenId] = useState<string | null>(null);
+  const [carte, setCarte] = useState<DonneesCarte>(CARTE_VIDE);
   const [etape, setEtape] = useState<Etape>("selection");
 
   if (!session || session.type !== "client") {
@@ -117,8 +128,15 @@ export function EcranPaiement({ contexte }: { contexte: ContextePaiement }) {
   const montant = detailTaxe.montant_ttc;
   const montantHtg = convertirUsdVersHtg(montant, tauxActuel);
 
+  const carteEstNouvelle = methode === "carte" && carteMoyenId === null;
+  const paiementValide = methode !== null && (!carteEstNouvelle || carteValide(carte));
+  const utilisateurId = session.utilisateur_id;
+  const possedeCarteEnregistree = tousLesMoyensPaiement.some(
+    (m) => m.utilisateur_id === utilisateurId && m.type === "carte"
+  );
+
   function confirmerPaiement() {
-    if (!methode) return;
+    if (!methode || !paiementValide) return;
     setEtape("traitement");
     const tauxFige = methode === "moncash" ? tauxActuel : undefined;
     const montantHtgFige = methode === "moncash" ? convertirUsdVersHtg(montant, tauxActuel) : undefined;
@@ -134,6 +152,14 @@ export function EcranPaiement({ contexte }: { contexte: ContextePaiement }) {
         montantHtg: montantHtgFige,
         tauxChangeApplique: tauxFige,
       });
+
+      // Raffinement Design — nouvelle carte enregistrée uniquement si l'utilisateur l'a explicitement
+      // demandé (jamais automatique) ; seuls les 4 derniers chiffres sont conservés, même convention que
+      // MoyensPaiement.tsx (aucune donnée de carte complète stockée, sandbox — décision actée n°41).
+      if (carteEstNouvelle && carte.enregistrer) {
+        const chiffres = carte.numero.replace(/\s/g, "");
+        ajouterMoyenPaiement(utilisateurId, "carte", `Carte •••• ${chiffres.slice(-4)}`);
+      }
 
       // RG-06-002, Cahier 9 (COMMANDE ⟶ FACTURE_PRO_FORMA « si Entreprise ») — une commande directe
       // (hors devis) génère aussi une facture pro forma pour un client Entreprise. montantHT (pas
@@ -212,7 +238,11 @@ export function EcranPaiement({ contexte }: { contexte: ContextePaiement }) {
             utilisateurId={session.utilisateur_id}
             mode="selection"
             methodeSelectionnee={methode}
-            onSelectionner={setMethode}
+            moyenSelectionneId={carteMoyenId}
+            onSelectionner={(type, moyenId) => {
+              setMethode(type);
+              setCarteMoyenId(type === "carte" ? moyenId : null);
+            }}
           />
         </div>
 
@@ -221,16 +251,27 @@ export function EcranPaiement({ contexte }: { contexte: ContextePaiement }) {
             <button
               key={id}
               type="button"
-              onClick={() => setMethode(id)}
+              onClick={() => {
+                setMethode(id);
+                // Choisir « Carte » ici (plutôt qu'un moyen enregistré ci-dessus) ouvre systématiquement
+                // le formulaire de nouvelle carte — jamais un report silencieux sur la carte par défaut.
+                if (id === "carte") setCarteMoyenId(null);
+              }}
               className={`flex items-center gap-3 rounded-lg border-2 px-4 py-3 text-left transition-colors ${
-                methode === id ? "border-primaire bg-primaire/5" : "border-bordure hover:border-primaire-clair"
+                methode === id && !(id === "carte" && carteMoyenId !== null)
+                  ? "border-primaire bg-primaire/5"
+                  : "border-bordure hover:border-primaire-clair"
               }`}
             >
               <Icone size={20} className="text-primaire-clair" />
-              <span className="text-sm font-medium text-texte-principal">{label}</span>
+              <span className="text-sm font-medium text-texte-principal">
+                {id === "carte" && possedeCarteEnregistree ? "Ajouter une nouvelle carte" : label}
+              </span>
             </button>
           ))}
         </div>
+
+        {carteEstNouvelle && <FormulaireNouvelleCarte donnees={carte} onChange={setCarte} />}
 
         {methode === "moncash" && (
           <div className="mt-4 rounded-lg bg-fond p-4 text-sm">
@@ -244,7 +285,7 @@ export function EcranPaiement({ contexte }: { contexte: ContextePaiement }) {
 
         <button
           type="button"
-          disabled={!methode}
+          disabled={!paiementValide}
           onClick={confirmerPaiement}
           className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-accent px-5 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
         >
