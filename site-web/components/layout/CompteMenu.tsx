@@ -2,16 +2,29 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { LayoutDashboard, LifeBuoy, LogOut, User } from "lucide-react";
 import { useSessionStore } from "@/lib/store/session-store";
 import { useTranslation } from "@/lib/i18n/useTranslation";
 
 // Reflète l'état de session dans l'en-tête — jamais connecté par défaut (section 6 du prompt de mission).
 export function CompteMenu() {
+  const router = useRouter();
   const [ouvert, setOuvert] = useState(false);
   const session = useSessionStore((s) => s.session);
   const deconnecter = useSessionStore((s) => s.deconnecter);
   const { t } = useTranslation();
+
+  // Raffinement Design (#19) — quel que soit le type de compte, la déconnexion invalide toujours la
+  // session avant de rediriger vers l'accueil public (jamais laissé sur une page qui pourrait exiger une
+  // connexion, ce qui provoquerait une redirection en boucle vers la page de connexion). Même destination
+  // que la déconnexion depuis la barre latérale du back-office (AdminSidebar.tsx) pour rester cohérent —
+  // aucune page de connexion admin dédiée n'existe séparément de /compte/connexion.
+  function seDeconnecter() {
+    deconnecter();
+    setOuvert(false);
+    router.push("/");
+  }
 
   const libelle =
     session?.type === "client" ? session.nom : session?.type === "admin" ? session.administrateur.nom : null;
@@ -98,10 +111,7 @@ export function CompteMenu() {
                 <button
                   type="button"
                   className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm text-danger hover:bg-fond"
-                  onClick={() => {
-                    deconnecter();
-                    setOuvert(false);
-                  }}
+                  onClick={seDeconnecter}
                 >
                   <LogOut size={16} /> {t("compte.seDeconnecter")}
                 </button>
@@ -126,10 +136,7 @@ export function CompteMenu() {
                 <button
                   type="button"
                   className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm text-danger hover:bg-fond"
-                  onClick={() => {
-                    deconnecter();
-                    setOuvert(false);
-                  }}
+                  onClick={seDeconnecter}
                 >
                   <LogOut size={16} /> {t("compte.seDeconnecter")}
                 </button>
