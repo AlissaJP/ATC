@@ -148,7 +148,7 @@ export const produits: Produit[] = [
     id: "prod-sonnette-video",
     slug: "sonnette-video-connectee",
     nom: "Sonnette vidéo connectée",
-    description: "Sonnette intelligente avec vision nocturne et détection de mouvement, notification mobile en temps réel.",
+    description: "Sonnette intelligente en 1080p avec vision nocturne et détection de mouvement, notification mobile en temps réel.",
     categorie_id: "cat-securite",
     marque_id: "marque-securvision",
     prix_public: 89,
@@ -158,13 +158,15 @@ export const produits: Produit[] = [
     // Aucune photo propre disponible (visuels fournisseur : texte marketing
     // anglais + logo "SMART+" tiers) — placeholder "Image à venir" (Audit Axe 2).
     images: [],
-    specifications: { alimentation: "Secteur", resolution: "1080p" },
+    // Résolution retirée des filtres de catalogue (Raffinement Design) — intégrée à la description
+    // ci-dessus plutôt qu'en critère de filtrage.
+    specifications: { alimentation: "Secteur" },
   },
   {
     id: "prod-camera-ptz-standard",
     slug: "camera-ptz-standard",
     nom: "Caméra PTZ standard",
-    description: "Caméra de surveillance motorisée (Pan-Tilt-Zoom) avec suivi automatique et vision nocturne.",
+    description: "Caméra de surveillance motorisée (Pan-Tilt-Zoom) en définition 3 MP, avec suivi automatique et vision nocturne.",
     categorie_id: "cat-securite",
     marque_id: "marque-securvision",
     prix_public: 145,
@@ -174,13 +176,13 @@ export const produits: Produit[] = [
     // Aucune photo propre disponible (visuels fournisseur : texte marketing
     // anglais + badges Tuya/Smart Life tiers) — placeholder "Image à venir" (Audit Axe 2).
     images: [],
-    specifications: { alimentation: "Secteur", resolution: "3 MP" },
+    specifications: { alimentation: "Secteur" },
   },
   {
     id: "prod-camera-ptz-solaire",
     slug: "camera-ptz-solaire-autonome",
     nom: "Caméra PTZ solaire autonome",
-    description: "Caméra de surveillance motorisée alimentée par panneau solaire intégré, idéale pour sites isolés.",
+    description: "Caméra de surveillance motorisée en définition 3 MP, alimentée par panneau solaire intégré, idéale pour sites isolés.",
     categorie_id: "cat-securite",
     marque_id: "marque-securvision",
     prix_public: 310,
@@ -191,7 +193,7 @@ export const produits: Produit[] = [
     // logo tiers uniquement, sans bandeau marketing anglais) ; les 4 autres
     // ont été retirées (Audit Axe 2).
     images: [img.securite("camera-ptz-solaire-produit-isole-produit-isole-03.webp")],
-    specifications: { alimentation: "Solaire", resolution: "3 MP" },
+    specifications: { alimentation: "Solaire" },
   },
 
   // --- Climatisation ---

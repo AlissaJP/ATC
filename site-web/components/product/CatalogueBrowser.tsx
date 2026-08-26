@@ -23,7 +23,6 @@ const LIBELLES_SPEC: Record<string, string> = {
   type: "Type",
   usage: "Usage",
   taille: "Taille",
-  resolution: "Résolution",
   stockage: "Stockage",
   connectivite: "Connectivité",
   installation: "Installation",
