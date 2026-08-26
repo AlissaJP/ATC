@@ -10,12 +10,16 @@ const img = {
 
 export const produits: Produit[] = [
   // --- Énergie solaire : panneaux ---
+  // Panneau solaire monocristallin — 2 SKU par puissance (même relation que la caméra PTZ standard
+  // ci-dessous, correction #23) : une seule fiche produit publique (405W, canonique) ; 550W est `masque:
+  // true`, retiré du catalogue/de la recherche, n'existe plus que comme SKU sélectionnable sur la fiche
+  // canonique. `puissance` retiré de specifications (déjà porté par le sélecteur, pas d'affichage en double).
   {
     id: "prod-panneau-405w",
     slug: "panneau-solaire-monocristallin-405w",
-    nom: "Panneau solaire monocristallin 405W",
+    nom: "Panneau solaire monocristallin",
     description:
-      "Panneau photovoltaïque monocristallin haute performance, idéal pour installations résidentielles et commerciales.",
+      "405 Wc : très bon rapport qualité-prix, la puissance de référence pour la plupart des installations résidentielles et commerciales.",
     categorie_id: "cat-panneaux",
     marque_id: "marque-solarmax",
     prix_public: 189,
@@ -23,14 +27,16 @@ export const produits: Produit[] = [
     eligible_package: true,
     statut_publication: "publié",
     images: [img.energie(17), img.energie(15)],
-    specifications: { puissance: "405 Wc", technologie: "Monocristallin" },
+    specifications: { technologie: "Monocristallin" },
     accessoires_compatibles_ids: ["prod-regulateur-mppt-60a", "prod-kit-cables-mc4", "prod-structure-montage"],
+    variante: { groupe: "panneau-solaire-monocristallin", libelle_attribut: "Puissance", valeur: "405 Wc" },
   },
   {
     id: "prod-panneau-550w",
     slug: "panneau-solaire-monocristallin-550w",
     nom: "Panneau solaire monocristallin 550W",
-    description: "Panneau haute puissance pour maximiser la production sur une surface réduite.",
+    description:
+      "550 Wc : puissance élevée pour maximiser la production sur une surface de toiture réduite, idéal si l'espace disponible est limité.",
     categorie_id: "cat-panneaux",
     marque_id: "marque-solarmax",
     prix_public: 245,
@@ -38,8 +44,9 @@ export const produits: Produit[] = [
     eligible_package: true,
     statut_publication: "publié",
     images: [img.energie(16), img.energie(4)],
-    specifications: { puissance: "550 Wc", technologie: "Monocristallin" },
+    specifications: { technologie: "Monocristallin" },
     accessoires_compatibles_ids: ["prod-regulateur-mppt-60a", "prod-kit-cables-mc4", "prod-structure-montage"],
+    variante: { groupe: "panneau-solaire-monocristallin", libelle_attribut: "Puissance", valeur: "550 Wc", masque: true },
   },
 
   // --- Énergie solaire : batteries ---
@@ -164,8 +171,8 @@ export const produits: Produit[] = [
   },
   // Caméra PTZ standard — 3 SKU distincts par résolution (Raffinement Design, sélecteur de résolution
   // ECR-03-001) : chacun a son propre prix et son propre stock (lib/mock-data/stock.ts), pas une simple
-  // variante d'affichage. `variante_resolution.groupe` identique sur les 3 relie le sélecteur. Correction
-  // #23 : une seule fiche produit publique (2K, canonique) — 1080p et 4K sont `masque: true`, retirés du
+  // variante d'affichage. `variante.groupe` identique sur les 3 relie le sélecteur. Correction #23 : une
+  // seule fiche produit publique (2K, canonique) — 1080p et 4K sont `masque: true`, retirés du
   // catalogue/de la recherche, et n'existent plus que comme SKU sélectionnables sur la fiche canonique.
   {
     id: "prod-camera-ptz-standard-1080p",
@@ -181,7 +188,7 @@ export const produits: Produit[] = [
     statut_publication: "publié",
     images: [],
     specifications: { alimentation: "Secteur" },
-    variante_resolution: { groupe: "camera-ptz-standard", resolution: "1080p", masque: true },
+    variante: { groupe: "camera-ptz-standard", libelle_attribut: "Résolution", valeur: "1080p", masque: true },
   },
   {
     id: "prod-camera-ptz-standard",
@@ -199,7 +206,7 @@ export const produits: Produit[] = [
     // anglais + badges Tuya/Smart Life tiers) — placeholder "Image à venir" (Audit Axe 2).
     images: [],
     specifications: { alimentation: "Secteur" },
-    variante_resolution: { groupe: "camera-ptz-standard", resolution: "2K" },
+    variante: { groupe: "camera-ptz-standard", libelle_attribut: "Résolution", valeur: "2K" },
   },
   {
     id: "prod-camera-ptz-standard-4k",
@@ -215,7 +222,7 @@ export const produits: Produit[] = [
     statut_publication: "publié",
     images: [],
     specifications: { alimentation: "Secteur" },
-    variante_resolution: { groupe: "camera-ptz-standard", resolution: "4K", masque: true },
+    variante: { groupe: "camera-ptz-standard", libelle_attribut: "Résolution", valeur: "4K", masque: true },
   },
   {
     id: "prod-camera-ptz-solaire",

@@ -22,11 +22,11 @@ interface AchatProduitProps {
   stockActuel: number;
   // Correction #23 — chaque entrée reste un SKU (Produit) distinct côté données (prix/stock/description
   // propres), mais la sélection change un état local plutôt que de naviguer vers une fiche produit
-  // séparée : une seule fiche produit publique par groupe de résolutions. Jamais fourni si le produit
-  // n'a qu'une seule résolution (cf. app/produit/[slug]/page.tsx).
-  variantesResolution?: ProduitEnrichi[];
-  // Stock exact par variante (id → quantité), pour borner le sélecteur de quantité une fois une
-  // résolution choisie — niveauStock (alerte) est déjà porté par variantesResolution[].niveauStock.
+  // séparée : une seule fiche produit publique par groupe de variantes. Jamais fourni si le produit n'a
+  // qu'une seule valeur (cf. app/produit/[slug]/page.tsx).
+  variantes?: ProduitEnrichi[];
+  // Stock exact par variante (id → quantité), pour borner le sélecteur de quantité une fois une valeur
+  // choisie — niveauStock (alerte) est déjà porté par variantes[].niveauStock.
   stocksVariantes?: Record<string, number>;
 }
 
@@ -37,7 +37,7 @@ export function AchatProduit({
   niveauStock,
   paliers,
   stockActuel,
-  variantesResolution,
+  variantes,
   stocksVariantes,
 }: AchatProduitProps) {
   const router = useRouter();
@@ -49,15 +49,15 @@ export function AchatProduit({
 
   const [quantite, setQuantite] = useState(1);
   const [confirmationVisible, setConfirmationVisible] = useState(false);
-  // Correction #23 — id du SKU actif : celui de la résolution sélectionnée si le produit en a
-  // plusieurs, sinon simplement le produit affiché. Change au clic sur un chip, jamais de navigation.
+  // Correction #23 — id du SKU actif : celui de la valeur sélectionnée si le produit en a plusieurs,
+  // sinon simplement le produit affiché. Change au clic sur un chip, jamais de navigation.
   const [varianteSelectionneeId, setVarianteSelectionneeId] = useState(produit.id);
   const [derniereVarianteAjusteeId, setDerniereVarianteAjusteeId] = useState(produit.id);
 
-  const varianteActive = variantesResolution?.find((v) => v.produit.id === varianteSelectionneeId);
+  const varianteActive = variantes?.find((v) => v.produit.id === varianteSelectionneeId);
   const produitActif = varianteActive?.produit ?? produit;
   const niveauStockActif = varianteActive?.niveauStock ?? niveauStock;
-  const stockActuelActif = variantesResolution ? (stocksVariantes?.[varianteSelectionneeId] ?? 0) : stockActuel;
+  const stockActuelActif = variantes ? (stocksVariantes?.[varianteSelectionneeId] ?? 0) : stockActuel;
   const paliersActifs = varianteActive?.paliers ?? paliers;
 
   const rupture = niveauStockActif === "rupture";
@@ -85,8 +85,8 @@ export function AchatProduit({
     router.push("/packages/configurateur");
   }
 
-  // Réinitialise la quantité au changement de résolution — le stock max diffère par variante, une
-  // quantité choisie sous l'ancienne résolution pourrait dépasser le stock de la nouvelle. Ajustement en
+  // Réinitialise la quantité au changement de variante — le stock max diffère par variante, une
+  // quantité choisie sous l'ancienne valeur pourrait dépasser le stock de la nouvelle. Ajustement en
   // cours de rendu (pattern recommandé react.dev pour dériver un état d'un changement de prop/état sans
   // passer par un effet) plutôt qu'un useEffect, qui provoquerait un second rendu en cascade évitable.
   if (varianteSelectionneeId !== derniereVarianteAjusteeId) {
@@ -98,11 +98,13 @@ export function AchatProduit({
 
   return (
     <div className="flex flex-col gap-5">
-      {variantesResolution && (
+      {variantes && (
         <div>
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-texte-secondaire">Résolution</p>
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-texte-secondaire">
+            {produitActif.variante?.libelle_attribut}
+          </p>
           <div className="flex flex-wrap gap-2">
-            {variantesResolution.map(({ produit: variante, niveauStock: niveauVariante }) => {
+            {variantes.map(({ produit: variante, niveauStock: niveauVariante }) => {
               const actif = variante.id === varianteSelectionneeId;
               return (
                 <button
@@ -118,7 +120,7 @@ export function AchatProduit({
                         : "border-bordure text-texte-principal hover:border-primaire hover:text-primaire"
                   }`}
                 >
-                  {variante.variante_resolution?.resolution}
+                  {variante.variante?.valeur}
                   {niveauVariante === "rupture" && !actif && " — rupture"}
                 </button>
               );

@@ -41,20 +41,26 @@ export async function listerProduitsEnrichisParIds(ids: string[]): Promise<Produ
   return Promise.all(produits.map(enrichir));
 }
 
-const ORDRE_RESOLUTIONS = ["1080p", "2K", "4K"];
+// Ordre explicite pour les valeurs dont l'échelle n'est pas déductible du texte (ex. "2K"/"4K" ne sont
+// pas des grandeurs directement comparables numériquement, contrairement à "405 Wc"/"550 Wc").
+const ORDRE_CONNU: Record<string, number> = { "1080p": 0, "2K": 1, "4K": 2 };
 
-// Raffinement Design — sélecteur de résolution (fiche produit) : chaque résolution est un SKU (Produit)
-// à part entière (lib/mock-data/produits.ts, champ variante_resolution), pas une variante virtuelle.
-export async function listerVariantesResolution(groupe: string): Promise<ProduitEnrichi[]> {
+function comparerValeursVariante(a: string, b: string): number {
+  if (a in ORDRE_CONNU && b in ORDRE_CONNU) return ORDRE_CONNU[a] - ORDRE_CONNU[b];
+  const na = parseFloat(a);
+  const nb = parseFloat(b);
+  if (!Number.isNaN(na) && !Number.isNaN(nb)) return na - nb;
+  return a.localeCompare(b);
+}
+
+// Raffinement Design — sélecteur de variante (fiche produit, ex. résolution d'une caméra, puissance d'un
+// panneau solaire) : chaque valeur est un SKU (Produit) à part entière (lib/mock-data/produits.ts, champ
+// variante), pas une variante virtuelle.
+export async function listerVariantesProduit(groupe: string): Promise<ProduitEnrichi[]> {
   const tous = await listerProduits();
-  const membres = tous.filter((p) => p.variante_resolution?.groupe === groupe);
+  const membres = tous.filter((p) => p.variante?.groupe === groupe);
   const enrichis = await Promise.all(membres.map(enrichir));
-  return enrichis.sort((a, b) => {
-    const ra = a.produit.variante_resolution?.resolution ?? "";
-    const rb = b.produit.variante_resolution?.resolution ?? "";
-    const ia = ORDRE_RESOLUTIONS.indexOf(ra);
-    const ib = ORDRE_RESOLUTIONS.indexOf(rb);
-    if (ia !== -1 && ib !== -1) return ia - ib;
-    return ra.localeCompare(rb);
-  });
+  return enrichis.sort((a, b) =>
+    comparerValeursVariante(a.produit.variante?.valeur ?? "", b.produit.variante?.valeur ?? "")
+  );
 }

@@ -5,7 +5,7 @@ import { GalerieImages } from "@/components/product/GalerieImages";
 import { AchatProduit } from "@/components/product/AchatProduit";
 import { ProduitsAssocies } from "@/components/product/ProduitsAssocies";
 import { AvisProduit } from "@/components/product/AvisProduit";
-import { obtenirProduitEnrichiParSlug, listerProduitsEnrichisParIds, listerVariantesResolution } from "@/lib/services/catalogue";
+import { obtenirProduitEnrichiParSlug, listerProduitsEnrichisParIds, listerVariantesProduit } from "@/lib/services/catalogue";
 import { obtenirStock } from "@/lib/services/stock";
 import { listerCategories } from "@/lib/services/produits";
 import { trouverGarantieParCategorie } from "@/lib/mock-data/garanties";
@@ -17,31 +17,29 @@ export default async function ProduitPage(props: PageProps<"/produit/[slug]">) {
   if (!resultat) notFound();
 
   const { produit, niveauStock, paliers, marque } = resultat;
-  const [stock, categories, produitsAssocies, variantesResolutionBrutes] = await Promise.all([
+  const [stock, categories, produitsAssocies, variantesBrutes] = await Promise.all([
     obtenirStock(produit.id),
     listerCategories(),
     listerProduitsEnrichisParIds(produit.accessoires_compatibles_ids ?? []),
-    produit.variante_resolution ? listerVariantesResolution(produit.variante_resolution.groupe) : Promise.resolve([]),
+    produit.variante ? listerVariantesProduit(produit.variante.groupe) : Promise.resolve([]),
   ]);
 
-  // Correction #23 — une seule fiche produit publique par groupe de résolutions : visiter directement
-  // l'URL d'un SKU non canonique (variante_resolution.masque) redirige vers le SKU canonique du groupe,
-  // qui porte le sélecteur de résolution (jamais de fiche produit distincte par résolution).
-  if (produit.variante_resolution?.masque) {
-    const canonique = variantesResolutionBrutes.find((v) => !v.produit.variante_resolution?.masque);
+  // Correction #23 — une seule fiche produit publique par groupe de variantes : visiter directement
+  // l'URL d'un SKU non canonique (variante.masque) redirige vers le SKU canonique du groupe, qui porte
+  // le sélecteur de variante (jamais de fiche produit distincte par valeur de variante).
+  if (produit.variante?.masque) {
+    const canonique = variantesBrutes.find((v) => !v.produit.variante?.masque);
     if (canonique) redirect(`/produit/${canonique.produit.slug}`);
   }
 
-  // Sélecteur affiché uniquement si au moins 2 résolutions existent réellement pour ce produit.
-  const variantesResolution = variantesResolutionBrutes.length > 1 ? variantesResolutionBrutes : undefined;
+  // Sélecteur affiché uniquement si au moins 2 valeurs existent réellement pour ce produit.
+  const variantes = variantesBrutes.length > 1 ? variantesBrutes : undefined;
 
-  // Stock exact par variante (au-delà du simple niveau d'alerte déjà présent dans variantesResolution)
-  // pour borner le sélecteur de quantité une fois une résolution choisie sur la fiche canonique.
+  // Stock exact par variante (au-delà du simple niveau d'alerte déjà présent dans variantes) pour borner
+  // le sélecteur de quantité une fois une valeur choisie sur la fiche canonique.
   const stocksVariantes = Object.fromEntries(
     await Promise.all(
-      variantesResolutionBrutes.map(
-        async (v) => [v.produit.id, (await obtenirStock(v.produit.id))?.stock_actuel ?? 0] as const
-      )
+      variantesBrutes.map(async (v) => [v.produit.id, (await obtenirStock(v.produit.id))?.stock_actuel ?? 0] as const)
     )
   );
 
@@ -67,10 +65,10 @@ export default async function ProduitPage(props: PageProps<"/produit/[slug]">) {
         <div>
           {marque && <p className="text-sm font-semibold text-primaire-clair">{marque.nom}</p>}
           <h1 className="mt-1 font-titres text-2xl font-bold text-texte-principal md:text-3xl">{produit.nom}</h1>
-          {/* Résolution variable (#23) : la description « points forts » dédiée à la résolution choisie
-              est affichée dans AchatProduit, juste sous le sélecteur, et se met à jour dynamiquement —
-              pas de paragraphe statique redondant ici dans ce cas. */}
-          {!variantesResolution && <p className="mt-3 text-texte-secondaire">{produit.description}</p>}
+          {/* Variante (#23) : la description « points forts » dédiée à la valeur choisie est affichée
+              dans AchatProduit, juste sous le sélecteur, et se met à jour dynamiquement — pas de
+              paragraphe statique redondant ici dans ce cas. */}
+          {!variantes && <p className="mt-3 text-texte-secondaire">{produit.description}</p>}
 
           <div className="mt-6">
             <AchatProduit
@@ -78,7 +76,7 @@ export default async function ProduitPage(props: PageProps<"/produit/[slug]">) {
               niveauStock={niveauStock}
               paliers={paliers}
               stockActuel={stock?.stock_actuel ?? 0}
-              variantesResolution={variantesResolution}
+              variantes={variantes}
               stocksVariantes={stocksVariantes}
             />
           </div>
