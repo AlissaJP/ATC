@@ -1,12 +1,13 @@
 "use client";
 
-// Raffinement Design — Chatbot : assistant virtuel intégré au site, indépendant du bouton WhatsApp
-// (ChatFlottant.tsx, qui reste le canal de support humain). Recherche par mots-clés dans la FAQ déjà
-// validée (lib/mock-data/faq.ts — mêmes questions/réponses que /faq, y compris les entrées ajoutées
-// depuis le back-office) plutôt qu'un moteur IA : pas d'infrastructure LLM réelle dans cette démo
-// statique (décision actée n°41), et un assistant à réponses scriptées ne peut structurellement pas
-// dériver vers une conversation hors-sujet — contrainte demandée, obtenue sans garde-fou additionnel.
-// Toute question sans correspondance suffisante redirige honnêtement vers le support WhatsApp.
+// Raffinement Design — Chatbot : assistant virtuel intégré au site, seul widget flottant depuis le
+// retrait de la bulle WhatsApp (ChatFlottant.tsx, supprimée — le support humain reste joignable via le
+// bandeau WhatsApp de BlocReassurance.tsx et via le repli ci-dessous). Recherche par mots-clés dans la
+// FAQ déjà validée (lib/mock-data/faq.ts — mêmes questions/réponses que /faq, y compris les entrées
+// ajoutées depuis le back-office) plutôt qu'un moteur IA : pas d'infrastructure LLM réelle dans cette
+// démo statique (décision actée n°41), et un assistant à réponses scriptées ne peut structurellement
+// pas dériver vers une conversation hors-sujet — contrainte demandée, obtenue sans garde-fou
+// additionnel. Toute question sans correspondance suffisante redirige honnêtement vers WhatsApp.
 import { useId, useState } from "react";
 import { usePathname } from "next/navigation";
 import { Bot, MessageCircleQuestion, Send, X } from "lucide-react";
@@ -102,13 +103,13 @@ export function Chatbot() {
         onClick={() => setOuvert((v) => !v)}
         aria-label={ouvert ? "Fermer l'assistant ATC" : "Ouvrir l'assistant ATC"}
         aria-expanded={ouvert}
-        className="fixed bottom-24 right-5 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-primaire text-white shadow-lg transition-transform hover:scale-105 print:hidden"
+        className="fixed bottom-5 right-5 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-primaire text-white shadow-lg transition-transform hover:scale-105 print:hidden"
       >
         {ouvert ? <X size={24} /> : <Bot size={26} />}
       </button>
 
       {ouvert && (
-        <div className="fixed bottom-[168px] right-5 z-30 flex h-[28rem] w-[min(22rem,calc(100vw-2.5rem))] flex-col overflow-hidden rounded-2xl border border-bordure bg-background shadow-2xl print:hidden">
+        <div className="fixed bottom-[92px] right-5 z-30 flex h-[28rem] w-[min(22rem,calc(100vw-2.5rem))] flex-col overflow-hidden rounded-2xl border border-bordure bg-background shadow-2xl print:hidden">
           <div className="flex items-center gap-2.5 border-b border-bordure bg-primaire px-4 py-3">
             <Bot size={20} className="text-white" />
             <div>

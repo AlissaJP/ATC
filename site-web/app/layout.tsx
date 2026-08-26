@@ -4,7 +4,6 @@ import { clashDisplay } from "@/lib/fonts/clash-display";
 import { generalSans } from "@/lib/fonts/general-sans";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { ChatFlottant } from "@/components/layout/ChatFlottant";
 import { Chatbot } from "@/components/layout/Chatbot";
 import "./globals.css";
 
@@ -32,7 +31,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <Header />
           {children}
           <Footer />
-          <ChatFlottant />
           <Chatbot />
         </MotionConfig>
       </body>
