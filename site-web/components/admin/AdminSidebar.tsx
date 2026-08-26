@@ -14,6 +14,7 @@ import {
   BarChart3,
   Boxes,
   CreditCard,
+  FileBarChart,
   FileQuestion,
   FileText,
   LayoutDashboard,
@@ -158,7 +159,10 @@ const GROUPES: { titre: string; liens: LienAdmin[] }[] = [
   },
   {
     titre: "PILOTAGE",
-    liens: [{ href: "/admin/statistiques", label: "Statistiques", icone: BarChart3, rolesAutorises: ["general"] }],
+    liens: [
+      { href: "/admin/statistiques", label: "Statistiques", icone: BarChart3, rolesAutorises: ["general"] },
+      { href: "/admin/rapports", label: "Rapports financiers", icone: FileBarChart, rolesAutorises: ["general"] },
+    ],
   },
 ];
 
