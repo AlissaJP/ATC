@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { Heart } from "lucide-react";
 import { useComptesStore } from "@/lib/store/comptes-store";
 import { useSessionStore } from "@/lib/store/session-store";
@@ -31,7 +32,17 @@ export function BoutonFavori({ produitId, className = "" }: { produitId: string;
         }}
         className={`flex h-9 w-9 items-center justify-center rounded-full bg-background/90 shadow-sm transition-colors ${className}`}
       >
-        <Heart size={18} className={estFavori ? "fill-accent text-accent" : "text-texte-secondaire"} />
+        {/* key={String(estFavori)} : remonte le cœur à chaque bascule pour rejouer le pop d'échelle
+            (Raffinement Design, micro-animation favoris). */}
+        <motion.span
+          key={String(estFavori)}
+          initial={{ scale: 0.6 }}
+          animate={{ scale: 1 }}
+          transition={{ duration: 0.2, type: "spring", stiffness: 500, damping: 15 }}
+          className="flex"
+        >
+          <Heart size={18} className={estFavori ? "fill-accent text-accent" : "text-texte-secondaire"} />
+        </motion.span>
       </button>
       {messageToast && (
         <Toast message={messageToast} actionLabel="Se connecter" onAction={allerALaConnexion} onFermer={fermerToast} />

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { Check, ShoppingCart } from "lucide-react";
 import { useCartStore } from "@/lib/store/cart-store";
 import { useGardeClient } from "@/lib/hooks/useGardeClient";
@@ -32,15 +33,27 @@ export function AjouterPackageBouton({
 
   return (
     <>
-      <button
+      <motion.button
         type="button"
         onClick={gererAjout}
         disabled={!disponible}
+        whileTap={{ scale: 0.97 }}
         className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-accent px-5 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
       >
-        {confirmationVisible ? <Check size={18} /> : <ShoppingCart size={18} />}
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.span
+            key={confirmationVisible ? "check" : "cart"}
+            initial={{ scale: 0.5, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.5, opacity: 0 }}
+            transition={{ duration: 0.15 }}
+            className="flex"
+          >
+            {confirmationVisible ? <Check size={18} /> : <ShoppingCart size={18} />}
+          </motion.span>
+        </AnimatePresence>
         {confirmationVisible ? "Ajouté au panier" : disponible ? "Ajouter au panier" : "Indisponible actuellement"}
-      </button>
+      </motion.button>
       {messageToast && (
         <Toast message={messageToast} actionLabel="Se connecter" onAction={allerALaConnexion} onFermer={fermerToast} />
       )}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { LayoutGrid, List, SlidersHorizontal, X } from "lucide-react";
 import { ProductCard } from "./ProductCard";
 import { ProductListItem } from "./ProductListItem";
@@ -285,18 +286,32 @@ export function CatalogueBrowser({ produits }: { produits: ProduitEnrichi[] }) {
             </p>
             <p className="mt-1 text-sm text-texte-secondaire">Essayez d&apos;élargir vos critères de recherche.</p>
           </div>
-        ) : vue === "grille" ? (
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-4">
-            {resultats.map(({ produit, niveauStock, paliers }) => (
-              <ProductCard key={produit.id} produit={produit} niveauStock={niveauStock} paliers={paliers} />
-            ))}
-          </div>
         ) : (
-          <div className="flex flex-col gap-3">
-            {resultats.map(({ produit, niveauStock, paliers }) => (
-              <ProductListItem key={produit.id} produit={produit} niveauStock={niveauStock} paliers={paliers} />
-            ))}
-          </div>
+          // key={vue} — transition douce (Raffinement Design) à la bascule grille/liste, plutôt qu'un
+          // changement brutal ; AnimatePresence anime la sortie de l'ancienne vue avant l'entrée de la nouvelle.
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={vue}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              {vue === "grille" ? (
+                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-4">
+                  {resultats.map(({ produit, niveauStock, paliers }) => (
+                    <ProductCard key={produit.id} produit={produit} niveauStock={niveauStock} paliers={paliers} />
+                  ))}
+                </div>
+              ) : (
+                <div className="flex flex-col gap-3">
+                  {resultats.map(({ produit, niveauStock, paliers }) => (
+                    <ProductListItem key={produit.id} produit={produit} niveauStock={niveauStock} paliers={paliers} />
+                  ))}
+                </div>
+              )}
+            </motion.div>
+          </AnimatePresence>
         )}
       </div>
 

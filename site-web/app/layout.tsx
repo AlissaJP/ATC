@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { MotionConfig } from "framer-motion";
 import { clashDisplay } from "@/lib/fonts/clash-display";
 import { generalSans } from "@/lib/fonts/general-sans";
 import { Header } from "@/components/layout/Header";
@@ -24,11 +25,16 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="fr" className={`${clashDisplay.variable} ${generalSans.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col bg-fond text-texte-principal">
-        <Header />
-        {children}
-        <Footer />
-        <ChatFlottant />
-        <Chatbot />
+        {/* Raffinement Design — micro-animations (Framer Motion). reduceMotion="user" respecte
+            automatiquement prefers-reduced-motion pour toutes les animations du site, sans vérification
+            manuelle dans chaque composant. */}
+        <MotionConfig reducedMotion="user">
+          <Header />
+          {children}
+          <Footer />
+          <ChatFlottant />
+          <Chatbot />
+        </MotionConfig>
       </body>
     </html>
   );

@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { AnimatePresence, motion } from "framer-motion";
 import { Check, Minus, Package, Plus, ShoppingCart } from "lucide-react";
 import type { NiveauAlerteStock, PalierPrixB2B, Produit } from "@/lib/types/entities";
 import type { ProduitEnrichi } from "@/lib/services/catalogue";
@@ -165,15 +166,27 @@ export function AchatProduit({ produit, niveauStock, paliers, stockActuel, varia
       </div>
 
       <div className="flex flex-col gap-3 sm:flex-row">
-        <button
+        <motion.button
           type="button"
           onClick={gererAjoutPanier}
           disabled={rupture}
+          whileTap={{ scale: 0.97 }}
           className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-accent px-5 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
         >
-          {confirmationVisible ? <Check size={18} /> : <ShoppingCart size={18} />}
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.span
+              key={confirmationVisible ? "check" : "cart"}
+              initial={{ scale: 0.5, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.5, opacity: 0 }}
+              transition={{ duration: 0.15 }}
+              className="flex"
+            >
+              {confirmationVisible ? <Check size={18} /> : <ShoppingCart size={18} />}
+            </motion.span>
+          </AnimatePresence>
           {confirmationVisible ? "Ajouté au panier" : rupture ? "Rupture de stock" : "Ajouter au panier"}
-        </button>
+        </motion.button>
 
         {produit.eligible_package && (
           <button

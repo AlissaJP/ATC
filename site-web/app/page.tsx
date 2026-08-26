@@ -8,6 +8,7 @@ import { BlocDevenirPro } from "@/components/home/BlocDevenirPro";
 import { BlocReassurance } from "@/components/home/BlocReassurance";
 import { AvisClientsAccueil } from "@/components/home/AvisClientsAccueil";
 import { BlocChiffresCles } from "@/components/home/BlocChiffresCles";
+import { RevealOnScroll } from "@/components/ui/RevealOnScroll";
 import { listerProduitsEnrichis } from "@/lib/services/catalogue";
 
 // Nombre "en extérieur" par bloc catégorie sur l'accueil (Raffinement Design, prompt d'approfondissement
@@ -25,11 +26,21 @@ export default async function AccueilPage() {
   return (
     <main className="mx-auto flex w-full max-w-7xl flex-col gap-14 px-4 py-8 md:px-6 md:py-12">
       <BanniereSolaire />
-      <CategoriesPhares produitsParCategorie={produitsParCategorie} />
-      <BlocDevenirPro />
-      <BlocReassurance />
-      <AvisClientsAccueil />
-      <BlocChiffresCles />
+      <RevealOnScroll>
+        <CategoriesPhares produitsParCategorie={produitsParCategorie} />
+      </RevealOnScroll>
+      <RevealOnScroll>
+        <BlocDevenirPro />
+      </RevealOnScroll>
+      <RevealOnScroll>
+        <BlocReassurance />
+      </RevealOnScroll>
+      <RevealOnScroll>
+        <AvisClientsAccueil />
+      </RevealOnScroll>
+      <RevealOnScroll>
+        <BlocChiffresCles />
+      </RevealOnScroll>
     </main>
   );
 }

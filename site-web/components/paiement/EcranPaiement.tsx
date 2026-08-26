@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { AlertTriangle, Check, CreditCard, Loader2, Smartphone, Wallet } from "lucide-react";
 import { useSessionStore, estClientB2BVerifie } from "@/lib/store/session-store";
 import { useDevisStore } from "@/lib/store/devis-store";
@@ -202,7 +203,14 @@ export function EcranPaiement({ contexte }: { contexte: ContextePaiement }) {
   if (etape === "succes") {
     return (
       <div className="mx-auto max-w-md rounded-xl border border-succes/30 bg-succes/5 p-8 text-center">
-        <Check size={28} className="mx-auto text-succes" />
+        <motion.div
+          initial={{ scale: 0, rotate: -45 }}
+          animate={{ scale: 1, rotate: 0 }}
+          transition={{ duration: 0.35, type: "spring", stiffness: 300, damping: 18 }}
+          className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-succes/15"
+        >
+          <Check size={26} className="text-succes" />
+        </motion.div>
         <p className="mt-3 font-titres text-lg font-semibold text-texte-principal">Paiement confirmé</p>
         <p className="mt-1 text-sm text-texte-secondaire">
           {contexte.type === "devis"

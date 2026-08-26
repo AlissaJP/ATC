@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Fragment, Suspense, useState } from "react";
+import { motion } from "framer-motion";
 import { Heart, Menu, Search, ShoppingCart, X } from "lucide-react";
 import { LogoMark } from "@/components/ui/LogoMark";
 import { LanguageSelector } from "@/components/layout/LanguageSelector";
@@ -118,11 +119,21 @@ export function Header() {
               className="relative inline-flex h-11 w-11 items-center justify-center rounded-lg text-texte-principal hover:bg-fond"
               aria-label={`${t("nav.panier")} (${nombreArticles})`}
             >
-              <ShoppingCart size={22} />
+              {/* key={nombreArticles} : remonte le composant à chaque changement de quantité pour rejouer
+                  le pulse initial→animate (Raffinement Design, micro-animation ajout au panier). */}
+              <motion.span key={nombreArticles} initial={{ scale: 1.35 }} animate={{ scale: 1 }} transition={{ duration: 0.25 }}>
+                <ShoppingCart size={22} />
+              </motion.span>
               {nombreArticles > 0 && (
-                <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-accent text-[10px] font-semibold text-white">
+                <motion.span
+                  key={`badge-${nombreArticles}`}
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ duration: 0.25, type: "spring", stiffness: 400, damping: 15 }}
+                  className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-accent text-[10px] font-semibold text-white"
+                >
                   {nombreArticles}
-                </span>
+                </motion.span>
               )}
             </Link>
           </div>

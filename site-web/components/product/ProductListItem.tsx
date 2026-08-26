@@ -1,8 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Plus } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { Check, Plus } from "lucide-react";
 import type { NiveauAlerteStock, PalierPrixB2B, Produit } from "@/lib/types/entities";
 import { StockBadge } from "./StockBadge";
 import { BoutonFavori } from "./BoutonFavori";
@@ -33,6 +35,7 @@ export function ProductListItem({ produit, niveauStock, paliers }: ProductListIt
 
   const ajouterLigne = useCartStore((s) => s.ajouterLigne);
   const { executerSiConnecte, messageToast, fermerToast, allerALaConnexion } = useGardeClient();
+  const [confirmationVisible, setConfirmationVisible] = useState(false);
 
   return (
     <Link
@@ -67,22 +70,35 @@ export function ProductListItem({ produit, niveauStock, paliers }: ProductListIt
           {palierDepart && "À partir de "}${prixAffiche.toFixed(2)}
         </p>
         <BoutonFavori produitId={produit.id} className="static h-9 w-9" />
-        <button
+        <motion.button
           type="button"
           aria-label="Ajouter au panier"
           disabled={niveauStock === "rupture"}
+          whileTap={{ scale: 0.85 }}
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            executerSiConnecte(
-              () => ajouterLigne(produit.id, 1),
-              "Connectez-vous pour ajouter ce produit à votre panier."
-            );
+            executerSiConnecte(() => {
+              ajouterLigne(produit.id, 1);
+              setConfirmationVisible(true);
+              setTimeout(() => setConfirmationVisible(false), 1200);
+            }, "Connectez-vous pour ajouter ce produit à votre panier.");
           }}
           className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primaire text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
         >
-          <Plus size={18} />
-        </button>
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.span
+              key={confirmationVisible ? "check" : "plus"}
+              initial={{ scale: 0.5, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.5, opacity: 0 }}
+              transition={{ duration: 0.15 }}
+              className="flex"
+            >
+              {confirmationVisible ? <Check size={18} /> : <Plus size={18} />}
+            </motion.span>
+          </AnimatePresence>
+        </motion.button>
       </div>
       {messageToast && (
         <Toast message={messageToast} actionLabel="Se connecter" onAction={allerALaConnexion} onFermer={fermerToast} />
