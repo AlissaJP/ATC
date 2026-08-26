@@ -164,7 +164,7 @@ export function Chatbot() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 16, scale: 0.96 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="fixed bottom-[92px] right-5 z-30 flex h-[28rem] w-[min(22rem,calc(100vw-2.5rem))] flex-col overflow-hidden rounded-2xl border border-bordure bg-background shadow-2xl print:hidden"
+            className="fixed bottom-[92px] right-5 z-30 flex h-[min(88vh,34rem)] w-[min(22rem,calc(100vw-2.5rem))] flex-col overflow-hidden rounded-2xl border border-bordure bg-background shadow-2xl print:hidden sm:h-[min(80vh,32rem)] sm:w-[23.75rem]"
           >
             <div className="flex items-center gap-2.5 bg-gradient-to-r from-primaire to-primaire-clair px-4 py-3">
               <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/15">
