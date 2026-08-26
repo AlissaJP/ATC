@@ -6,6 +6,7 @@ import { ArrowRight } from "lucide-react";
 import { useTranslation } from "@/lib/i18n/useTranslation";
 import { produits } from "@/lib/mock-data/produits";
 import { stardom } from "@/lib/fonts/stardom";
+import { ParallaxImage } from "@/components/ui/ParallaxImage";
 import type { Produit } from "@/lib/types/entities";
 
 const panneauVitrine = produits.find((p) => p.id === "prod-panneau-405w")!;
@@ -52,14 +53,16 @@ export function BanniereSolaire() {
         </div>
 
         <div className="relative min-h-[320px] md:min-h-[520px] md:w-[57%]">
-          <Image
-            src="/images/energie-solaire/energie-16-retouche.webp"
-            alt="Techniciens ATC installant un champ de panneaux solaires, Port-au-Prince"
-            fill
-            priority
-            className="object-cover"
-            sizes="(min-width: 768px) 57vw, 100vw"
-          />
+          <ParallaxImage amplitude={36}>
+            <Image
+              src="/images/energie-solaire/energie-16-retouche.webp"
+              alt="Techniciens ATC installant un champ de panneaux solaires, Port-au-Prince"
+              fill
+              priority
+              className="object-cover"
+              sizes="(min-width: 768px) 57vw, 100vw"
+            />
+          </ParallaxImage>
 
           {/* Cartes flottantes à deux profondeurs (desktop uniquement) — l'une chevauche le point de jonction
               texte/photo en haut, l'autre repose plus bas et plus proche du bord, comme dans le modèle. */}
