@@ -20,14 +20,26 @@ interface AchatProduitProps {
   niveauStock: NiveauAlerteStock;
   paliers: PalierPrixB2B[];
   stockActuel: number;
-  // Raffinement Design — sélecteur de résolution : chaque entrée est un SKU (Produit) distinct, jamais
-  // fourni si le produit n'a qu'une seule résolution (cf. app/produit/[slug]/page.tsx).
+  // Correction #23 — chaque entrée reste un SKU (Produit) distinct côté données (prix/stock/description
+  // propres), mais la sélection change un état local plutôt que de naviguer vers une fiche produit
+  // séparée : une seule fiche produit publique par groupe de résolutions. Jamais fourni si le produit
+  // n'a qu'une seule résolution (cf. app/produit/[slug]/page.tsx).
   variantesResolution?: ProduitEnrichi[];
+  // Stock exact par variante (id → quantité), pour borner le sélecteur de quantité une fois une
+  // résolution choisie — niveauStock (alerte) est déjà porté par variantesResolution[].niveauStock.
+  stocksVariantes?: Record<string, number>;
 }
 
 // ECR-03-001 — Prix + barème B2B (RG-03-001, RG-03-004), sélection de quantité en temps réel,
 // boutons « Ajouter au panier » / « Ajouter au package personnalisé » visuellement distincts (Cahier 7 §3).
-export function AchatProduit({ produit, niveauStock, paliers, stockActuel, variantesResolution }: AchatProduitProps) {
+export function AchatProduit({
+  produit,
+  niveauStock,
+  paliers,
+  stockActuel,
+  variantesResolution,
+  stocksVariantes,
+}: AchatProduitProps) {
   const router = useRouter();
   const session = useSessionStore((s) => s.session);
   const estB2B = estClientB2BVerifie(session);
@@ -37,12 +49,22 @@ export function AchatProduit({ produit, niveauStock, paliers, stockActuel, varia
 
   const [quantite, setQuantite] = useState(1);
   const [confirmationVisible, setConfirmationVisible] = useState(false);
+  // Correction #23 — id du SKU actif : celui de la résolution sélectionnée si le produit en a
+  // plusieurs, sinon simplement le produit affiché. Change au clic sur un chip, jamais de navigation.
+  const [varianteSelectionneeId, setVarianteSelectionneeId] = useState(produit.id);
+  const [derniereVarianteAjusteeId, setDerniereVarianteAjusteeId] = useState(produit.id);
 
-  const rupture = niveauStock === "rupture";
-  const quantiteMax = rupture ? 0 : stockActuel;
+  const varianteActive = variantesResolution?.find((v) => v.produit.id === varianteSelectionneeId);
+  const produitActif = varianteActive?.produit ?? produit;
+  const niveauStockActif = varianteActive?.niveauStock ?? niveauStock;
+  const stockActuelActif = variantesResolution ? (stocksVariantes?.[varianteSelectionneeId] ?? 0) : stockActuel;
+  const paliersActifs = varianteActive?.paliers ?? paliers;
 
-  const palierActif = estB2B && paliers.length > 0 ? trouverPalierApplicable(paliers, quantite) : undefined;
-  const prixUnitaire = palierActif ? palierActif.prix_unitaire : produit.prix_public;
+  const rupture = niveauStockActif === "rupture";
+  const quantiteMax = rupture ? 0 : stockActuelActif;
+
+  const palierActif = estB2B && paliersActifs.length > 0 ? trouverPalierApplicable(paliersActifs, quantite) : undefined;
+  const prixUnitaire = palierActif ? palierActif.prix_unitaire : produitActif.prix_public;
   const prixTotal = prixUnitaire * quantite;
 
   function ajusterQuantite(delta: number) {
@@ -52,18 +74,27 @@ export function AchatProduit({ produit, niveauStock, paliers, stockActuel, varia
   function gererAjoutPanier() {
     if (rupture) return;
     executerSiConnecte(() => {
-      ajouterLigne(produit.id, quantite);
+      ajouterLigne(produitActif.id, quantite);
       setConfirmationVisible(true);
       setTimeout(() => setConfirmationVisible(false), 1500);
     }, "Connectez-vous pour ajouter ce produit à votre panier.");
   }
 
   function gererAjoutPackage() {
-    ajouterAuPackage(produit.id);
+    ajouterAuPackage(produitActif.id);
     router.push("/packages/configurateur");
   }
 
-  const lignesBareme = useMemo(() => [...paliers].sort((a, b) => a.quantite_min - b.quantite_min), [paliers]);
+  // Réinitialise la quantité au changement de résolution — le stock max diffère par variante, une
+  // quantité choisie sous l'ancienne résolution pourrait dépasser le stock de la nouvelle. Ajustement en
+  // cours de rendu (pattern recommandé react.dev pour dériver un état d'un changement de prop/état sans
+  // passer par un effet) plutôt qu'un useEffect, qui provoquerait un second rendu en cascade évitable.
+  if (varianteSelectionneeId !== derniereVarianteAjusteeId) {
+    setDerniereVarianteAjusteeId(varianteSelectionneeId);
+    setQuantite(1);
+  }
+
+  const lignesBareme = useMemo(() => [...paliersActifs].sort((a, b) => a.quantite_min - b.quantite_min), [paliersActifs]);
 
   return (
     <div className="flex flex-col gap-5">
@@ -72,13 +103,13 @@ export function AchatProduit({ produit, niveauStock, paliers, stockActuel, varia
           <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-texte-secondaire">Résolution</p>
           <div className="flex flex-wrap gap-2">
             {variantesResolution.map(({ produit: variante, niveauStock: niveauVariante }) => {
-              const actif = variante.id === produit.id;
+              const actif = variante.id === varianteSelectionneeId;
               return (
                 <button
                   key={variante.id}
                   type="button"
                   disabled={actif}
-                  onClick={() => router.push(`/produit/${variante.slug}`)}
+                  onClick={() => setVarianteSelectionneeId(variante.id)}
                   className={`rounded-lg border px-3 py-2 text-sm font-medium transition-colors ${
                     actif
                       ? "border-primaire bg-primaire/5 text-primaire"
@@ -93,6 +124,18 @@ export function AchatProduit({ produit, niveauStock, paliers, stockActuel, varia
               );
             })}
           </div>
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.p
+              key={varianteSelectionneeId}
+              initial={{ opacity: 0, y: -4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
+              transition={{ duration: 0.15 }}
+              className="mt-3 text-sm text-texte-secondaire"
+            >
+              {produitActif.description}
+            </motion.p>
+          </AnimatePresence>
         </div>
       )}
 
@@ -101,8 +144,8 @@ export function AchatProduit({ produit, niveauStock, paliers, stockActuel, varia
           ${prixUnitaire.toFixed(2)}
           {estB2B && <span className="ml-1 text-sm font-normal text-texte-secondaire">/ unité</span>}
         </p>
-        <StockBadge niveau={niveauStock} />
-        <BoutonFavori produitId={produit.id} className="ml-auto border border-bordure" />
+        <StockBadge niveau={niveauStockActif} />
+        <BoutonFavori produitId={produitActif.id} className="ml-auto border border-bordure" />
       </div>
 
       {estB2B && lignesBareme.length > 0 && (
@@ -188,7 +231,7 @@ export function AchatProduit({ produit, niveauStock, paliers, stockActuel, varia
           {confirmationVisible ? "Ajouté au panier" : rupture ? "Rupture de stock" : "Ajouter au panier"}
         </motion.button>
 
-        {produit.eligible_package && (
+        {produitActif.eligible_package && (
           <button
             type="button"
             onClick={gererAjoutPackage}

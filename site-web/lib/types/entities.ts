@@ -72,11 +72,14 @@ export interface Produit {
   images: string[];
   accessoires_compatibles_ids?: string[]; // RG-03-003
   specifications?: Record<string, string>;
-  // Raffinement Design — sélecteur de résolution sur la fiche produit : chaque résolution est un SKU
-  // (Produit) à part entière, avec son propre prix/stock — pas une variante virtuelle. `groupe` relie
-  // les SKU entre eux (même valeur pour tous les membres du groupe) ; `resolution` distingue chacun.
-  // N'est affiché comme sélecteur que si au moins 2 produits partagent le même `groupe`.
-  variante_resolution?: { groupe: string; resolution: string };
+  // Raffinement Design — sélecteur de résolution sur la fiche produit : chaque résolution reste un SKU
+  // (Produit) à part entière, avec son propre prix/stock/description — pas une variante virtuelle.
+  // `groupe` relie les SKU entre eux (même valeur pour tous les membres du groupe) ; `resolution`
+  // distingue chacun. N'est affiché comme sélecteur que si au moins 2 produits partagent le même
+  // `groupe`. Correction #23 : une seule fiche produit publique par groupe — `masque` sur les autres
+  // membres les exclut du catalogue/de la recherche et fait rediriger leur propre page vers le SKU
+  // canonique (app/produit/[slug]/page.tsx) ; ils restent résolubles par id pour le panier/stock.
+  variante_resolution?: { groupe: string; resolution: string; masque?: boolean };
 }
 
 export interface Categorie {

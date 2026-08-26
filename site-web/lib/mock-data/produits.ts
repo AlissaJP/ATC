@@ -164,12 +164,15 @@ export const produits: Produit[] = [
   },
   // Caméra PTZ standard — 3 SKU distincts par résolution (Raffinement Design, sélecteur de résolution
   // ECR-03-001) : chacun a son propre prix et son propre stock (lib/mock-data/stock.ts), pas une simple
-  // variante d'affichage. `variante_resolution.groupe` identique sur les 3 relie le sélecteur.
+  // variante d'affichage. `variante_resolution.groupe` identique sur les 3 relie le sélecteur. Correction
+  // #23 : une seule fiche produit publique (2K, canonique) — 1080p et 4K sont `masque: true`, retirés du
+  // catalogue/de la recherche, et n'existent plus que comme SKU sélectionnables sur la fiche canonique.
   {
     id: "prod-camera-ptz-standard-1080p",
     slug: "camera-ptz-standard-1080p",
     nom: "Caméra PTZ standard 1080p",
-    description: "Caméra de surveillance motorisée (Pan-Tilt-Zoom) en définition 1080p, avec suivi automatique et vision nocturne.",
+    description:
+      "1080p : bon rapport qualité-prix, adapté à une surveillance générale de proximité. Suivi automatique et vision nocturne inclus.",
     categorie_id: "cat-securite",
     marque_id: "marque-securvision",
     prix_public: 99,
@@ -178,13 +181,14 @@ export const produits: Produit[] = [
     statut_publication: "publié",
     images: [],
     specifications: { alimentation: "Secteur" },
-    variante_resolution: { groupe: "camera-ptz-standard", resolution: "1080p" },
+    variante_resolution: { groupe: "camera-ptz-standard", resolution: "1080p", masque: true },
   },
   {
     id: "prod-camera-ptz-standard",
     slug: "camera-ptz-standard",
-    nom: "Caméra PTZ standard 2K",
-    description: "Caméra de surveillance motorisée (Pan-Tilt-Zoom) en définition 2K, avec suivi automatique et vision nocturne.",
+    nom: "Caméra PTZ standard",
+    description:
+      "2K : définition intermédiaire offrant un bon équilibre netteté/coût, pour une surveillance résidentielle ou commerciale standard. Suivi automatique et vision nocturne inclus.",
     categorie_id: "cat-securite",
     marque_id: "marque-securvision",
     prix_public: 145,
@@ -201,7 +205,8 @@ export const produits: Produit[] = [
     id: "prod-camera-ptz-standard-4k",
     slug: "camera-ptz-standard-4k",
     nom: "Caméra PTZ standard 4K",
-    description: "Caméra de surveillance motorisée (Pan-Tilt-Zoom) en définition 4K, avec suivi automatique et vision nocturne.",
+    description:
+      "4K : détails ultra-nets, idéal pour l'identification de plaques d'immatriculation ou de visages à distance. Suivi automatique et vision nocturne inclus.",
     categorie_id: "cat-securite",
     marque_id: "marque-securvision",
     prix_public: 199,
@@ -210,7 +215,7 @@ export const produits: Produit[] = [
     statut_publication: "publié",
     images: [],
     specifications: { alimentation: "Secteur" },
-    variante_resolution: { groupe: "camera-ptz-standard", resolution: "4K" },
+    variante_resolution: { groupe: "camera-ptz-standard", resolution: "4K", masque: true },
   },
   {
     id: "prod-camera-ptz-solaire",

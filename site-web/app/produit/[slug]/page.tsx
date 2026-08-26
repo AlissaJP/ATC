@@ -1,5 +1,5 @@
 // ECR-03-001 — Fiche produit. BF-03-001 à BF-03-007, RG-03-001 à RG-03-004, RG-08-001.
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { GalerieImages } from "@/components/product/GalerieImages";
 import { AchatProduit } from "@/components/product/AchatProduit";
@@ -23,8 +23,27 @@ export default async function ProduitPage(props: PageProps<"/produit/[slug]">) {
     listerProduitsEnrichisParIds(produit.accessoires_compatibles_ids ?? []),
     produit.variante_resolution ? listerVariantesResolution(produit.variante_resolution.groupe) : Promise.resolve([]),
   ]);
+
+  // Correction #23 — une seule fiche produit publique par groupe de résolutions : visiter directement
+  // l'URL d'un SKU non canonique (variante_resolution.masque) redirige vers le SKU canonique du groupe,
+  // qui porte le sélecteur de résolution (jamais de fiche produit distincte par résolution).
+  if (produit.variante_resolution?.masque) {
+    const canonique = variantesResolutionBrutes.find((v) => !v.produit.variante_resolution?.masque);
+    if (canonique) redirect(`/produit/${canonique.produit.slug}`);
+  }
+
   // Sélecteur affiché uniquement si au moins 2 résolutions existent réellement pour ce produit.
   const variantesResolution = variantesResolutionBrutes.length > 1 ? variantesResolutionBrutes : undefined;
+
+  // Stock exact par variante (au-delà du simple niveau d'alerte déjà présent dans variantesResolution)
+  // pour borner le sélecteur de quantité une fois une résolution choisie sur la fiche canonique.
+  const stocksVariantes = Object.fromEntries(
+    await Promise.all(
+      variantesResolutionBrutes.map(
+        async (v) => [v.produit.id, (await obtenirStock(v.produit.id))?.stock_actuel ?? 0] as const
+      )
+    )
+  );
 
   const categorie = categories.find((c) => c.id === produit.categorie_id);
   const categorieParente = categorie?.parent_id ? categories.find((c) => c.id === categorie.parent_id) : undefined;
@@ -48,7 +67,10 @@ export default async function ProduitPage(props: PageProps<"/produit/[slug]">) {
         <div>
           {marque && <p className="text-sm font-semibold text-primaire-clair">{marque.nom}</p>}
           <h1 className="mt-1 font-titres text-2xl font-bold text-texte-principal md:text-3xl">{produit.nom}</h1>
-          <p className="mt-3 text-texte-secondaire">{produit.description}</p>
+          {/* Résolution variable (#23) : la description « points forts » dédiée à la résolution choisie
+              est affichée dans AchatProduit, juste sous le sélecteur, et se met à jour dynamiquement —
+              pas de paragraphe statique redondant ici dans ce cas. */}
+          {!variantesResolution && <p className="mt-3 text-texte-secondaire">{produit.description}</p>}
 
           <div className="mt-6">
             <AchatProduit
@@ -57,6 +79,7 @@ export default async function ProduitPage(props: PageProps<"/produit/[slug]">) {
               paliers={paliers}
               stockActuel={stock?.stock_actuel ?? 0}
               variantesResolution={variantesResolution}
+              stocksVariantes={stocksVariantes}
             />
           </div>
 
