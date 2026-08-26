@@ -177,7 +177,16 @@ const LIENS_BAS_DE_PAGE: LienAdmin[] = [
     ],
   },
   { href: "/admin/comptes", label: "Comptes administrateurs", icone: ShieldCheck, rolesAutorises: ["general"] },
-  { href: "/admin/agents-sav", label: "Agents SAV", icone: UserCog, rolesAutorises: ["general"] },
+  {
+    href: "/admin/agents-sav",
+    label: "Agents SAV",
+    icone: UserCog,
+    rolesAutorises: ["general"],
+    sousLiens: [
+      { href: "/admin/agents-sav", label: "Annuaire" },
+      { href: "/admin/agents-sav/historique", label: "Historique des actions" },
+    ],
+  },
 ];
 
 function chemin(href: string): string {

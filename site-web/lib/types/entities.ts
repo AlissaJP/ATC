@@ -223,6 +223,26 @@ export interface CompteAgentSav {
   statut: StatutCompteAgentSav;
 }
 
+// Raffinement Design (point #27) — journal des actions par agent SAV, lecture seule pour l'Admin Général
+// (RG-12-001). `codeAgent` relie logiquement chaque entrée à un CompteAgentSav.codeAgent — pas de clé
+// étrangère typée ici (mock plat), mais la forme est pensée pour se transposer directement vers une table
+// PostgreSQL dédiée `agent_actions_log` (codeAgent en clé étrangère vers agents_sav.code_agent) lors de
+// l'intégration d'une vraie base, sans changement de modèle côté frontend. Décision actée n°46.
+export type TypeActionAgentSav =
+  | "commande_prise_en_charge"
+  | "commande_traitee"
+  | "ticket_pris_en_charge"
+  | "reponse_client"
+  | "ticket_resolu";
+
+export interface JournalActionAgentSav {
+  id: string;
+  codeAgent: string;
+  typeAction: TypeActionAgentSav;
+  referenceCommande: string; // référence de la commande ou du ticket concerné
+  date: string; // ISO 8601
+}
+
 export interface ParametresGeneraux {
   id: string; // singleton
   taux_change_htg_usd: number; // RG-06-003 — manuel, jamais automatique
