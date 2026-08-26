@@ -23,6 +23,7 @@ import {
   ShieldCheck,
   Star,
   Tags,
+  UserCog,
   Users,
 } from "lucide-react";
 import { useSessionStore } from "@/lib/store/session-store";
@@ -176,6 +177,7 @@ const LIENS_BAS_DE_PAGE: LienAdmin[] = [
     ],
   },
   { href: "/admin/comptes", label: "Comptes administrateurs", icone: ShieldCheck, rolesAutorises: ["general"] },
+  { href: "/admin/agents-sav", label: "Agents SAV", icone: UserCog, rolesAutorises: ["general"] },
 ];
 
 function chemin(href: string): string {

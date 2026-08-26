@@ -205,6 +205,24 @@ export interface Administrateur {
   role: RoleAdmin;
 }
 
+// Raffinement Design (point #26) — annuaire des agents SAV, DISTINCT des 2 comptes de connexion stricts
+// (Administrateur ci-dessus, RG-12-001, décision actée n°20 — inchangée, toujours exactement 2 rôles
+// connectables). Un CompteAgentSav n'est pas un compte de connexion : c'est une fiche de suivi (nom,
+// code généré, email, statut) que l'Admin Général gère pour un nombre quelconque d'agents SAV réels,
+// indépendamment du fait que cette démo n'expose qu'une seule session Agent SAV connectable au total.
+// `codeAgent` est généré par le système, jamais saisi — cf. lib/services/agents-sav.ts pour la
+// génération/vérification d'unicité, isolée pour être remplacée par une séquence + contrainte UNIQUE
+// PostgreSQL lors de l'intégration d'une vraie base, sans changer ce modèle. Décision actée n°45.
+export type StatutCompteAgentSav = "actif" | "inactif";
+
+export interface CompteAgentSav {
+  id: string;
+  codeAgent: string; // ex. "SAV-0001"
+  nom: string;
+  email: string;
+  statut: StatutCompteAgentSav;
+}
+
 export interface ParametresGeneraux {
   id: string; // singleton
   taux_change_htg_usd: number; // RG-06-003 — manuel, jamais automatique
