@@ -13,10 +13,14 @@ import { convertirUsdVersHtg } from "@/lib/business-rules/change-htg";
 import { calculerFacture } from "@/lib/business-rules/taxe";
 import { MoyensPaiement } from "@/components/compte/MoyensPaiement";
 import { FormulaireNouvelleCarte, carteValide, type DonneesCarte } from "@/components/paiement/FormulaireNouvelleCarte";
+import { FormulaireNouveauMoncash, moncashValide, type DonneesMoncash } from "@/components/paiement/FormulaireNouveauMoncash";
+import { FormulaireConnexionPaypal, paypalValide, type DonneesPaypal } from "@/components/paiement/FormulaireConnexionPaypal";
 import { useComptesStore } from "@/lib/store/comptes-store";
 import type { MethodePaiement } from "@/lib/types/entities";
 
 const CARTE_VIDE: DonneesCarte = { numero: "", expiration: "", cvv: "", titulaire: "", enregistrer: false };
+const MONCASH_VIDE: DonneesMoncash = { numero: "", enregistrer: false };
+const PAYPAL_VIDE: DonneesPaypal = { email: "", connecte: false, enregistrer: false };
 
 // ECR-06-001 — Paiement, réutilisé pour un devis accepté (Phase 3) ou une commande panier (Phase 4).
 // RG-06-001 (moyens acceptés, jamais virement), RG-06-003/004 (conversion MonCash au taux interne,
@@ -68,11 +72,14 @@ export function EcranPaiement({ contexte }: { contexte: ContextePaiement }) {
   const tousLesMoyensPaiement = useComptesStore((s) => s.moyensPaiement);
 
   const [methode, setMethode] = useState<MethodePaiement | null>(null);
-  // null = carte saisie manuellement (nouvelle carte) ; sinon id du moyen enregistré utilisé — Raffinement
-  // Design : la commande doit être réglée avec la carte effectivement choisie, jamais silencieusement
-  // reportée sur une carte enregistrée par défaut.
-  const [carteMoyenId, setCarteMoyenId] = useState<string | null>(null);
+  // null = saisie manuelle pour cette transaction (nouvelle carte / numéro MonCash / compte PayPal) ; sinon id
+  // du moyen enregistré utilisé — Raffinement Design (#13 pour la carte, généralisé au #17 pour MonCash/PayPal) :
+  // la commande doit être réglée avec le moyen effectivement choisi/saisi à cette étape, jamais silencieusement
+  // reporté sur un moyen enregistré par défaut.
+  const [moyenSelectionneId, setMoyenSelectionneId] = useState<string | null>(null);
   const [carte, setCarte] = useState<DonneesCarte>(CARTE_VIDE);
+  const [moncash, setMoncash] = useState<DonneesMoncash>(MONCASH_VIDE);
+  const [paypal, setPaypal] = useState<DonneesPaypal>(PAYPAL_VIDE);
   const [etape, setEtape] = useState<Etape>("selection");
 
   if (!session || session.type !== "client") {
@@ -129,8 +136,17 @@ export function EcranPaiement({ contexte }: { contexte: ContextePaiement }) {
   const montant = detailTaxe.montant_ttc;
   const montantHtg = convertirUsdVersHtg(montant, tauxActuel);
 
-  const carteEstNouvelle = methode === "carte" && carteMoyenId === null;
-  const paiementValide = methode !== null && (!carteEstNouvelle || carteValide(carte));
+  // Saisie libre = aucun moyen enregistré explicitement choisi pour cette transaction (bouton générique
+  // MonCash/Carte/PayPal ci-dessous) — dans ce cas, le moyen effectivement utilisé est celui saisi/connecté
+  // ici, jamais un moyen enregistré implicite.
+  const estSaisieLibre = moyenSelectionneId === null;
+  const carteEstNouvelle = methode === "carte" && estSaisieLibre;
+  const paiementValide =
+    methode !== null &&
+    (!estSaisieLibre ||
+      (methode === "carte" && carteValide(carte)) ||
+      (methode === "moncash" && moncashValide(moncash)) ||
+      (methode === "paypal" && paypalValide(paypal)));
   const utilisateurId = session.utilisateur_id;
   const possedeCarteEnregistree = tousLesMoyensPaiement.some(
     (m) => m.utilisateur_id === utilisateurId && m.type === "carte"
@@ -154,12 +170,19 @@ export function EcranPaiement({ contexte }: { contexte: ContextePaiement }) {
         tauxChangeApplique: tauxFige,
       });
 
-      // Raffinement Design — nouvelle carte enregistrée uniquement si l'utilisateur l'a explicitement
-      // demandé (jamais automatique) ; seuls les 4 derniers chiffres sont conservés, même convention que
-      // MoyensPaiement.tsx (aucune donnée de carte complète stockée, sandbox — décision actée n°41).
-      if (carteEstNouvelle && carte.enregistrer) {
+      // Raffinement Design — nouveau moyen enregistré uniquement si l'utilisateur l'a explicitement demandé
+      // (jamais automatique), pour les trois types de moyens saisis manuellement à cette étape.
+      if (estSaisieLibre && methode === "carte" && carte.enregistrer) {
         const chiffres = carte.numero.replace(/\s/g, "");
         ajouterMoyenPaiement(utilisateurId, "carte", `Carte •••• ${chiffres.slice(-4)}`);
+      }
+      if (estSaisieLibre && methode === "moncash" && moncash.enregistrer) {
+        const chiffres = moncash.numero.replace(/\D/g, "");
+        ajouterMoyenPaiement(utilisateurId, "moncash", `MonCash — •••• ${chiffres.slice(-4)}`);
+      }
+      if (estSaisieLibre && methode === "paypal" && paypal.enregistrer) {
+        const [utilisateurPaypal] = paypal.email.split("@");
+        ajouterMoyenPaiement(utilisateurId, "paypal", "PayPal connecté", `${utilisateurPaypal}***@…`);
       }
 
       // RG-06-002, Cahier 9 (COMMANDE ⟶ FACTURE_PRO_FORMA « si Entreprise ») — une commande directe
@@ -246,10 +269,10 @@ export function EcranPaiement({ contexte }: { contexte: ContextePaiement }) {
             utilisateurId={session.utilisateur_id}
             mode="selection"
             methodeSelectionnee={methode}
-            moyenSelectionneId={carteMoyenId}
+            moyenSelectionneId={moyenSelectionneId}
             onSelectionner={(type, moyenId) => {
               setMethode(type);
-              setCarteMoyenId(type === "carte" ? moyenId : null);
+              setMoyenSelectionneId(moyenId);
             }}
           />
         </div>
@@ -261,12 +284,13 @@ export function EcranPaiement({ contexte }: { contexte: ContextePaiement }) {
               type="button"
               onClick={() => {
                 setMethode(id);
-                // Choisir « Carte » ici (plutôt qu'un moyen enregistré ci-dessus) ouvre systématiquement
-                // le formulaire de nouvelle carte — jamais un report silencieux sur la carte par défaut.
-                if (id === "carte") setCarteMoyenId(null);
+                // Choisir un moyen ici (plutôt qu'un moyen enregistré ci-dessus) ouvre systématiquement une
+                // saisie/connexion propre à cette transaction — jamais un report silencieux sur un moyen
+                // enregistré par défaut (carte, numéro MonCash ou compte PayPal).
+                setMoyenSelectionneId(null);
               }}
               className={`flex items-center gap-3 rounded-lg border-2 px-4 py-3 text-left transition-colors ${
-                methode === id && !(id === "carte" && carteMoyenId !== null)
+                methode === id && estSaisieLibre
                   ? "border-primaire bg-primaire/5"
                   : "border-bordure hover:border-primaire-clair"
               }`}
@@ -280,6 +304,8 @@ export function EcranPaiement({ contexte }: { contexte: ContextePaiement }) {
         </div>
 
         {carteEstNouvelle && <FormulaireNouvelleCarte donnees={carte} onChange={setCarte} />}
+        {methode === "moncash" && estSaisieLibre && <FormulaireNouveauMoncash donnees={moncash} onChange={setMoncash} />}
+        {methode === "paypal" && estSaisieLibre && <FormulaireConnexionPaypal donnees={paypal} onChange={setPaypal} />}
 
         {methode === "moncash" && (
           <div className="mt-4 rounded-lg bg-fond p-4 text-sm">
