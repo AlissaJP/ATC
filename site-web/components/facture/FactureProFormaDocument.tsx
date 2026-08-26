@@ -7,6 +7,7 @@ import { useCommandeStore } from "@/lib/store/commande-store";
 import { useSessionStore } from "@/lib/store/session-store";
 import { produits } from "@/lib/mock-data/produits";
 import { utilisateurs, trouverProfilEntrepriseParUtilisateur } from "@/lib/mock-data/utilisateurs";
+import { nomAffichageVariante, resoudreProduitEtVariante } from "@/lib/services/variantes";
 import type { FactureProForma } from "@/lib/types/entities";
 
 // ECR-06-002 — Facture pro forma. RG-06-002 : mentions obligatoires (identité ATC, identité client,
@@ -98,10 +99,12 @@ export function FactureProFormaDocument({ facture }: { facture: FactureProForma 
           </thead>
           <tbody>
             {lignes.map((l) => {
-              const produit = produits.find((p) => p.id === l.produit_id);
+              const resolu = resoudreProduitEtVariante(l.produit_id, produits);
               return (
                 <tr key={l.id} className="border-b border-bordure/60">
-                  <td className="py-2 text-texte-principal">{produit?.nom ?? "Produit"}</td>
+                  <td className="py-2 text-texte-principal">
+                    {resolu ? nomAffichageVariante(resolu.produit, resolu.variante) : "Produit"}
+                  </td>
                   <td className="py-2 text-right text-texte-secondaire">{l.quantite}</td>
                   <td className="py-2 text-right text-texte-secondaire">${l.prix_unitaire_applique.toFixed(2)}</td>
                   <td className="py-2 text-right text-texte-principal">

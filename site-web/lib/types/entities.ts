@@ -72,16 +72,26 @@ export interface Produit {
   images: string[];
   accessoires_compatibles_ids?: string[]; // RG-03-003
   specifications?: Record<string, string>;
-  // Raffinement Design — sélecteur de variante sur la fiche produit (résolution d'une caméra, puissance
-  // d'un panneau solaire, etc.) : chaque valeur reste un SKU (Produit) à part entière, avec son propre
-  // prix/stock/description — pas une variante virtuelle. `groupe` relie les SKU entre eux (même valeur
-  // pour tous les membres du groupe) ; `libelle_attribut` est le nom affiché au-dessus du sélecteur
-  // (« Résolution », « Puissance »...) ; `valeur` distingue chaque SKU du groupe (« 4K », « 405 Wc »...).
-  // N'est affiché comme sélecteur que si au moins 2 produits partagent le même `groupe`. Correction #23 :
-  // une seule fiche produit publique par groupe — `masque` sur les autres membres les exclut du
-  // catalogue/de la recherche et fait rediriger leur propre page vers le SKU canonique
-  // (app/produit/[slug]/page.tsx) ; ils restent résolubles par id pour le panier/stock.
-  variante?: { groupe: string; libelle_attribut: string; valeur: string; masque?: boolean };
+  // Raffinement Design (point #29 — remplace le mécanisme à SKU séparés du point #23) : options de
+  // variantes avec prix, imbriquées directement sur la fiche produit plutôt qu'en fiches Produit
+  // distinctes reliées par un `groupe` — plus proche d'une vraie relation SQL `product_variants` →
+  // `products` (variantes.id, produit_id en clé étrangère implicite). `attribut` est libre (« Puissance »,
+  // « Résolution »...) ; plusieurs attributs différents peuvent coexister sur un même produit, mais SANS
+  // matrice combinée (chaque variante reste une valeur indépendante avec son propre prix/stock — pas de
+  // combinaison croisée entre attributs, volontairement, pour rester simple). Le sélecteur ne s'affiche
+  // que si `variantes` contient au moins 2 entrées (components/product/AchatProduit.tsx).
+  variantes?: VarianteProduit[];
+}
+
+export interface VarianteProduit {
+  id: string;
+  attribut: string; // ex. "Puissance", "Résolution"
+  valeur: string; // ex. "405 Wc", "4K"
+  prix: number;
+  stock?: number; // non renseigné = stock non suivi pour cette variante (toujours disponible)
+  // Extension au-delà de l'exemple du point #29 — préserve la description "points forts" par valeur déjà
+  // exigée au point #23 (ex. "4K : idéal pour l'identification de plaques à distance").
+  description?: string;
 }
 
 export interface Categorie {

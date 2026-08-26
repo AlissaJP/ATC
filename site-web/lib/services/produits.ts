@@ -24,10 +24,7 @@ export async function listerProduitsParCategorieSlug(categorieSlug: string): Pro
     ...categories.filter((c) => c.parent_id === categorie.id).map((c) => c.id),
   ];
 
-  // Correction #23 — les SKU de variante non canoniques (variante.masque) n'apparaissent jamais comme
-  // fiche produit indépendante en catalogue ; seul le SKU canonique du groupe y figure, avec un
-  // sélecteur de variante sur sa propre fiche (AchatProduit.tsx).
-  return idsCategorie.flatMap((id) => produitsParCategorie(id)).filter((p) => !p.variante?.masque);
+  return idsCategorie.flatMap((id) => produitsParCategorie(id));
 }
 
 export async function listerCategories() {

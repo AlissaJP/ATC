@@ -12,15 +12,19 @@ import { useFactureStore } from "@/lib/store/facture-store";
 import { produits } from "@/lib/mock-data/produits";
 import { categories } from "@/lib/mock-data/categories";
 import { trouverStockParProduit } from "@/lib/mock-data/stock";
+import { nomAffichageVariante, resoudreProduitEtVariante } from "@/lib/services/variantes";
 import { Toast } from "@/components/ui/Toast";
 import type { Categorie } from "@/lib/types/entities";
 
 // ECR-05-001 — Panier. RG-03-002 (quantité bornée au stock), RG-03-004/UC-05-001-E1 (recalcul du
 // palier B2B applicable géré par cart-store), BF-05-002 (sous-totaux par catégorie).
+// Point #29 — ligne.produit_id peut être un identifiant composite "produit::variante" (une seule fiche
+// produit avec options de variantes) : résolu partout ici via resoudreProduitEtVariante, jamais par un
+// simple produits.find(), pour ne pas faire disparaître silencieusement la ligne du panier.
 function categorieRacine(produitId: string): Categorie | undefined {
-  const produit = produits.find((p) => p.id === produitId);
-  if (!produit) return undefined;
-  const cat = categories.find((c) => c.id === produit.categorie_id);
+  const resolu = resoudreProduitEtVariante(produitId, produits);
+  if (!resolu) return undefined;
+  const cat = categories.find((c) => c.id === resolu.produit.categorie_id);
   if (!cat) return undefined;
   return cat.parent_id ? (categories.find((c) => c.id === cat.parent_id) ?? cat) : cat;
 }
@@ -121,9 +125,12 @@ export function PanierContenu() {
               {!replie && (
                 <div className="flex flex-col divide-y divide-bordure border-t border-bordure">
                   {lignesCategorie.map((ligne) => {
-                    const produit = produits.find((p) => p.id === ligne.produit_id);
-                    const stockDisponible = trouverStockParProduit(ligne.produit_id)?.stock_actuel ?? 0;
-                    if (!produit) return null;
+                    const resolu = resoudreProduitEtVariante(ligne.produit_id, produits);
+                    if (!resolu) return null;
+                    const { produit, variante } = resolu;
+                    const stockDisponible = variante
+                      ? (variante.stock ?? Number.POSITIVE_INFINITY)
+                      : (trouverStockParProduit(ligne.produit_id)?.stock_actuel ?? 0);
                     return (
                       <div key={ligne.produit_id} className="flex items-center gap-3 p-4">
                         <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-fond">
@@ -133,7 +140,7 @@ export function PanierContenu() {
                         </div>
                         <div className="min-w-0 flex-1">
                           <Link href={`/produit/${produit.slug}`} className="truncate text-sm font-medium text-texte-principal hover:underline">
-                            {produit.nom}
+                            {nomAffichageVariante(produit, variante)}
                           </Link>
                           <p className="text-xs text-texte-secondaire">${ligne.prix_unitaire_applique.toFixed(2)} / unité</p>
                           <div className="mt-2 flex items-center gap-2">

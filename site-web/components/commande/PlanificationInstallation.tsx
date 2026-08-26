@@ -10,6 +10,7 @@ import { useInstallationStore } from "@/lib/store/installation-store";
 import { commandeEstEligibleInstallation } from "@/lib/business-rules/installation-eligibilite";
 import { produits } from "@/lib/mock-data/produits";
 import { categories } from "@/lib/mock-data/categories";
+import { resoudreProduitEtVariante } from "@/lib/services/variantes";
 import { StatutInstallationBadge } from "./StatutInstallationBadge";
 import type { LigneCommande } from "@/lib/types/entities";
 
@@ -18,8 +19,14 @@ export function PlanificationInstallation({ commandeId, lignes }: { commandeId: 
   const planifierInstallation = useInstallationStore((s) => s.planifierInstallation);
   const [dateProposee, setDateProposee] = useState("");
 
+  // Point #29 — l.produit_id peut être un identifiant composite "produit::variante" (panneau solaire à
+  // options de puissance) : résolu vers le produit de base, l'éligibilité à l'installation dépend de la
+  // catégorie du produit, pas de la variante choisie.
   const produitsCommande = useMemo(
-    () => lignes.map((l) => produits.find((p) => p.id === l.produit_id)).filter((p): p is NonNullable<typeof p> => Boolean(p)),
+    () =>
+      lignes
+        .map((l) => resoudreProduitEtVariante(l.produit_id, produits)?.produit)
+        .filter((p): p is NonNullable<typeof p> => Boolean(p)),
     [lignes]
   );
   const eligible = commandeEstEligibleInstallation(produitsCommande, categories);

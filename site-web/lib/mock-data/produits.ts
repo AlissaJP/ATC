@@ -1,6 +1,6 @@
 // Catalogue produit fictif de démonstration — décision actée n°42, reflète le dictionnaire du Cahier 9.
 // BF-03-001 à BF-03-007.
-import type { Produit, StatutPublicationProduit } from "@/lib/types/entities";
+import type { Produit, StatutPublicationProduit, VarianteProduit } from "@/lib/types/entities";
 
 const img = {
   energie: (n: number) => `/images/energie-solaire/energie-${String(n).padStart(2, "0")}.webp`,
@@ -10,16 +10,15 @@ const img = {
 
 export const produits: Produit[] = [
   // --- Énergie solaire : panneaux ---
-  // Panneau solaire monocristallin — 2 SKU par puissance (même relation que la caméra PTZ standard
-  // ci-dessous, correction #23) : une seule fiche produit publique (405W, canonique) ; 550W est `masque:
-  // true`, retiré du catalogue/de la recherche, n'existe plus que comme SKU sélectionnable sur la fiche
-  // canonique. `puissance` retiré de specifications (déjà porté par le sélecteur, pas d'affichage en double).
+  // Panneau solaire monocristallin — options de variantes avec prix (point #29, remplace le mécanisme à
+  // SKU séparés du point #23) : une seule fiche produit, deux valeurs de puissance imbriquées dans
+  // `variantes`, chacune avec son propre prix/stock. `puissance` retiré de specifications (déjà porté par
+  // le sélecteur, pas d'affichage en double).
   {
     id: "prod-panneau-405w",
     slug: "panneau-solaire-monocristallin-405w",
     nom: "Panneau solaire monocristallin",
-    description:
-      "405 Wc : très bon rapport qualité-prix, la puissance de référence pour la plupart des installations résidentielles et commerciales.",
+    description: "Panneau photovoltaïque monocristallin haute performance, plusieurs puissances disponibles.",
     categorie_id: "cat-panneaux",
     marque_id: "marque-solarmax",
     prix_public: 189,
@@ -29,24 +28,26 @@ export const produits: Produit[] = [
     images: [img.energie(17), img.energie(15)],
     specifications: { technologie: "Monocristallin" },
     accessoires_compatibles_ids: ["prod-regulateur-mppt-60a", "prod-kit-cables-mc4", "prod-structure-montage"],
-    variante: { groupe: "panneau-solaire-monocristallin", libelle_attribut: "Puissance", valeur: "405 Wc" },
-  },
-  {
-    id: "prod-panneau-550w",
-    slug: "panneau-solaire-monocristallin-550w",
-    nom: "Panneau solaire monocristallin 550W",
-    description:
-      "550 Wc : puissance élevée pour maximiser la production sur une surface de toiture réduite, idéal si l'espace disponible est limité.",
-    categorie_id: "cat-panneaux",
-    marque_id: "marque-solarmax",
-    prix_public: 245,
-    eligible_b2b: true,
-    eligible_package: true,
-    statut_publication: "publié",
-    images: [img.energie(16), img.energie(4)],
-    specifications: { technologie: "Monocristallin" },
-    accessoires_compatibles_ids: ["prod-regulateur-mppt-60a", "prod-kit-cables-mc4", "prod-structure-montage"],
-    variante: { groupe: "panneau-solaire-monocristallin", libelle_attribut: "Puissance", valeur: "550 Wc", masque: true },
+    variantes: [
+      {
+        id: "var-panneau-405w",
+        attribut: "Puissance",
+        valeur: "405 Wc",
+        prix: 189,
+        stock: 65,
+        description:
+          "405 Wc : très bon rapport qualité-prix, la puissance de référence pour la plupart des installations résidentielles et commerciales.",
+      },
+      {
+        id: "var-panneau-550w",
+        attribut: "Puissance",
+        valeur: "550 Wc",
+        prix: 245,
+        stock: 38,
+        description:
+          "550 Wc : puissance élevée pour maximiser la production sur une surface de toiture réduite, idéal si l'espace disponible est limité.",
+      },
+    ],
   },
 
   // --- Énergie solaire : batteries ---
@@ -169,36 +170,17 @@ export const produits: Produit[] = [
     // ci-dessus plutôt qu'en critère de filtrage.
     specifications: { alimentation: "Secteur" },
   },
-  // Caméra PTZ standard — 3 SKU distincts par résolution (Raffinement Design, sélecteur de résolution
-  // ECR-03-001) : chacun a son propre prix et son propre stock (lib/mock-data/stock.ts), pas une simple
-  // variante d'affichage. `variante.groupe` identique sur les 3 relie le sélecteur. Correction #23 : une
-  // seule fiche produit publique (2K, canonique) — 1080p et 4K sont `masque: true`, retirés du
-  // catalogue/de la recherche, et n'existent plus que comme SKU sélectionnables sur la fiche canonique.
-  {
-    id: "prod-camera-ptz-standard-1080p",
-    slug: "camera-ptz-standard-1080p",
-    nom: "Caméra PTZ standard 1080p",
-    description:
-      "1080p : bon rapport qualité-prix, adapté à une surveillance générale de proximité. Suivi automatique et vision nocturne inclus.",
-    categorie_id: "cat-securite",
-    marque_id: "marque-securvision",
-    prix_public: 99,
-    eligible_b2b: true,
-    eligible_package: false,
-    statut_publication: "publié",
-    images: [],
-    specifications: { alimentation: "Secteur" },
-    variante: { groupe: "camera-ptz-standard", libelle_attribut: "Résolution", valeur: "1080p", masque: true },
-  },
+  // Caméra PTZ standard — options de variantes avec prix (point #29, remplace le mécanisme à SKU
+  // séparés du point #23) : une seule fiche produit, trois valeurs de résolution imbriquées dans
+  // `variantes`, chacune avec son propre prix/stock/description.
   {
     id: "prod-camera-ptz-standard",
     slug: "camera-ptz-standard",
     nom: "Caméra PTZ standard",
-    description:
-      "2K : définition intermédiaire offrant un bon équilibre netteté/coût, pour une surveillance résidentielle ou commerciale standard. Suivi automatique et vision nocturne inclus.",
+    description: "Caméra de surveillance motorisée (Pan-Tilt-Zoom), plusieurs résolutions disponibles, suivi automatique et vision nocturne inclus.",
     categorie_id: "cat-securite",
     marque_id: "marque-securvision",
-    prix_public: 145,
+    prix_public: 99,
     eligible_b2b: true,
     eligible_package: false,
     statut_publication: "publié",
@@ -206,23 +188,32 @@ export const produits: Produit[] = [
     // anglais + badges Tuya/Smart Life tiers) — placeholder "Image à venir" (Audit Axe 2).
     images: [],
     specifications: { alimentation: "Secteur" },
-    variante: { groupe: "camera-ptz-standard", libelle_attribut: "Résolution", valeur: "2K" },
-  },
-  {
-    id: "prod-camera-ptz-standard-4k",
-    slug: "camera-ptz-standard-4k",
-    nom: "Caméra PTZ standard 4K",
-    description:
-      "4K : détails ultra-nets, idéal pour l'identification de plaques d'immatriculation ou de visages à distance. Suivi automatique et vision nocturne inclus.",
-    categorie_id: "cat-securite",
-    marque_id: "marque-securvision",
-    prix_public: 199,
-    eligible_b2b: true,
-    eligible_package: false,
-    statut_publication: "publié",
-    images: [],
-    specifications: { alimentation: "Secteur" },
-    variante: { groupe: "camera-ptz-standard", libelle_attribut: "Résolution", valeur: "4K", masque: true },
+    variantes: [
+      {
+        id: "var-camera-1080p",
+        attribut: "Résolution",
+        valeur: "1080p",
+        prix: 99,
+        stock: 60,
+        description: "1080p : bon rapport qualité-prix, adapté à une surveillance générale de proximité.",
+      },
+      {
+        id: "var-camera-2k",
+        attribut: "Résolution",
+        valeur: "2K",
+        prix: 145,
+        stock: 25,
+        description: "2K : définition intermédiaire offrant un bon équilibre netteté/coût, pour une surveillance résidentielle ou commerciale standard.",
+      },
+      {
+        id: "var-camera-4k",
+        attribut: "Résolution",
+        valeur: "4K",
+        prix: 199,
+        stock: 8,
+        description: "4K : détails ultra-nets, idéal pour l'identification de plaques d'immatriculation ou de visages à distance.",
+      },
+    ],
   },
   {
     id: "prod-camera-ptz-solaire",
@@ -311,6 +302,8 @@ export interface ProduitInputMock {
   statut_publication: StatutPublicationProduit;
   images?: string[];
   specifications?: Record<string, string>;
+  // Point #29 — section optionnelle "Options du produit" ; undefined/tableau vide = pas de variantes.
+  variantes?: VarianteProduit[];
 }
 
 function genererSlug(nom: string): string {
@@ -350,6 +343,7 @@ export function creerProduitMock(input: ProduitInputMock): Produit {
     statut_publication: input.statut_publication,
     images: input.images ?? [],
     specifications: input.specifications,
+    variantes: input.variantes,
   };
   produits.push(produit);
   return produit;

@@ -8,6 +8,7 @@ import { useSessionStore } from "@/lib/store/session-store";
 import { produits } from "@/lib/mock-data/produits";
 import { utilisateurs } from "@/lib/mock-data/utilisateurs";
 import { calculerFacture } from "@/lib/business-rules/taxe";
+import { nomAffichageVariante, resoudreProduitEtVariante } from "@/lib/services/variantes";
 
 const LIBELLES_PAIEMENT: Record<string, string> = {
   moncash: "MonCash",
@@ -84,10 +85,12 @@ export function RecuCommandeDocument({ commandeId }: { commandeId: string }) {
           </thead>
           <tbody>
             {lignes.map((l) => {
-              const produit = produits.find((p) => p.id === l.produit_id);
+              const resolu = resoudreProduitEtVariante(l.produit_id, produits);
               return (
                 <tr key={l.id} className="border-b border-bordure/60">
-                  <td className="py-2 text-texte-principal">{produit?.nom ?? "Produit"}</td>
+                  <td className="py-2 text-texte-principal">
+                    {resolu ? nomAffichageVariante(resolu.produit, resolu.variante) : "Produit"}
+                  </td>
                   <td className="py-2 text-right text-texte-secondaire">{l.quantite}</td>
                   <td className="py-2 text-right text-texte-secondaire">${l.prix_unitaire_applique.toFixed(2)}</td>
                   <td className="py-2 text-right text-texte-principal">

@@ -4,8 +4,8 @@
 import type { Stock } from "@/lib/types/entities";
 
 export const stock: Stock[] = [
-  { produit_id: "prod-panneau-405w", stock_actuel: 65, stock_reference: 100 },
-  { produit_id: "prod-panneau-550w", stock_actuel: 38, stock_reference: 100 },
+  // prod-panneau-405w : produit à variantes (point #29) — le stock par valeur vit directement dans
+  // Produit.variantes[].stock (lib/mock-data/produits.ts), pas ici.
   { produit_id: "prod-batterie-lithium-100ah", stock_actuel: 12, stock_reference: 100 },
   { produit_id: "prod-batterie-gel-200ah", stock_actuel: 0, stock_reference: 100 },
   { produit_id: "prod-regulateur-mppt-60a", stock_actuel: 80, stock_reference: 100 },
@@ -14,9 +14,7 @@ export const stock: Stock[] = [
   { produit_id: "prod-structure-montage", stock_actuel: 55, stock_reference: 100 },
   { produit_id: "prod-kit-mise-a-la-terre", stock_actuel: 15, stock_reference: 100 },
   { produit_id: "prod-sonnette-video", stock_actuel: 70, stock_reference: 100 },
-  { produit_id: "prod-camera-ptz-standard-1080p", stock_actuel: 60, stock_reference: 100 },
-  { produit_id: "prod-camera-ptz-standard", stock_actuel: 25, stock_reference: 100 },
-  { produit_id: "prod-camera-ptz-standard-4k", stock_actuel: 8, stock_reference: 100 },
+  // prod-camera-ptz-standard : produit à variantes (point #29) — idem, stock dans variantes[].stock.
   { produit_id: "prod-camera-ptz-solaire", stock_actuel: 5, stock_reference: 50 },
   { produit_id: "prod-climatiseur-split-12000", stock_actuel: 45, stock_reference: 100 },
   { produit_id: "prod-climatiseur-split-18000", stock_actuel: 18, stock_reference: 100 },

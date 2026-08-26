@@ -51,12 +51,27 @@ function revaliderCatalogue() {
   revalidatePath("/", "layout");
 }
 
+// Point #29 — validation des options de variantes (section facultative du formulaire produit) : chaque
+// entrée doit avoir un attribut, une valeur et un prix renseignés. Le stock reste optionnel (non
+// renseigné = non suivi pour cette variante, cf. lib/services/variantes.ts).
+function validerVariantes(variantes: ProduitInputMock["variantes"]): string | undefined {
+  if (!variantes || variantes.length === 0) return undefined;
+  for (const v of variantes) {
+    if (!v.attribut.trim() || !v.valeur.trim() || !(v.prix > 0)) {
+      return "Chaque variante doit avoir un attribut, une valeur et un prix (supérieur à 0).";
+    }
+  }
+  return undefined;
+}
+
 export async function creerProduitAction(
   input: ProduitInputMock
 ): Promise<ActionResult<{ id: string }>> {
   if (!input.nom.trim() || !input.categorie_id || !(input.prix_public > 0)) {
     return { succes: false, erreur: "Nom, catégorie et prix public (supérieur à 0) sont obligatoires." };
   }
+  const erreurVariantes = validerVariantes(input.variantes);
+  if (erreurVariantes) return { succes: false, erreur: erreurVariantes };
 
   const produit = creerProduitMock(input);
   definirStockMock(produit.id, 0, 100); // RG-03-002 — stock_reference par défaut 100 (décision n°28)
@@ -75,6 +90,8 @@ export async function modifierProduitAction(
   if (patch.prix_public !== undefined && !(patch.prix_public > 0)) {
     return { succes: false, erreur: "Le prix public doit être supérieur à 0." };
   }
+  const erreurVariantes = validerVariantes(patch.variantes);
+  if (erreurVariantes) return { succes: false, erreur: erreurVariantes };
 
   const produit = modifierProduitMock(id, patch);
   if (!produit) return { succes: false, erreur: "Produit introuvable." };

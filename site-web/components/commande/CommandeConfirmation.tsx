@@ -9,6 +9,7 @@ import { useFactureStore } from "@/lib/store/facture-store";
 import { useSessionStore, estClientB2BVerifie } from "@/lib/store/session-store";
 import { produits } from "@/lib/mock-data/produits";
 import { calculerFacture } from "@/lib/business-rules/taxe";
+import { nomAffichageVariante, resoudreProduitEtVariante } from "@/lib/services/variantes";
 import { MAGASIN_ADRESSE, MAGASIN_HORAIRES } from "@/lib/constants/magasin";
 import { StatutCommandeBadge } from "./StatutCommandeBadge";
 import { PlanificationInstallation } from "./PlanificationInstallation";
@@ -112,7 +113,8 @@ export function CommandeConfirmation({ commandeId }: { commandeId: string }) {
         {/* Articles — photo + nom + prix appliqué */}
         <ul className="mt-6 flex flex-col divide-y divide-bordure border-t border-bordure">
           {lignes.map((l) => {
-            const produit = produits.find((p) => p.id === l.produit_id);
+            const resolu = resoudreProduitEtVariante(l.produit_id, produits);
+            const produit = resolu?.produit;
             return (
               <li key={l.id} className="flex items-center gap-3 py-3">
                 <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-fond">
@@ -125,7 +127,7 @@ export function CommandeConfirmation({ commandeId }: { commandeId: string }) {
                   )}
                 </div>
                 <span className="flex-1 text-sm text-texte-principal">
-                  {produit?.nom ?? "Produit"} × {l.quantite}
+                  {resolu ? nomAffichageVariante(resolu.produit, resolu.variante) : "Produit"} × {l.quantite}
                 </span>
                 <span className="text-sm text-texte-secondaire">${(l.prix_unitaire_applique * l.quantite).toFixed(2)}</span>
               </li>

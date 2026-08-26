@@ -6,7 +6,9 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { trouverStockParProduit } from "@/lib/mock-data/stock";
+import { produits } from "@/lib/mock-data/produits";
 import { resoudrePrixUnitaire } from "@/lib/services/prix";
+import { resoudreProduitEtVariante, stockEffectifVariante } from "@/lib/services/variantes";
 import { useSessionStore, estClientB2BVerifie } from "@/lib/store/session-store";
 
 export interface LignePanier {
@@ -30,6 +32,12 @@ function estB2BSessionCourante(): boolean {
 }
 
 function quantiteAutorisee(produit_id: string, quantite: number): number {
+  const resolu = resoudreProduitEtVariante(produit_id, produits);
+  if (resolu?.variante) {
+    const stockVariante = stockEffectifVariante(resolu.variante);
+    // undefined = stock non suivi pour cette variante (point #29) — aucun plafond réel à appliquer.
+    return stockVariante === undefined ? Math.max(0, quantite) : Math.max(0, Math.min(quantite, stockVariante));
+  }
   const stockDisponible = trouverStockParProduit(produit_id)?.stock_actuel ?? 0;
   return Math.max(0, Math.min(quantite, stockDisponible));
 }

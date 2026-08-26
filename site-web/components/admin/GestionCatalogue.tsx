@@ -12,7 +12,7 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AlertTriangle, Check, Plus, Save, Trash2 } from "lucide-react";
-import type { Categorie, Marque, PalierPrixB2B, Produit, Stock } from "@/lib/types/entities";
+import type { Categorie, Marque, PalierPrixB2B, Produit, Stock, VarianteProduit } from "@/lib/types/entities";
 import { determinerNiveauAlerteStock } from "@/lib/business-rules/stock-alerte";
 import {
   ajouterPalierAction,
@@ -210,12 +210,29 @@ function PanneauProduit({
           eligible_b2b: produit.eligible_b2b,
           eligible_package: produit.eligible_package,
           statut_publication: produit.statut_publication,
+          variantes: produit.variantes,
         }
       : FORM_VIDE
   );
   const [enCours, setEnCours] = useState(false);
   const [erreur, setErreur] = useState<string | null>(null);
   const [confirmation, setConfirmation] = useState<string | null>(null);
+
+  function varianteVide(): VarianteProduit {
+    return { id: crypto.randomUUID(), attribut: "", valeur: "", prix: 0 };
+  }
+  function ajouterVariante() {
+    setForm((f) => ({ ...f, variantes: [...(f.variantes ?? []), varianteVide()] }));
+  }
+  function modifierVariante(index: number, patch: Partial<VarianteProduit>) {
+    setForm((f) => ({
+      ...f,
+      variantes: (f.variantes ?? []).map((v, i) => (i === index ? { ...v, ...patch } : v)),
+    }));
+  }
+  function supprimerVariante(index: number) {
+    setForm((f) => ({ ...f, variantes: (f.variantes ?? []).filter((_, i) => i !== index) }));
+  }
 
   async function soumettre() {
     setEnCours(true);
@@ -362,6 +379,106 @@ function PanneauProduit({
           />
           <span className="text-texte-principal">Éligible configurateur de package</span>
         </label>
+      </div>
+
+      {/* Point #29 — section facultative : un produit n'a pas de variantes par défaut. Chaque valeur a
+          son propre prix (et, en option, son propre stock) — pas de matrice combinée entre attributs. */}
+      <div className="mt-6 border-t border-bordure pt-5">
+        <label className="flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={!!form.variantes}
+            onChange={(e) =>
+              setForm((f) => ({
+                ...f,
+                variantes: e.target.checked ? (f.variantes && f.variantes.length > 0 ? f.variantes : [varianteVide()]) : undefined,
+              }))
+            }
+            className="h-4 w-4 rounded border-bordure"
+          />
+          <span className="font-titres text-sm font-semibold text-texte-principal">
+            Options du produit (variantes avec prix)
+          </span>
+        </label>
+
+        {form.variantes && (
+          <div className="mt-4 flex flex-col gap-4">
+            {form.variantes.map((v, index) => (
+              <div key={v.id} className="grid gap-3 rounded-lg border border-bordure p-3 sm:grid-cols-2">
+                <label className="block text-sm">
+                  <span className="text-texte-secondaire">Attribut</span>
+                  <input
+                    type="text"
+                    value={v.attribut}
+                    onChange={(e) => modifierVariante(index, { attribut: e.target.value })}
+                    placeholder="ex. Puissance, Résolution…"
+                    className="mt-1 w-full rounded-lg border border-bordure px-3 py-2 text-texte-principal focus:outline-none focus:ring-2 focus:ring-primaire-clair"
+                  />
+                </label>
+                <label className="block text-sm">
+                  <span className="text-texte-secondaire">Valeur</span>
+                  <input
+                    type="text"
+                    value={v.valeur}
+                    onChange={(e) => modifierVariante(index, { valeur: e.target.value })}
+                    placeholder="ex. 405W, 4K…"
+                    className="mt-1 w-full rounded-lg border border-bordure px-3 py-2 text-texte-principal focus:outline-none focus:ring-2 focus:ring-primaire-clair"
+                  />
+                </label>
+                <label className="block text-sm">
+                  <span className="text-texte-secondaire">Prix (USD)</span>
+                  <input
+                    type="number"
+                    min={0}
+                    step="0.01"
+                    value={v.prix}
+                    onChange={(e) => modifierVariante(index, { prix: Number(e.target.value) })}
+                    className="mt-1 w-full rounded-lg border border-bordure px-3 py-2 text-texte-principal focus:outline-none focus:ring-2 focus:ring-primaire-clair"
+                  />
+                </label>
+                <label className="block text-sm">
+                  <span className="text-texte-secondaire">Stock (facultatif — vide = non suivi)</span>
+                  <input
+                    type="number"
+                    min={0}
+                    value={v.stock ?? ""}
+                    onChange={(e) =>
+                      modifierVariante(index, { stock: e.target.value === "" ? undefined : Number(e.target.value) })
+                    }
+                    className="mt-1 w-full rounded-lg border border-bordure px-3 py-2 text-texte-principal focus:outline-none focus:ring-2 focus:ring-primaire-clair"
+                  />
+                </label>
+                <label className="block text-sm sm:col-span-2">
+                  <span className="text-texte-secondaire">Description (facultatif — points forts de cette valeur)</span>
+                  <textarea
+                    value={v.description ?? ""}
+                    onChange={(e) => modifierVariante(index, { description: e.target.value })}
+                    rows={2}
+                    className="mt-1 w-full rounded-lg border border-bordure px-3 py-2 text-texte-principal focus:outline-none focus:ring-2 focus:ring-primaire-clair"
+                  />
+                </label>
+                <button
+                  type="button"
+                  onClick={() => supprimerVariante(index)}
+                  className="inline-flex w-fit items-center gap-1.5 text-sm font-medium text-danger hover:underline sm:col-span-2"
+                >
+                  <Trash2 size={14} /> Retirer cette valeur
+                </button>
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={ajouterVariante}
+              className="inline-flex w-fit items-center gap-1.5 rounded-lg border border-bordure px-3 py-2 text-sm font-medium text-texte-principal hover:bg-fond"
+            >
+              <Plus size={14} /> Ajouter une valeur
+            </button>
+            <p className="text-xs text-texte-secondaire">
+              Plusieurs attributs différents peuvent coexister sur ce produit (ex. Puissance et Couleur), mais sans
+              matrice combinée : chaque ligne reste une valeur indépendante avec son propre prix.
+            </p>
+          </div>
+        )}
       </div>
 
       {erreur && <p className="mt-4 text-sm font-medium text-danger">{erreur}</p>}

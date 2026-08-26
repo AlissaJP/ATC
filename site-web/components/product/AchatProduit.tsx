@@ -4,8 +4,7 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { Check, Minus, Package, Plus, ShoppingCart } from "lucide-react";
-import type { NiveauAlerteStock, PalierPrixB2B, Produit } from "@/lib/types/entities";
-import type { ProduitEnrichi } from "@/lib/services/catalogue";
+import type { NiveauAlerteStock, PalierPrixB2B, Produit, VarianteProduit } from "@/lib/types/entities";
 import { StockBadge } from "./StockBadge";
 import { BoutonFavori } from "./BoutonFavori";
 import { useSessionStore, estClientB2BVerifie } from "@/lib/store/session-store";
@@ -13,6 +12,7 @@ import { useCartStore } from "@/lib/store/cart-store";
 import { usePackageDraftStore } from "@/lib/store/package-draft-store";
 import { trouverPalierApplicable } from "@/lib/business-rules/bareme-b2b";
 import { useGardeClient } from "@/lib/hooks/useGardeClient";
+import { construireIdLigne } from "@/lib/services/variantes";
 import { Toast } from "@/components/ui/Toast";
 
 interface AchatProduitProps {
@@ -20,26 +20,14 @@ interface AchatProduitProps {
   niveauStock: NiveauAlerteStock;
   paliers: PalierPrixB2B[];
   stockActuel: number;
-  // Correction #23 — chaque entrée reste un SKU (Produit) distinct côté données (prix/stock/description
-  // propres), mais la sélection change un état local plutôt que de naviguer vers une fiche produit
-  // séparée : une seule fiche produit publique par groupe de variantes. Jamais fourni si le produit n'a
-  // qu'une seule valeur (cf. app/produit/[slug]/page.tsx).
-  variantes?: ProduitEnrichi[];
-  // Stock exact par variante (id → quantité), pour borner le sélecteur de quantité une fois une valeur
-  // choisie — niveauStock (alerte) est déjà porté par variantes[].niveauStock.
-  stocksVariantes?: Record<string, number>;
+  // Point #29 — options de variantes avec prix, imbriquées sur le produit (remplace le mécanisme à SKU
+  // séparés du point #23). Jamais fourni si le produit a moins de 2 valeurs (cf. app/produit/[slug]/page.tsx).
+  variantes?: VarianteProduit[];
 }
 
 // ECR-03-001 — Prix + barème B2B (RG-03-001, RG-03-004), sélection de quantité en temps réel,
 // boutons « Ajouter au panier » / « Ajouter au package personnalisé » visuellement distincts (Cahier 7 §3).
-export function AchatProduit({
-  produit,
-  niveauStock,
-  paliers,
-  stockActuel,
-  variantes,
-  stocksVariantes,
-}: AchatProduitProps) {
+export function AchatProduit({ produit, niveauStock, paliers, stockActuel, variantes }: AchatProduitProps) {
   const router = useRouter();
   const session = useSessionStore((s) => s.session);
   const estB2B = estClientB2BVerifie(session);
@@ -49,22 +37,46 @@ export function AchatProduit({
 
   const [quantite, setQuantite] = useState(1);
   const [confirmationVisible, setConfirmationVisible] = useState(false);
-  // Correction #23 — id du SKU actif : celui de la valeur sélectionnée si le produit en a plusieurs,
-  // sinon simplement le produit affiché. Change au clic sur un chip, jamais de navigation.
-  const [varianteSelectionneeId, setVarianteSelectionneeId] = useState(produit.id);
-  const [derniereVarianteAjusteeId, setDerniereVarianteAjusteeId] = useState(produit.id);
+  // Point #29 — id de la variante active : la première par défaut. Change au clic sur un chip, jamais de
+  // navigation (une seule fiche produit, quelle que soit la valeur choisie).
+  const [varianteSelectionneeId, setVarianteSelectionneeId] = useState(variantes?.[0]?.id);
+  const [derniereVarianteAjusteeId, setDerniereVarianteAjusteeId] = useState(variantes?.[0]?.id);
 
-  const varianteActive = variantes?.find((v) => v.produit.id === varianteSelectionneeId);
-  const produitActif = varianteActive?.produit ?? produit;
-  const niveauStockActif = varianteActive?.niveauStock ?? niveauStock;
-  const stockActuelActif = variantes ? (stocksVariantes?.[varianteSelectionneeId] ?? 0) : stockActuel;
-  const paliersActifs = varianteActive?.paliers ?? paliers;
+  const varianteActive = variantes?.find((v) => v.id === varianteSelectionneeId);
+
+  // Regroupe les variantes par attribut (ex. "Puissance", "Résolution") pour afficher un sélecteur par
+  // attribut — sans matrice combinée entre attributs (une seule variante active à la fois, celle du
+  // dernier chip cliqué, quel que soit son attribut). Aucun produit de cette démo n'a besoin de plus d'un
+  // attribut simultané ; rester simple plutôt que construire une combinatoire non demandée.
+  const groupesParAttribut = useMemo(() => {
+    if (!variantes) return [];
+    const ordre: string[] = [];
+    const groupes = new Map<string, VarianteProduit[]>();
+    for (const v of variantes) {
+      if (!groupes.has(v.attribut)) {
+        groupes.set(v.attribut, []);
+        ordre.push(v.attribut);
+      }
+      groupes.get(v.attribut)!.push(v);
+    }
+    return ordre.map((attribut) => ({ attribut, valeurs: groupes.get(attribut)! }));
+  }, [variantes]);
+
+  const niveauStockActif: NiveauAlerteStock = varianteActive
+    ? varianteActive.stock !== undefined && varianteActive.stock <= 0
+      ? "rupture"
+      : "en_stock"
+    : niveauStock;
+  // undefined = stock non suivi pour cette variante (point #29) — pas de plafond réel, valeur haute
+  // uniquement pour borner le sélecteur de quantité de l'interface.
+  const stockActuelActif = varianteActive ? (varianteActive.stock ?? 99) : stockActuel;
 
   const rupture = niveauStockActif === "rupture";
   const quantiteMax = rupture ? 0 : stockActuelActif;
 
-  const palierActif = estB2B && paliersActifs.length > 0 ? trouverPalierApplicable(paliersActifs, quantite) : undefined;
-  const prixUnitaire = palierActif ? palierActif.prix_unitaire : produitActif.prix_public;
+  const palierActif = estB2B && paliers.length > 0 && !varianteActive ? trouverPalierApplicable(paliers, quantite) : undefined;
+  // Prix de variante fixe (point #29) — pas de barème B2B distinct par variante, pour rester simple.
+  const prixUnitaire = varianteActive ? varianteActive.prix : palierActif ? palierActif.prix_unitaire : produit.prix_public;
   const prixTotal = prixUnitaire * quantite;
 
   function ajusterQuantite(delta: number) {
@@ -74,14 +86,14 @@ export function AchatProduit({
   function gererAjoutPanier() {
     if (rupture) return;
     executerSiConnecte(() => {
-      ajouterLigne(produitActif.id, quantite);
+      ajouterLigne(construireIdLigne(produit.id, varianteActive?.id), quantite, prixUnitaire);
       setConfirmationVisible(true);
       setTimeout(() => setConfirmationVisible(false), 1500);
     }, "Connectez-vous pour ajouter ce produit à votre panier.");
   }
 
   function gererAjoutPackage() {
-    ajouterAuPackage(produitActif.id);
+    ajouterAuPackage(produit.id);
     router.push("/packages/configurateur");
   }
 
@@ -94,51 +106,53 @@ export function AchatProduit({
     setQuantite(1);
   }
 
-  const lignesBareme = useMemo(() => [...paliersActifs].sort((a, b) => a.quantite_min - b.quantite_min), [paliersActifs]);
+  const lignesBareme = useMemo(() => [...paliers].sort((a, b) => a.quantite_min - b.quantite_min), [paliers]);
 
   return (
     <div className="flex flex-col gap-5">
-      {variantes && (
-        <div>
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-texte-secondaire">
-            {produitActif.variante?.libelle_attribut}
-          </p>
+      {groupesParAttribut.map(({ attribut, valeurs }) => (
+        <div key={attribut}>
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-texte-secondaire">{attribut}</p>
           <div className="flex flex-wrap gap-2">
-            {variantes.map(({ produit: variante, niveauStock: niveauVariante }) => {
-              const actif = variante.id === varianteSelectionneeId;
+            {valeurs.map((v) => {
+              const actif = v.id === varianteSelectionneeId;
+              const varianteRupture = v.stock !== undefined && v.stock <= 0;
               return (
                 <button
-                  key={variante.id}
+                  key={v.id}
                   type="button"
                   disabled={actif}
-                  onClick={() => setVarianteSelectionneeId(variante.id)}
+                  onClick={() => setVarianteSelectionneeId(v.id)}
                   className={`rounded-lg border px-3 py-2 text-sm font-medium transition-colors ${
                     actif
                       ? "border-primaire bg-primaire/5 text-primaire"
-                      : niveauVariante === "rupture"
+                      : varianteRupture
                         ? "border-bordure text-texte-secondaire opacity-50"
                         : "border-bordure text-texte-principal hover:border-primaire hover:text-primaire"
                   }`}
                 >
-                  {variante.variante?.valeur}
-                  {niveauVariante === "rupture" && !actif && " — rupture"}
+                  {v.valeur}
+                  {varianteRupture && !actif && " — rupture"}
                 </button>
               );
             })}
           </div>
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.p
-              key={varianteSelectionneeId}
-              initial={{ opacity: 0, y: -4 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -4 }}
-              transition={{ duration: 0.15 }}
-              className="mt-3 text-sm text-texte-secondaire"
-            >
-              {produitActif.description}
-            </motion.p>
-          </AnimatePresence>
         </div>
+      ))}
+
+      {varianteActive?.description && (
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.p
+            key={varianteSelectionneeId}
+            initial={{ opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.15 }}
+            className="-mt-2 text-sm text-texte-secondaire"
+          >
+            {varianteActive.description}
+          </motion.p>
+        </AnimatePresence>
       )}
 
       <div className="flex items-center gap-3">
@@ -147,10 +161,10 @@ export function AchatProduit({
           {estB2B && <span className="ml-1 text-sm font-normal text-texte-secondaire">/ unité</span>}
         </p>
         <StockBadge niveau={niveauStockActif} />
-        <BoutonFavori produitId={produitActif.id} className="ml-auto border border-bordure" />
+        <BoutonFavori produitId={produit.id} className="ml-auto border border-bordure" />
       </div>
 
-      {estB2B && lignesBareme.length > 0 && (
+      {estB2B && !varianteActive && lignesBareme.length > 0 && (
         <div className="overflow-x-auto rounded-lg border border-bordure">
           <table className="w-full min-w-[320px] text-sm">
             <caption className="sr-only">Barème de prix professionnel par palier de quantité</caption>
@@ -233,7 +247,7 @@ export function AchatProduit({
           {confirmationVisible ? "Ajouté au panier" : rupture ? "Rupture de stock" : "Ajouter au panier"}
         </motion.button>
 
-        {produitActif.eligible_package && (
+        {produit.eligible_package && (
           <button
             type="button"
             onClick={gererAjoutPackage}
