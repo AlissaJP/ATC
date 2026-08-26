@@ -1,9 +1,10 @@
 "use client";
 
+import { Clock, ArrowRight, Check } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Check } from "lucide-react";
 import { useTranslation } from "@/lib/i18n/useTranslation";
+import { useSessionStore, estClientB2BVerifie } from "@/lib/store/session-store";
 
 const AVANTAGES = [
   "Barème de prix par palier de quantité",
@@ -12,8 +13,33 @@ const AVANTAGES = [
 ];
 
 // BF-01-010 — Section « Devenir client professionnel » incitant à l'inscription B2B (RG-08-001).
+// Raffinement Design : masquée (pas seulement désactivée) pour un compte Entreprise déjà validé — n'a
+// plus lieu d'être puisqu'il a déjà accès au tarif professionnel. Dossier encore en attente (en_attente/
+// complement_demande) : remplacée par un message de statut plutôt que masquée ou laissée telle quelle —
+// pas de règle dans le Cahier pour ce cas précis (RG-08-001 ne couvre que l'espace client), décision
+// prise en cohérence avec l'affichage du statut déjà fait là-bas. « rejete » : section inchangée
+// (l'utilisateur peut vouloir soumettre un nouveau dossier).
 export function BlocDevenirPro() {
   const { t } = useTranslation();
+  const session = useSessionStore((s) => s.session);
+
+  if (estClientB2BVerifie(session)) {
+    return null;
+  }
+
+  const dossierEnAttente =
+    session?.type === "client" &&
+    session.type_compte === "entreprise" &&
+    (session.statut_validation_entreprise === "en_attente" || session.statut_validation_entreprise === "complement_demande");
+
+  if (dossierEnAttente) {
+    return (
+      <section className="flex items-center gap-3 rounded-2xl border border-bordure bg-fond p-6">
+        <Clock size={22} className="shrink-0 text-primaire-clair" />
+        <p className="text-sm font-medium text-texte-principal">Votre compte professionnel est en cours de validation.</p>
+      </section>
+    );
+  }
 
   return (
     <section className="grid gap-8 overflow-hidden rounded-2xl border border-bordure bg-fond md:grid-cols-2">
