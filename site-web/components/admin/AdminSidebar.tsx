@@ -26,6 +26,7 @@ import {
   Tags,
   UserCog,
   Users,
+  Warehouse,
 } from "lucide-react";
 import { useSessionStore } from "@/lib/store/session-store";
 import { useComptesStore } from "@/lib/store/comptes-store";
@@ -59,19 +60,16 @@ const GROUPES: { titre: string; liens: LienAdmin[] }[] = [
     titre: "VENTES",
     liens: [
       {
+        // Raffinement Design — plus de sous-éléments ici (Produits/Barèmes B2B/Stock pointaient tous les
+        // 3 vers cette même page) : le Catalogue affiche directement ses 3 onglets par catégorie
+        // (Énergie solaire / Climatisation / Sécurité, cf. GestionCatalogue.tsx). Stock est désormais sa
+        // propre section (vue d'ensemble tous produits confondus), pas un sous-élément du Catalogue.
         href: "/admin/catalogue",
         label: "Catalogue",
         icone: Tags,
         rolesAutorises: ["general"],
-        // Les 3 sous-éléments pointent volontairement vers la même page : Produits/Stock/Barèmes B2B
-        // sont déjà affichés ensemble pour le produit sélectionné (pas des vues séparées) — ce sont ici
-        // des repères de structure (conformes au doc), pas des filtres fonctionnellement distincts.
-        sousLiens: [
-          { href: "/admin/catalogue", label: "Produits" },
-          { href: "/admin/catalogue", label: "Barèmes B2B" },
-          { href: "/admin/catalogue", label: "Stock" },
-        ],
       },
+      { href: "/admin/stock", label: "Stock", icone: Warehouse, rolesAutorises: ["general"] },
       { href: "/admin/packages", label: "Packages", icone: Boxes, rolesAutorises: ["general"] },
       {
         href: "/admin/devis",
