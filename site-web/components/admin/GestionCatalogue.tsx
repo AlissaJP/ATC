@@ -43,17 +43,42 @@ const FORM_VIDE: ProduitInputMock = {
   statut_publication: "brouillon",
 };
 
+// Raffinement Design — le catalogue se navigue par section (une par catégorie racine), même idiome que
+// les onglets de filtre de TraitementDevis.tsx (En attente / Répondus / …) : un seul onglet actif à la
+// fois, plutôt qu'une liste plate mélangeant les 3 familles de produits (Énergie solaire, Climatisation,
+// Sécurité — Packages n'est pas une catégorie du catalogue, cf. Header.tsx). Ordre identique à la
+// navigation publique du site, pas l'ordre brut de lib/mock-data/categories.ts (où Sécurité précède
+// Climatisation).
+const ORDRE_SLUGS_ONGLETS = ["energie-solaire", "climatisation", "securite"];
+
 export function GestionCatalogue({ produits, stock, paliers, categories, marques }: GestionCatalogueProps) {
   const router = useRouter();
   const [recherche, setRecherche] = useState("");
   const [selectionId, setSelectionId] = useState<string | null>(produits[0]?.id ?? null);
   const [modeCreation, setModeCreation] = useState(false);
 
+  const categoriesRacines = useMemo(() => {
+    const racines = categories.filter((c) => !c.parent_id);
+    return ORDRE_SLUGS_ONGLETS.map((slug) => racines.find((c) => c.slug === slug)).filter(
+      (c): c is Categorie => Boolean(c)
+    );
+  }, [categories]);
+  const [ongletId, setOngletId] = useState<string | undefined>(() => categoriesRacines[0]?.id);
+
+  // Une catégorie racine (ex. Énergie solaire) regroupe aussi les produits de ses sous-catégories (ex.
+  // Panneaux, Batteries) — même agrégation que lib/services/produits.ts (listerProduitsParCategorieSlug).
+  const idsCategorieOnglet = useMemo(() => {
+    if (!ongletId) return new Set<string>();
+    const enfants = categories.filter((c) => c.parent_id === ongletId).map((c) => c.id);
+    return new Set([ongletId, ...enfants]);
+  }, [categories, ongletId]);
+
   const produitsFiltres = useMemo(() => {
     const terme = recherche.trim().toLowerCase();
-    if (!terme) return produits;
-    return produits.filter((p) => p.nom.toLowerCase().includes(terme));
-  }, [produits, recherche]);
+    return produits
+      .filter((p) => idsCategorieOnglet.has(p.categorie_id))
+      .filter((p) => !terme || p.nom.toLowerCase().includes(terme));
+  }, [produits, recherche, idsCategorieOnglet]);
 
   const selection = modeCreation ? undefined : produits.find((p) => p.id === selectionId);
   const stockSelection = selection ? stock.find((s) => s.produit_id === selection.id) : undefined;
@@ -69,9 +94,31 @@ export function GestionCatalogue({ produits, stock, paliers, categories, marques
     return categories.find((c) => c.id === id)?.nom ?? id;
   }
 
+  function choisirOnglet(id: string) {
+    setOngletId(id);
+    setModeCreation(false);
+    setSelectionId(null);
+  }
+
   return (
-    <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
-      <div>
+    <div>
+      <div className="mb-4 flex flex-wrap gap-2">
+        {categoriesRacines.map((c) => (
+          <button
+            key={c.id}
+            type="button"
+            onClick={() => choisirOnglet(c.id)}
+            className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
+              ongletId === c.id ? "bg-primaire text-white" : "bg-fond text-texte-secondaire"
+            }`}
+          >
+            {c.nom}
+          </button>
+        ))}
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
+        <div>
         <div className="mb-3 flex items-center gap-2">
           <input
             type="search"
@@ -177,6 +224,7 @@ export function GestionCatalogue({ produits, stock, paliers, categories, marques
             )}
           </div>
         )}
+      </div>
       </div>
     </div>
   );
