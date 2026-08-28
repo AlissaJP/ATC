@@ -37,6 +37,15 @@ export function GestionClients({ filtreInitial = "tous" }: { filtreInitial?: Typ
   const [recherche, setRecherche] = useState("");
   const [clientOuvertId, setClientOuvertId] = useState<string | null>(null);
 
+  // Un clic sur un sous-lien de la sidebar navigue vers la même route avec un `type` différent : React
+  // ne réinitialise pas l'état local de ce composant client pour autant, donc on resynchronise le filtre
+  // pendant le rendu plutôt qu'un useEffect (même correction que TraitementDevis.tsx/GestionCatalogue.tsx).
+  const [filtreInitialTraite, setFiltreInitialTraite] = useState(filtreInitial);
+  if (filtreInitial !== filtreInitialTraite) {
+    setFiltreInitialTraite(filtreInitial);
+    setFiltre(filtreInitial);
+  }
+
   const tousLesUtilisateurs = useMemo(() => {
     const idsDynamiques = new Set(utilisateursDynamiques.map((u) => u.id));
     const seedsNonAdoptes = utilisateursSeed.filter((u) => !idsDynamiques.has(u.id));

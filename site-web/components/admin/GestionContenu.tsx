@@ -41,6 +41,16 @@ export function GestionContenu({
 }: GestionContenuProps & { ongletInitial?: "faq" | SlugPageLegale }) {
   const router = useRouter();
   const [onglet, setOnglet] = useState<"faq" | SlugPageLegale>(ongletInitial);
+
+  // Un clic sur un sous-lien de la sidebar navigue vers la même route avec un `onglet` différent : React
+  // ne réinitialise pas l'état local de ce composant client pour autant, donc on resynchronise l'onglet
+  // pendant le rendu plutôt qu'un useEffect (même correction que TraitementDevis.tsx/GestionCatalogue.tsx).
+  const [ongletInitialTraite, setOngletInitialTraite] = useState(ongletInitial);
+  if (ongletInitial !== ongletInitialTraite) {
+    setOngletInitialTraite(ongletInitial);
+    setOnglet(ongletInitial);
+  }
+
   const pageLegaleActive = pagesLegales.find((p) => p.slug === onglet);
 
   return (

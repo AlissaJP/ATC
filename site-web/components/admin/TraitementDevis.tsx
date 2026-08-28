@@ -137,6 +137,18 @@ export function TraitementDevis({ filtreInitial = "en_attente" }: { filtreInitia
   const devis = useDevisStore((s) => s.devis);
   const [filtre, setFiltre] = useState<FiltreDevis>(filtreInitial);
 
+  // Un clic sur un sous-lien de la sidebar (Raffinement Design) navigue vers la même route avec un
+  // `statut` différent : React ne réinitialise pas l'état local de ce composant client pour autant (pas
+  // de changement de clé), donc on resynchronise le filtre pendant le rendu — pattern recommandé par
+  // React pour « ajuster un state quand une prop change » plutôt qu'un useEffect (qui provoquerait un
+  // second rendu/commit inutile, cf. règle react-hooks/set-state-in-effect ; même correction que
+  // GestionCatalogue.tsx).
+  const [filtreInitialTraite, setFiltreInitialTraite] = useState(filtreInitial);
+  if (filtreInitial !== filtreInitialTraite) {
+    setFiltreInitialTraite(filtreInitial);
+    setFiltre(filtreInitial);
+  }
+
   const filtres = useMemo(() => {
     return [...devis]
       .filter((d) => {

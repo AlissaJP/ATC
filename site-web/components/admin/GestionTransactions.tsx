@@ -39,6 +39,15 @@ export function GestionTransactions({ filtreInitial = "tous" }: { filtreInitial?
   const utilisateursDynamiques = useComptesStore((s) => s.utilisateurs);
   const [filtre, setFiltre] = useState<MethodePaiement | "tous">(filtreInitial);
 
+  // Un clic sur un sous-lien de la sidebar navigue vers la même route avec un `methode` différent : React
+  // ne réinitialise pas l'état local de ce composant client pour autant, donc on resynchronise le filtre
+  // pendant le rendu plutôt qu'un useEffect (même correction que TraitementDevis.tsx/GestionCatalogue.tsx).
+  const [filtreInitialTraite, setFiltreInitialTraite] = useState(filtreInitial);
+  if (filtreInitial !== filtreInitialTraite) {
+    setFiltreInitialTraite(filtreInitial);
+    setFiltre(filtreInitial);
+  }
+
   const utilisateurDuPaiement = (p: Paiement): string | undefined => {
     if (p.devis_id) return devis.find((d) => d.id === p.devis_id)?.utilisateur_id;
     if (p.commande_id) return commandes.find((c) => c.id === p.commande_id)?.utilisateur_id;

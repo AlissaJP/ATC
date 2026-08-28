@@ -65,6 +65,15 @@ export function GestionCommandes({ filtreInitial = "tous" }: { filtreInitial?: S
   const commandes = useCommandeStore((s) => s.commandes);
   const [filtre, setFiltre] = useState<StatutCommande | "tous">(filtreInitial);
 
+  // Un clic sur un sous-lien de la sidebar navigue vers la même route avec un `statut` différent : React
+  // ne réinitialise pas l'état local de ce composant client pour autant, donc on resynchronise le filtre
+  // pendant le rendu plutôt qu'un useEffect (même correction que TraitementDevis.tsx/GestionCatalogue.tsx).
+  const [filtreInitialTraite, setFiltreInitialTraite] = useState(filtreInitial);
+  if (filtreInitial !== filtreInitialTraite) {
+    setFiltreInitialTraite(filtreInitial);
+    setFiltre(filtreInitial);
+  }
+
   const triees = useMemo(
     () =>
       [...commandes]
