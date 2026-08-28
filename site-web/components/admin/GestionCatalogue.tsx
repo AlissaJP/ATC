@@ -124,6 +124,21 @@ export function GestionCatalogue({ produits, stock, paliers, categories, marques
 
   return (
     <div>
+      <div className="mb-4 flex flex-wrap gap-2">
+        {categoriesRacines.map((c) => (
+          <button
+            key={c.id}
+            type="button"
+            onClick={() => choisirOnglet(c.id)}
+            className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
+              ongletId === c.id ? "bg-primaire text-white" : "bg-fond text-texte-secondaire"
+            }`}
+          >
+            {c.nom}
+          </button>
+        ))}
+      </div>
+
       <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
         <div>
         <div className="mb-3 flex items-center gap-2">
@@ -223,21 +238,6 @@ export function GestionCatalogue({ produits, stock, paliers, categories, marques
           </div>
         )}
       </div>
-      </div>
-
-      <div className="mt-6 flex flex-wrap gap-2">
-        {categoriesRacines.map((c) => (
-          <button
-            key={c.id}
-            type="button"
-            onClick={() => choisirOnglet(c.id)}
-            className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
-              ongletId === c.id ? "bg-primaire text-white" : "bg-fond text-texte-secondaire"
-            }`}
-          >
-            {c.nom}
-          </button>
-        ))}
       </div>
     </div>
   );
