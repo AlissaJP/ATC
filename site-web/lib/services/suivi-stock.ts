@@ -11,6 +11,10 @@ export type PanierStock = "vert" | "jaune" | "rouge";
 
 export interface LigneSuiviStock {
   id: string;
+  produitId: string;
+  // Présent seulement pour une ligne issue d'une variante (point #29) — distingue les 2 chemins d'édition
+  // côté SuiviStock.tsx (definirStockAction vs definirStockVarianteAction, lib/actions/catalogue-admin.ts).
+  varianteId?: string;
   nom: string;
   categorieNom: string;
   // undefined = stock non suivi pour cette variante (point #29) — toujours considéré "vert" (disponible).
@@ -40,6 +44,8 @@ export function construireSuiviStock(produits: Produit[], stock: Stock[], catego
           variante.stock === undefined ? "en_stock" : determinerNiveauAlerteStock(variante.stock, REFERENCE_PAR_DEFAUT_VARIANTE);
         lignes.push({
           id: variante.id,
+          produitId: produit.id,
+          varianteId: variante.id,
           nom: `${produit.nom} — ${variante.attribut} ${variante.valeur}`,
           categorieNom,
           quantite: variante.stock,
@@ -51,7 +57,14 @@ export function construireSuiviStock(produits: Produit[], stock: Stock[], catego
 
     const s = stock.find((st) => st.produit_id === produit.id);
     const niveau = s ? determinerNiveauAlerteStock(s.stock_actuel, s.stock_reference) : "rupture";
-    lignes.push({ id: produit.id, nom: produit.nom, categorieNom, quantite: s?.stock_actuel, panier: panierDepuisNiveau(niveau) });
+    lignes.push({
+      id: produit.id,
+      produitId: produit.id,
+      nom: produit.nom,
+      categorieNom,
+      quantite: s?.stock_actuel,
+      panier: panierDepuisNiveau(niveau),
+    });
   }
 
   return lignes;

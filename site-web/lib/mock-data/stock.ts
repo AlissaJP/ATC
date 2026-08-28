@@ -42,3 +42,8 @@ export function supprimerStockMock(produitId: string): void {
   const index = stock.findIndex((s) => s.produit_id === produitId);
   if (index !== -1) stock.splice(index, 1);
 }
+
+// Raffinement Design — la section Stock (/admin/stock, SuiviStock.tsx) est éditable directement (plus de
+// duplication de cette édition dans le Catalogue). Pour un produit à variantes (point #29), le stock vit
+// dans Produit.variantes[].stock plutôt que dans ce tableau : voir definirStockVarianteMock,
+// lib/mock-data/produits.ts.

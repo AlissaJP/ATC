@@ -363,3 +363,14 @@ export function supprimerProduitMock(id: string): boolean {
   produits.splice(index, 1);
   return true;
 }
+
+// Raffinement Design — édition du stock d'une variante (point #29) depuis la section Stock dédiée
+// (/admin/stock, SuiviStock.tsx). Contrairement à un produit sans variantes, il n'y a pas de tableau
+// `stock` séparé : la quantité vit directement sur la variante, donc on la met à jour en place ici.
+export function definirStockVarianteMock(produitId: string, varianteId: string, quantite: number): Produit | undefined {
+  const produit = produits.find((p) => p.id === produitId);
+  const variante = produit?.variantes?.find((v) => v.id === varianteId);
+  if (!variante) return undefined;
+  variante.stock = quantite;
+  return produit;
+}

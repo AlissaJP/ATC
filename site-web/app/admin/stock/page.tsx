@@ -6,7 +6,8 @@ import { GardeRoleAdmin } from "@/components/admin/GardeRoleAdmin";
 
 // Raffinement Design — vue d'ensemble du stock (back-office, Général uniquement — RG-12-001), distincte
 // de Catalogue : 3 paniers par niveau d'alerte (vert/jaune/rouge), tous produits des 3 catégories
-// confondus. Lecture seule — l'édition du stock reste dans Catalogue (par produit sélectionné).
+// confondus. Éditable directement ici (clic sur la quantité) — c'est désormais la seule section pour
+// gérer le stock, le Catalogue ne le montre plus (cf. GestionCatalogue.tsx).
 export default function AdminStockPage() {
   return (
     <main className="mx-auto w-full max-w-4xl px-4 py-8 md:px-6">

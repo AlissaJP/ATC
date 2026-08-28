@@ -1,14 +1,17 @@
 "use client";
 
-// ECR-12-002 — Gestion catalogue / stock / barème B2B (back-office). RG-03-002, RG-03-004, RG-12-001.
+// ECR-12-002 — Gestion catalogue / barème B2B (back-office). RG-03-004, RG-12-001. L'édition du stock
+// vit désormais dans sa propre section (/admin/stock, SuiviStock.tsx) plutôt qu'ici (Raffinement Design).
 // Les données initiales viennent de app/admin/catalogue/page.tsx (Server Component qui lit les tableaux
 // mock-data côté serveur) : après chaque mutation réussie, router.refresh() redemande le rendu serveur de
 // cette route pour obtenir les props à jour — nécessaire car ce composant client ne peut pas relire
 // directement les tableaux serveur (bundle client séparé du process Node, voir lib/actions/catalogue-admin.ts).
 //
-// PanneauProduit / EditeurStock / EditeurPaliers sont remontés via `key={selection.id ?? "creation"}`
-// lors d'un changement de sélection plutôt que resynchronisés par un useEffect + setState (qui provoque
-// des rendus en cascade) — l'état local part alors directement de la bonne valeur initiale.
+// PanneauProduit / EditeurPaliers sont remontés via `key={selection.id ?? "creation"}` lors d'un
+// changement de sélection plutôt que resynchronisés par un useEffect + setState (qui provoque des rendus
+// en cascade) — l'état local part alors directement de la bonne valeur initiale. EditeurPaliers (barème
+// B2B) ne s'affiche que lorsqu'un produit est sélectionné pour modification (jamais par défaut à l'arrivée
+// sur la page).
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AlertTriangle, Check, Plus, Save, Trash2 } from "lucide-react";
@@ -17,7 +20,6 @@ import { determinerNiveauAlerteStock } from "@/lib/business-rules/stock-alerte";
 import {
   ajouterPalierAction,
   creerProduitAction,
-  definirStockAction,
   modifierProduitAction,
   supprimerPalierAction,
   supprimerProduitAction,
@@ -54,7 +56,9 @@ const ORDRE_SLUGS_ONGLETS = ["energie-solaire", "climatisation", "securite"];
 export function GestionCatalogue({ produits, stock, paliers, categories, marques }: GestionCatalogueProps) {
   const router = useRouter();
   const [recherche, setRecherche] = useState("");
-  const [selectionId, setSelectionId] = useState<string | null>(produits[0]?.id ?? null);
+  // Raffinement Design — aucune sélection par défaut : la section de modification (formulaire produit,
+  // barème B2B) ne doit apparaître qu'après un clic explicite sur un produit, pas dès l'arrivée sur la page.
+  const [selectionId, setSelectionId] = useState<string | null>(null);
   const [modeCreation, setModeCreation] = useState(false);
 
   const categoriesRacines = useMemo(() => {
@@ -81,7 +85,6 @@ export function GestionCatalogue({ produits, stock, paliers, categories, marques
   }, [produits, recherche, idsCategorieOnglet]);
 
   const selection = modeCreation ? undefined : produits.find((p) => p.id === selectionId);
-  const stockSelection = selection ? stock.find((s) => s.produit_id === selection.id) : undefined;
   const paliersSelection = useMemo(
     () =>
       selection
@@ -102,21 +105,6 @@ export function GestionCatalogue({ produits, stock, paliers, categories, marques
 
   return (
     <div>
-      <div className="mb-4 flex flex-wrap gap-2">
-        {categoriesRacines.map((c) => (
-          <button
-            key={c.id}
-            type="button"
-            onClick={() => choisirOnglet(c.id)}
-            className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
-              ongletId === c.id ? "bg-primaire text-white" : "bg-fond text-texte-secondaire"
-            }`}
-          >
-            {c.nom}
-          </button>
-        ))}
-      </div>
-
       <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
         <div>
         <div className="mb-3 flex items-center gap-2">
@@ -205,15 +193,6 @@ export function GestionCatalogue({ produits, stock, paliers, categories, marques
               }}
             />
 
-            {!modeCreation && selection && (
-              <EditeurStock
-                key={`stock-${selection.id}`}
-                produitId={selection.id}
-                stock={stockSelection}
-                onSucces={() => router.refresh()}
-              />
-            )}
-
             {!modeCreation && selection && selection.eligible_b2b && (
               <EditeurPaliers
                 key={`paliers-${selection.id}`}
@@ -225,6 +204,21 @@ export function GestionCatalogue({ produits, stock, paliers, categories, marques
           </div>
         )}
       </div>
+      </div>
+
+      <div className="mt-6 flex flex-wrap gap-2">
+        {categoriesRacines.map((c) => (
+          <button
+            key={c.id}
+            type="button"
+            onClick={() => choisirOnglet(c.id)}
+            className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
+              ongletId === c.id ? "bg-primaire text-white" : "bg-fond text-texte-secondaire"
+            }`}
+          >
+            {c.nom}
+          </button>
+        ))}
       </div>
     </div>
   );
@@ -556,73 +550,6 @@ function PanneauProduit({
           </button>
         )}
       </div>
-    </div>
-  );
-}
-
-function EditeurStock({
-  produitId,
-  stock,
-  onSucces,
-}: {
-  produitId: string;
-  stock: Stock | undefined;
-  onSucces: () => void;
-}) {
-  const [stockActuel, setStockActuel] = useState(stock?.stock_actuel ?? 0);
-  const [stockReference, setStockReference] = useState(stock?.stock_reference ?? 100);
-  const [enCours, setEnCours] = useState(false);
-  const [erreur, setErreur] = useState<string | null>(null);
-
-  async function enregistrer() {
-    setEnCours(true);
-    try {
-      const resultat = await definirStockAction(produitId, stockActuel, stockReference);
-      if (!resultat.succes) {
-        setErreur(resultat.erreur ?? "Une erreur est survenue.");
-        return;
-      }
-      setErreur(null);
-      onSucces();
-    } finally {
-      setEnCours(false);
-    }
-  }
-
-  return (
-    <div className="rounded-xl border border-bordure bg-background p-6">
-      <p className="mb-4 font-titres text-base font-semibold text-texte-principal">Stock (RG-03-002)</p>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <label className="block text-sm">
-          <span className="text-texte-secondaire">Stock actuel</span>
-          <input
-            type="number"
-            min={0}
-            value={stockActuel}
-            onChange={(e) => setStockActuel(Number(e.target.value))}
-            className="mt-1 w-full rounded-lg border border-bordure px-3 py-2 text-texte-principal focus:outline-none focus:ring-2 focus:ring-primaire-clair"
-          />
-        </label>
-        <label className="block text-sm">
-          <span className="text-texte-secondaire">Stock de référence</span>
-          <input
-            type="number"
-            min={1}
-            value={stockReference}
-            onChange={(e) => setStockReference(Number(e.target.value))}
-            className="mt-1 w-full rounded-lg border border-bordure px-3 py-2 text-texte-principal focus:outline-none focus:ring-2 focus:ring-primaire-clair"
-          />
-        </label>
-      </div>
-      {erreur && <p className="mt-3 text-sm font-medium text-danger">{erreur}</p>}
-      <button
-        type="button"
-        disabled={enCours}
-        onClick={enregistrer}
-        className="mt-4 inline-flex items-center gap-1.5 rounded-lg border border-bordure px-4 py-2 text-sm font-semibold text-texte-principal hover:bg-fond disabled:cursor-not-allowed disabled:opacity-50"
-      >
-        <Save size={16} /> Mettre à jour le stock
-      </button>
     </div>
   );
 }

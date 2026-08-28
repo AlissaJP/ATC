@@ -17,6 +17,7 @@
 import { revalidatePath } from "next/cache";
 import {
   creerProduitMock,
+  definirStockVarianteMock,
   modifierProduitMock,
   supprimerProduitMock,
   type ProduitInputMock,
@@ -126,6 +127,23 @@ export async function definirStockAction(
   }
 
   definirStockMock(produitId, stockActuel, stockReference);
+  revaliderCatalogue();
+  return { succes: true };
+}
+
+// Raffinement Design — édition du stock d'une variante (point #29) depuis la section Stock dédiée.
+export async function definirStockVarianteAction(
+  produitId: string,
+  varianteId: string,
+  quantite: number
+): Promise<ActionResult> {
+  if (quantite < 0) {
+    return { succes: false, erreur: "La quantité doit être ≥ 0." };
+  }
+
+  const produit = definirStockVarianteMock(produitId, varianteId, quantite);
+  if (!produit) return { succes: false, erreur: "Variante introuvable." };
+
   revaliderCatalogue();
   return { succes: true };
 }
