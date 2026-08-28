@@ -4,11 +4,18 @@
 // Entreprise, accessible aux deux rôles admin. Combine les comptes de test seedés
 // (lib/mock-data/utilisateurs.ts) et les comptes créés dynamiquement pendant la démo (comptes-store.ts),
 // même logique que components/admin/ValidationEntreprises.tsx.
+//
+// Raffinement Design — la ligne compacte n'affiche plus l'email/téléphone/date directement : il faut
+// cliquer sur un client pour voir ces informations, dans une fenêtre modale (Modal.tsx, même idiome que
+// GestionCatalogue.tsx). Seul le statut de validation B2B reste visible à côté du nom dans la liste (pas
+// caché derrière le clic) — c'est l'information qu'un admin doit pouvoir repérer en un coup d'œil pour
+// savoir si un compte Entreprise est en attente d'approbation.
 import { useMemo, useState } from "react";
 import { Building2, User } from "lucide-react";
 import { useComptesStore } from "@/lib/store/comptes-store";
 import { utilisateurs as utilisateursSeed, profilsEntreprise as profilsEntrepriseSeed } from "@/lib/mock-data/utilisateurs";
-import type { StatutValidationEntreprise, TypeCompte } from "@/lib/types/entities";
+import type { ProfilEntreprise, StatutValidationEntreprise, TypeCompte, Utilisateur } from "@/lib/types/entities";
+import { Modal } from "@/components/ui/Modal";
 
 const LIBELLES_STATUT: Record<StatutValidationEntreprise, { label: string; classe: string }> = {
   en_attente: { label: "En attente", classe: "bg-avertissement/10 text-avertissement" },
@@ -24,6 +31,7 @@ export function GestionClients({ filtreInitial = "tous" }: { filtreInitial?: Typ
   const profilsDynamiques = useComptesStore((s) => s.profilsEntreprise);
   const [filtre, setFiltre] = useState<TypeCompte | "tous">(filtreInitial);
   const [recherche, setRecherche] = useState("");
+  const [clientOuvertId, setClientOuvertId] = useState<string | null>(null);
 
   const tousLesUtilisateurs = useMemo(() => [...utilisateursSeed, ...utilisateursDynamiques], [utilisateursDynamiques]);
   const tousLesProfils = useMemo(() => [...profilsEntrepriseSeed, ...profilsDynamiques], [profilsDynamiques]);
@@ -35,6 +43,9 @@ export function GestionClients({ filtreInitial = "tous" }: { filtreInitial?: Typ
       .filter((u) => !terme || u.nom.toLowerCase().includes(terme) || u.email.toLowerCase().includes(terme))
       .sort((a, b) => new Date(b.date_creation).getTime() - new Date(a.date_creation).getTime());
   }, [tousLesUtilisateurs, filtre, recherche]);
+
+  const clientOuvert = clientOuvertId ? tousLesUtilisateurs.find((u) => u.id === clientOuvertId) : undefined;
+  const profilOuvert = clientOuvert ? tousLesProfils.find((p) => p.utilisateur_id === clientOuvert.id) : undefined;
 
   return (
     <div>
@@ -69,37 +80,100 @@ export function GestionClients({ filtreInitial = "tous" }: { filtreInitial?: Typ
           {clients.map((c) => {
             const profil = c.type_compte === "entreprise" ? tousLesProfils.find((p) => p.utilisateur_id === c.id) : undefined;
             return (
-              <div key={c.id} className="flex items-center justify-between rounded-lg border border-bordure bg-background px-4 py-3">
+              <button
+                key={c.id}
+                type="button"
+                onClick={() => setClientOuvertId(c.id)}
+                className="flex items-center justify-between rounded-lg border border-bordure bg-background px-4 py-3 text-left transition-colors hover:border-primaire-clair"
+              >
                 <div className="flex items-center gap-3">
                   {c.type_compte === "entreprise" ? (
                     <Building2 size={18} className="shrink-0 text-texte-secondaire" />
                   ) : (
                     <User size={18} className="shrink-0 text-texte-secondaire" />
                   )}
-                  <div>
-                    <p className="text-sm font-medium text-texte-principal">
-                      {c.nom} {profil?.nom_commercial && <span className="text-texte-secondaire">— {profil.nom_commercial}</span>}
-                    </p>
-                    <p className="text-xs text-texte-secondaire">
-                      {c.email} {c.telephone && `— ${c.telephone}`}
-                    </p>
-                  </div>
+                  <p className="text-sm font-medium text-texte-principal">
+                    {c.nom} {profil?.nom_commercial && <span className="text-texte-secondaire">— {profil.nom_commercial}</span>}
+                  </p>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-texte-secondaire">
-                    Depuis le {new Date(c.date_creation).toLocaleDateString("fr-FR")}
+                {profil && (
+                  <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${LIBELLES_STATUT[profil.statut_validation].classe}`}>
+                    {LIBELLES_STATUT[profil.statut_validation].label}
                   </span>
-                  {profil && (
-                    <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${LIBELLES_STATUT[profil.statut_validation].classe}`}>
-                      {LIBELLES_STATUT[profil.statut_validation].label}
-                    </span>
-                  )}
-                </div>
-              </div>
+                )}
+              </button>
             );
           })}
         </div>
       )}
+
+      {clientOuvert && (
+        <FicheClient client={clientOuvert} profil={profilOuvert} onFermer={() => setClientOuvertId(null)} />
+      )}
     </div>
+  );
+}
+
+function FicheClient({
+  client,
+  profil,
+  onFermer,
+}: {
+  client: Utilisateur;
+  profil: ProfilEntreprise | undefined;
+  onFermer: () => void;
+}) {
+  return (
+    <Modal titre={client.nom} onFermer={onFermer}>
+      <dl className="grid grid-cols-1 gap-y-3 text-sm">
+        <div>
+          <dt className="text-texte-secondaire">Type de compte</dt>
+          <dd className="text-texte-principal">{client.type_compte === "entreprise" ? "Entreprise" : "Particulier"}</dd>
+        </div>
+        <div>
+          <dt className="text-texte-secondaire">Email</dt>
+          <dd className="text-texte-principal">{client.email}</dd>
+        </div>
+        <div>
+          <dt className="text-texte-secondaire">Téléphone</dt>
+          <dd className="text-texte-principal">{client.telephone || "—"}</dd>
+        </div>
+        <div>
+          <dt className="text-texte-secondaire">Client depuis</dt>
+          <dd className="text-texte-principal">{new Date(client.date_creation).toLocaleDateString("fr-FR")}</dd>
+        </div>
+        <div>
+          <dt className="text-texte-secondaire">Statut du compte</dt>
+          <dd className="text-texte-principal">{client.statut_compte === "actif" ? "Actif" : "Suspendu"}</dd>
+        </div>
+
+        {profil && (
+          <>
+            <div className="mt-2 flex items-center justify-between border-t border-bordure pt-3">
+              <dt className="text-texte-secondaire">Statut B2B</dt>
+              <dd>
+                <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${LIBELLES_STATUT[profil.statut_validation].classe}`}>
+                  {LIBELLES_STATUT[profil.statut_validation].label}
+                </span>
+              </dd>
+            </div>
+            {profil.nom_commercial && (
+              <div>
+                <dt className="text-texte-secondaire">Nom commercial</dt>
+                <dd className="text-texte-principal">{profil.nom_commercial}</dd>
+              </div>
+            )}
+            <div>
+              <dt className="text-texte-secondaire">Nom légal</dt>
+              <dd className="text-texte-principal">{profil.nom_legal}</dd>
+            </div>
+            <div>
+              <dt className="text-texte-secondaire">NIF</dt>
+              <dd className="text-texte-principal">{profil.nif}</dd>
+            </div>
+          </>
+        )}
+      </dl>
+    </Modal>
   );
 }
