@@ -7,12 +7,14 @@
 import { useRef, useState } from "react";
 import { Check, ImagePlus, Plus, Save, Trash2, X } from "lucide-react";
 import type { Categorie, Marque, PalierPrixB2B, Produit, VarianteProduit } from "@/lib/types/entities";
+import { detecterChevauchementsPaliers } from "@/lib/business-rules/bareme-b2b";
 import {
   ajouterPalierAction,
   creerProduitAction,
   modifierProduitAction,
   supprimerPalierAction,
   supprimerProduitAction,
+  type PalierBrouillonInput,
 } from "@/lib/actions/catalogue-admin";
 import type { ProduitInputMock } from "@/lib/mock-data/produits";
 
@@ -81,6 +83,41 @@ export function FormulaireProduit({
   const [confirmation, setConfirmation] = useState<string | null>(null);
   const inputImageRef = useRef<HTMLInputElement>(null);
 
+  // Barème B2B saisi à la création (Raffinement Design) — le produit n'existe pas encore (pas de
+  // produit_id), donc ces paliers restent en état local jusqu'à la soumission : creerProduitAction les
+  // crée juste après le produit (lib/actions/catalogue-admin.ts). Sans staging, ce serait impossible de
+  // définir un barème personnalisé avant la création — l'admin devrait rouvrir le produit ensuite.
+  const [paliersBrouillon, setPaliersBrouillon] = useState<(PalierBrouillonInput & { id: string })[]>([]);
+  const [brouillonQuantiteMin, setBrouillonQuantiteMin] = useState(1);
+  const [brouillonQuantiteMax, setBrouillonQuantiteMax] = useState("");
+  const [brouillonPrixUnitaire, setBrouillonPrixUnitaire] = useState(0);
+  const [erreurPalierBrouillon, setErreurPalierBrouillon] = useState<string | null>(null);
+
+  function ajouterPalierBrouillon() {
+    const nouveau = { quantite_min: brouillonQuantiteMin, quantite_max: brouillonQuantiteMax === "" ? undefined : Number(brouillonQuantiteMax), prix_unitaire: brouillonPrixUnitaire };
+    if (nouveau.quantite_min < 1 || (nouveau.quantite_max !== undefined && nouveau.quantite_max < nouveau.quantite_min) || !(nouveau.prix_unitaire > 0)) {
+      setErreurPalierBrouillon("Plage de quantité ou prix unitaire invalide.");
+      return;
+    }
+    const provisoires = [...paliersBrouillon, { ...nouveau, id: "nouveau" }].map((p, i) => ({
+      ...p,
+      id: `provisoire-${i}`,
+      produit_id: "provisoire",
+    }));
+    if (detecterChevauchementsPaliers(provisoires).length > 0) {
+      setErreurPalierBrouillon("Ce palier chevauche un palier déjà ajouté.");
+      return;
+    }
+    setErreurPalierBrouillon(null);
+    setPaliersBrouillon((prev) => [...prev, { ...nouveau, id: crypto.randomUUID() }]);
+    setBrouillonQuantiteMin(1);
+    setBrouillonQuantiteMax("");
+    setBrouillonPrixUnitaire(0);
+  }
+  function supprimerPalierBrouillon(id: string) {
+    setPaliersBrouillon((prev) => prev.filter((p) => p.id !== id));
+  }
+
   function varianteVide(): VarianteProduit {
     return { id: crypto.randomUUID(), attribut: "", valeur: "", prix: 0 };
   }
@@ -127,7 +164,12 @@ export function FormulaireProduit({
     setEnCours(true);
     try {
       if (modeCreation) {
-        const resultat = await creerProduitAction(form);
+        const paliersAEnvoyer = paliersBrouillon.map(({ quantite_min, quantite_max, prix_unitaire }) => ({
+          quantite_min,
+          quantite_max,
+          prix_unitaire,
+        }));
+        const resultat = await creerProduitAction(form, paliersAEnvoyer);
         if (!resultat.succes) {
           setErreur(resultat.erreur ?? "Une erreur est survenue.");
           return;
@@ -260,12 +302,6 @@ export function FormulaireProduit({
           />
           <span className="text-texte-principal">Éligible barème B2B (RG-03-004)</span>
         </label>
-        {modeCreation && form.eligible_b2b && (
-          <p className="text-xs text-texte-secondaire sm:col-span-2">
-            Un barème par défaut sera généré automatiquement à la création — vous pourrez l&apos;ajuster
-            juste après (paliers personnalisés, suppression…).
-          </p>
-        )}
 
         <label className="flex items-center gap-2 text-sm">
           <input
@@ -313,6 +349,89 @@ export function FormulaireProduit({
         {erreurImage && <p className="mt-2 text-xs font-medium text-danger">{erreurImage}</p>}
         <p className="mt-2 text-xs text-texte-secondaire">JPG ou PNG, 5 Mo max par photo.</p>
       </div>
+
+      {/* Raffinement Design — barème B2B saisi directement à la création (le produit n'existe pas encore
+          côté serveur, donc ces paliers restent en état local ici jusqu'à la soumission, cf.
+          ajouterPalierBrouillon plus haut) ; en modification, la gestion des paliers reste dans
+          EditeurPaliers (GestionCatalogue.tsx), qui appelle directement les Server Actions puisque le
+          produit existe déjà. */}
+      {modeCreation && form.eligible_b2b && (
+        <div className="mt-6 border-t border-bordure pt-5">
+          <p className="mb-1 font-titres text-sm font-semibold text-texte-principal">Barème B2B (RG-03-004)</p>
+          <p className="mb-3 text-xs text-texte-secondaire">
+            Si aucun palier n&apos;est ajouté ici, un barème par défaut (1–9 / 10–49 / 50+) sera généré
+            automatiquement à la création.
+          </p>
+
+          {paliersBrouillon.length > 0 && (
+            <ul className="mb-3 flex flex-col gap-2">
+              {paliersBrouillon.map((p) => (
+                <li
+                  key={p.id}
+                  className="flex items-center justify-between rounded-lg bg-fond px-3 py-2 text-sm text-texte-principal"
+                >
+                  <span>
+                    {p.quantite_min}
+                    {p.quantite_max ? `–${p.quantite_max}` : "+"} unités — ${p.prix_unitaire.toFixed(2)} / unité
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => supprimerPalierBrouillon(p.id)}
+                    className="text-texte-secondaire hover:text-danger"
+                    aria-label="Retirer ce palier"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          <div className="grid gap-3 sm:grid-cols-3">
+            <label className="block text-sm">
+              <span className="text-texte-secondaire">Qté min</span>
+              <input
+                type="number"
+                min={1}
+                value={brouillonQuantiteMin}
+                onChange={(e) => setBrouillonQuantiteMin(Number(e.target.value))}
+                className="mt-1 w-full rounded-lg border border-bordure px-3 py-2 text-texte-principal focus:outline-none focus:ring-2 focus:ring-primaire-clair"
+              />
+            </label>
+            <label className="block text-sm">
+              <span className="text-texte-secondaire">Qté max (vide = illimité)</span>
+              <input
+                type="number"
+                min={brouillonQuantiteMin}
+                value={brouillonQuantiteMax}
+                onChange={(e) => setBrouillonQuantiteMax(e.target.value)}
+                className="mt-1 w-full rounded-lg border border-bordure px-3 py-2 text-texte-principal focus:outline-none focus:ring-2 focus:ring-primaire-clair"
+              />
+            </label>
+            <label className="block text-sm">
+              <span className="text-texte-secondaire">Prix unitaire (USD)</span>
+              <input
+                type="number"
+                min={0}
+                step="0.01"
+                value={brouillonPrixUnitaire}
+                onChange={(e) => setBrouillonPrixUnitaire(Number(e.target.value))}
+                className="mt-1 w-full rounded-lg border border-bordure px-3 py-2 text-texte-principal focus:outline-none focus:ring-2 focus:ring-primaire-clair"
+              />
+            </label>
+          </div>
+
+          {erreurPalierBrouillon && <p className="mt-2 text-xs font-medium text-danger">{erreurPalierBrouillon}</p>}
+
+          <button
+            type="button"
+            onClick={ajouterPalierBrouillon}
+            className="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-bordure px-3 py-2 text-sm font-medium text-texte-principal hover:bg-fond"
+          >
+            <Plus size={14} /> Ajouter ce palier
+          </button>
+        </div>
+      )}
 
       {/* Point #29 — section facultative : un produit n'a pas de variantes par défaut. Chaque valeur a
           son propre prix (et, en option, son propre stock) — pas de matrice combinée entre attributs. */}

@@ -65,8 +65,20 @@ function validerVariantes(variantes: ProduitInputMock["variantes"]): string | un
   return undefined;
 }
 
+export interface PalierBrouillonInput {
+  quantite_min: number;
+  quantite_max?: number;
+  prix_unitaire: number;
+}
+
 export async function creerProduitAction(
-  input: ProduitInputMock
+  input: ProduitInputMock,
+  // Raffinement Design — barème B2B saisi directement sur la page de création
+  // (/admin/catalogue/nouveau, FormulaireProduit.tsx), avant même que le produit n'existe (donc sans
+  // produit_id) : si fourni et non vide, remplace la génération du barème par défaut ci-dessous ; si
+  // absent (undefined) ou vide, le comportement historique s'applique (barème par défaut auto-généré
+  // quand eligible_b2b est coché, comme avant l'ajout de cette saisie).
+  paliersInitiaux?: PalierBrouillonInput[]
 ): Promise<ActionResult<{ id: string }>> {
   if (!input.nom.trim() || !input.categorie_id || !(input.prix_public > 0)) {
     return { succes: false, erreur: "Nom, catégorie et prix public (supérieur à 0) sont obligatoires." };
@@ -74,10 +86,30 @@ export async function creerProduitAction(
   const erreurVariantes = validerVariantes(input.variantes);
   if (erreurVariantes) return { succes: false, erreur: erreurVariantes };
 
+  if (paliersInitiaux && paliersInitiaux.length > 0) {
+    for (const p of paliersInitiaux) {
+      if (p.quantite_min < 1 || (p.quantite_max !== undefined && p.quantite_max < p.quantite_min) || !(p.prix_unitaire > 0)) {
+        return { succes: false, erreur: "Plage de quantité ou prix unitaire invalide dans le barème B2B." };
+      }
+    }
+    const conflits = detecterChevauchementsPaliers(
+      paliersInitiaux.map((p, i) => ({ id: `provisoire-${i}`, produit_id: "provisoire", ...p }))
+    );
+    if (conflits.length > 0) {
+      return { succes: false, erreur: "Deux paliers du barème B2B se chevauchent." };
+    }
+  }
+
   const produit = creerProduitMock(input);
   definirStockMock(produit.id, 0, 100); // RG-03-002 — stock_reference par défaut 100 (décision n°28)
   if (produit.eligible_b2b) {
-    ajouterPaliersMock(genererPaliersParDefaut(produit.id, produit.prix_public));
+    if (paliersInitiaux && paliersInitiaux.length > 0) {
+      for (const p of paliersInitiaux) {
+        ajouterPalierMock({ produit_id: produit.id, ...p });
+      }
+    } else {
+      ajouterPaliersMock(genererPaliersParDefaut(produit.id, produit.prix_public));
+    }
   }
 
   revaliderCatalogue();
