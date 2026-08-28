@@ -3,15 +3,18 @@
 // ECR-12-005 (implicite, onglet "Clients" de RG-12-001) — Liste générale des comptes Particulier et
 // Entreprise, accessible aux deux rôles admin. Combine les comptes de test seedés
 // (lib/mock-data/utilisateurs.ts) et les comptes créés dynamiquement pendant la démo (comptes-store.ts),
-// même logique que components/admin/ValidationEntreprises.tsx.
+// même logique que components/admin/ValidationEntreprises.tsx — y compris la déduplication seed/adopté
+// (un compte seedé est copié dans le store au premier geste admin dessus, cf. avecUtilisateurAdopte,
+// comptes-store.ts) : sans ça un compte modifié apparaîtrait deux fois (version seed + version adoptée).
 //
 // Raffinement Design — la ligne compacte n'affiche plus l'email/téléphone/date directement : il faut
 // cliquer sur un client pour voir ces informations, dans une fenêtre modale (Modal.tsx, même idiome que
-// GestionCatalogue.tsx). Seul le statut de validation B2B reste visible à côté du nom dans la liste (pas
-// caché derrière le clic) — c'est l'information qu'un admin doit pouvoir repérer en un coup d'œil pour
-// savoir si un compte Entreprise est en attente d'approbation.
+// GestionCatalogue.tsx). Le statut de validation B2B et le statut « Suspendu » restent visibles à côté du
+// nom dans la liste (pas cachés derrière le clic) — ce qu'un admin doit pouvoir repérer en un coup d'œil.
+// La fenêtre d'édition porte les actions (suspendre/réactiver, supprimer, approuver/rejeter un dossier
+// B2B) — Général et Agent SAV y ont accès, comme au reste de cette page (RG-12-001).
 import { useMemo, useState } from "react";
-import { Building2, User } from "lucide-react";
+import { Building2, Check, RotateCcw, ShieldOff, Trash2, User, X } from "lucide-react";
 import { useComptesStore } from "@/lib/store/comptes-store";
 import { utilisateurs as utilisateursSeed, profilsEntreprise as profilsEntrepriseSeed } from "@/lib/mock-data/utilisateurs";
 import type { ProfilEntreprise, StatutValidationEntreprise, TypeCompte, Utilisateur } from "@/lib/types/entities";
@@ -29,12 +32,22 @@ const LIBELLES_STATUT: Record<StatutValidationEntreprise, { label: string; class
 export function GestionClients({ filtreInitial = "tous" }: { filtreInitial?: TypeCompte | "tous" }) {
   const utilisateursDynamiques = useComptesStore((s) => s.utilisateurs);
   const profilsDynamiques = useComptesStore((s) => s.profilsEntreprise);
+  const utilisateursSupprimesIds = useComptesStore((s) => s.utilisateursSupprimesIds);
   const [filtre, setFiltre] = useState<TypeCompte | "tous">(filtreInitial);
   const [recherche, setRecherche] = useState("");
   const [clientOuvertId, setClientOuvertId] = useState<string | null>(null);
 
-  const tousLesUtilisateurs = useMemo(() => [...utilisateursSeed, ...utilisateursDynamiques], [utilisateursDynamiques]);
-  const tousLesProfils = useMemo(() => [...profilsEntrepriseSeed, ...profilsDynamiques], [profilsDynamiques]);
+  const tousLesUtilisateurs = useMemo(() => {
+    const idsDynamiques = new Set(utilisateursDynamiques.map((u) => u.id));
+    const seedsNonAdoptes = utilisateursSeed.filter((u) => !idsDynamiques.has(u.id));
+    return [...seedsNonAdoptes, ...utilisateursDynamiques].filter((u) => !utilisateursSupprimesIds.includes(u.id));
+  }, [utilisateursDynamiques, utilisateursSupprimesIds]);
+
+  const tousLesProfils = useMemo(() => {
+    const idsDynamiques = new Set(profilsDynamiques.map((p) => p.id));
+    const seedsNonAdoptes = profilsEntrepriseSeed.filter((p) => !idsDynamiques.has(p.id));
+    return [...seedsNonAdoptes, ...profilsDynamiques];
+  }, [profilsDynamiques]);
 
   const clients = useMemo(() => {
     const terme = recherche.trim().toLowerCase();
@@ -96,11 +109,18 @@ export function GestionClients({ filtreInitial = "tous" }: { filtreInitial?: Typ
                     {c.nom} {profil?.nom_commercial && <span className="text-texte-secondaire">— {profil.nom_commercial}</span>}
                   </p>
                 </div>
-                {profil && (
-                  <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${LIBELLES_STATUT[profil.statut_validation].classe}`}>
-                    {LIBELLES_STATUT[profil.statut_validation].label}
-                  </span>
-                )}
+                <div className="flex shrink-0 items-center gap-1.5">
+                  {c.statut_compte === "suspendu" && (
+                    <span className="rounded-full bg-danger/10 px-2 py-0.5 text-[10px] font-semibold text-danger">
+                      Suspendu
+                    </span>
+                  )}
+                  {profil && (
+                    <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${LIBELLES_STATUT[profil.statut_validation].classe}`}>
+                      {LIBELLES_STATUT[profil.statut_validation].label}
+                    </span>
+                  )}
+                </div>
               </button>
             );
           })}
@@ -108,7 +128,12 @@ export function GestionClients({ filtreInitial = "tous" }: { filtreInitial?: Typ
       )}
 
       {clientOuvert && (
-        <FicheClient client={clientOuvert} profil={profilOuvert} onFermer={() => setClientOuvertId(null)} />
+        <FicheClient
+          client={clientOuvert}
+          profil={profilOuvert}
+          onFermer={() => setClientOuvertId(null)}
+          onSupprime={() => setClientOuvertId(null)}
+        />
       )}
     </div>
   );
@@ -118,11 +143,33 @@ function FicheClient({
   client,
   profil,
   onFermer,
+  onSupprime,
 }: {
   client: Utilisateur;
   profil: ProfilEntreprise | undefined;
   onFermer: () => void;
+  onSupprime: () => void;
 }) {
+  const basculerStatutCompteClient = useComptesStore((s) => s.basculerStatutCompteClient);
+  const supprimerClient = useComptesStore((s) => s.supprimerClient);
+  const approuverDossier = useComptesStore((s) => s.approuverDossier);
+  const rejeterDossier = useComptesStore((s) => s.rejeterDossier);
+  const demanderComplement = useComptesStore((s) => s.demanderComplement);
+  const [motif, setMotif] = useState("");
+
+  function agirSurDossier(action: (id: string, motif: string) => void, exigeMotif: boolean) {
+    if (!profil) return;
+    if (exigeMotif && !motif.trim()) return;
+    action(profil.id, motif);
+    setMotif("");
+  }
+
+  function supprimer() {
+    if (!window.confirm(`Supprimer définitivement le compte de « ${client.nom} » ?`)) return;
+    supprimerClient(client.id);
+    onSupprime();
+  }
+
   return (
     <Modal titre={client.nom} onFermer={onFermer}>
       <dl className="grid grid-cols-1 gap-y-3 text-sm">
@@ -142,9 +189,17 @@ function FicheClient({
           <dt className="text-texte-secondaire">Client depuis</dt>
           <dd className="text-texte-principal">{new Date(client.date_creation).toLocaleDateString("fr-FR")}</dd>
         </div>
-        <div>
+        <div className="flex items-center justify-between">
           <dt className="text-texte-secondaire">Statut du compte</dt>
-          <dd className="text-texte-principal">{client.statut_compte === "actif" ? "Actif" : "Suspendu"}</dd>
+          <dd>
+            <span
+              className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                client.statut_compte === "actif" ? "bg-succes/10 text-succes" : "bg-danger/10 text-danger"
+              }`}
+            >
+              {client.statut_compte === "actif" ? "Actif" : "Suspendu"}
+            </span>
+          </dd>
         </div>
 
         {profil && (
@@ -174,6 +229,74 @@ function FicheClient({
           </>
         )}
       </dl>
+
+      {/* Approbation du dossier B2B — mêmes actions que ValidationEntreprises.tsx (Approuver/Rejeter/
+          Compléments), disponibles directement depuis la fiche client. */}
+      {profil && profil.statut_validation === "en_attente" && (
+        <div className="mt-5 border-t border-bordure pt-4">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-texte-secondaire">Dossier B2B</p>
+          <label className="block text-sm">
+            <span className="text-texte-secondaire">Commentaire (motif de rejet ou de complément)</span>
+            <textarea
+              value={motif}
+              onChange={(e) => setMotif(e.target.value)}
+              rows={2}
+              className="mt-1 w-full rounded-lg border border-bordure px-3 py-2 text-texte-principal focus:outline-none focus:ring-2 focus:ring-primaire-clair"
+            />
+          </label>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => agirSurDossier(approuverDossier, false)}
+              className="inline-flex items-center gap-1.5 rounded-lg bg-succes px-3 py-2 text-sm font-semibold text-white hover:opacity-90"
+            >
+              <Check size={16} /> Approuver
+            </button>
+            <button
+              type="button"
+              onClick={() => agirSurDossier(demanderComplement, true)}
+              disabled={!motif.trim()}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-bordure px-3 py-2 text-sm font-semibold text-texte-principal hover:bg-fond disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              Demander un complément
+            </button>
+            <button
+              type="button"
+              onClick={() => agirSurDossier(rejeterDossier, true)}
+              disabled={!motif.trim()}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-danger/40 px-3 py-2 text-sm font-semibold text-danger hover:bg-danger/5 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              <X size={16} /> Rejeter
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Gestion du compte — suspendre/réactiver et suppression définitive. */}
+      <div className="mt-5 flex flex-wrap gap-3 border-t border-bordure pt-4">
+        <button
+          type="button"
+          onClick={() => basculerStatutCompteClient(client.id)}
+          className="inline-flex items-center gap-1.5 rounded-lg border border-bordure px-4 py-2.5 text-sm font-semibold text-texte-principal hover:bg-fond"
+        >
+          {client.statut_compte === "actif" ? (
+            <>
+              <ShieldOff size={16} /> Suspendre le compte
+            </>
+          ) : (
+            <>
+              <RotateCcw size={16} /> Réactiver le compte
+            </>
+          )}
+        </button>
+        <button
+          type="button"
+          onClick={supprimer}
+          className="inline-flex items-center gap-1.5 rounded-lg border border-danger/40 px-4 py-2.5 text-sm font-semibold text-danger hover:bg-danger/5"
+        >
+          <Trash2 size={16} /> Supprimer le client
+        </button>
+      </div>
     </Modal>
   );
 }

@@ -5,7 +5,7 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { profilsEntreprise as profilsEntrepriseSeed } from "@/lib/mock-data/utilisateurs";
+import { profilsEntreprise as profilsEntrepriseSeed, utilisateurs as utilisateursSeed } from "@/lib/mock-data/utilisateurs";
 import type {
   Adresse,
   DocumentEntreprise,
@@ -45,6 +45,12 @@ interface ComptesState {
   adresses: Adresse[];
   favoris: Favori[];
   moyensPaiement: MoyenPaiementEnregistre[];
+  // Raffinement Design (Section Administration, admin/clients) — suppression d'un compte client. Simple
+  // « tombstone » (liste d'ids exclus) plutôt qu'une vraie mutation du tableau `utilisateurs` : un compte
+  // seedé (lib/mock-data/utilisateurs.ts) n'est pas dans ce store tant qu'aucune action admin n'a été
+  // faite dessus (même logique d'adoption que profilsEntreprise ci-dessous), donc filtrer sur cette liste
+  // fonctionne uniformément pour un compte seedé ou créé pendant la démo.
+  utilisateursSupprimesIds: string[];
 
   inscrireParticulier: (nom: string, email: string, telephone?: string) => Utilisateur;
   inscrireEntreprise: (donnees: InscriptionEntrepriseInput, documents: DocumentTeleverse[]) => ProfilEntreprise;
@@ -52,6 +58,11 @@ interface ComptesState {
   rejeterDossier: (profilId: string, motif: string) => void;
   demanderComplement: (profilId: string, motif: string) => void;
   televerserDocumentsComplement: (profilId: string, documents: DocumentTeleverse[]) => void;
+
+  // Raffinement Design — suspendre/réactiver un compte client (bascule, même idiome que
+  // basculerStatutAgentSavAction pour les agents SAV) et suppression définitive (démo — pas de corbeille).
+  basculerStatutCompteClient: (utilisateurId: string) => void;
+  supprimerClient: (utilisateurId: string) => void;
 
   ajouterAdresse: (utilisateurId: string, libelle: string, adresse: string) => void;
   retirerAdresse: (adresseId: string) => void;
@@ -83,6 +94,14 @@ function avecProfilAdopte(profils: ProfilEntreprise[], profilId: string): Profil
   if (profils.some((p) => p.id === profilId)) return profils;
   const depuisSeed = profilsEntrepriseSeed.find((p) => p.id === profilId);
   return depuisSeed ? [...profils, depuisSeed] : profils;
+}
+
+// Même logique d'adoption que ci-dessus, pour un compte client seedé (lib/mock-data/utilisateurs.ts) —
+// nécessaire pour que basculerStatutCompteClient fonctionne aussi sur les comptes de démonstration.
+function avecUtilisateurAdopte(utilisateurs: Utilisateur[], utilisateurId: string): Utilisateur[] {
+  if (utilisateurs.some((u) => u.id === utilisateurId)) return utilisateurs;
+  const depuisSeed = utilisateursSeed.find((u) => u.id === utilisateurId);
+  return depuisSeed ? [...utilisateurs, depuisSeed] : utilisateurs;
 }
 
 // RAFF-MOYENS-PAIEMENT — jeu de démonstration pour le compte de test « Particulier » (décision actée
@@ -125,6 +144,7 @@ export const useComptesStore = create<ComptesState>()(
       adresses: [],
       favoris: [],
       moyensPaiement: seedMoyensPaiement(),
+      utilisateursSupprimesIds: [],
 
       inscrireParticulier: (nom, email, telephone) => {
         const utilisateur: Utilisateur = {
@@ -217,6 +237,20 @@ export const useComptesStore = create<ComptesState>()(
           ),
         }));
       },
+
+      basculerStatutCompteClient: (utilisateurId) =>
+        set((state) => ({
+          utilisateurs: avecUtilisateurAdopte(state.utilisateurs, utilisateurId).map((u) =>
+            u.id === utilisateurId ? { ...u, statut_compte: u.statut_compte === "actif" ? "suspendu" : "actif" } : u
+          ),
+        })),
+
+      supprimerClient: (utilisateurId) =>
+        set((state) => ({
+          utilisateursSupprimesIds: state.utilisateursSupprimesIds.includes(utilisateurId)
+            ? state.utilisateursSupprimesIds
+            : [...state.utilisateursSupprimesIds, utilisateurId],
+        })),
 
       ajouterAdresse: (utilisateurId, libelle, adresse) =>
         set((state) => ({
