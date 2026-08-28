@@ -16,6 +16,7 @@ export interface LigneSuiviStock {
   // côté SuiviStock.tsx (definirStockAction vs definirStockVarianteAction, lib/actions/catalogue-admin.ts).
   varianteId?: string;
   nom: string;
+  categorieId: string;
   categorieNom: string;
   // undefined = stock non suivi pour cette variante (point #29) — toujours considéré "vert" (disponible).
   quantite?: number;
@@ -47,6 +48,7 @@ export function construireSuiviStock(produits: Produit[], stock: Stock[], catego
           produitId: produit.id,
           varianteId: variante.id,
           nom: `${produit.nom} — ${variante.attribut} ${variante.valeur}`,
+          categorieId: produit.categorie_id,
           categorieNom,
           quantite: variante.stock,
           panier: panierDepuisNiveau(niveau),
@@ -61,6 +63,7 @@ export function construireSuiviStock(produits: Produit[], stock: Stock[], catego
       id: produit.id,
       produitId: produit.id,
       nom: produit.nom,
+      categorieId: produit.categorie_id,
       categorieNom,
       quantite: s?.stock_actuel,
       panier: panierDepuisNiveau(niveau),

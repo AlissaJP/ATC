@@ -18,6 +18,7 @@ import Link from "next/link";
 import { AlertTriangle, Plus } from "lucide-react";
 import type { Categorie, Marque, PalierPrixB2B, Produit, Stock } from "@/lib/types/entities";
 import { determinerNiveauAlerteStock } from "@/lib/business-rules/stock-alerte";
+import { categoriesRacinesOrdonnees, idsCategorieEtEnfants } from "@/lib/services/categories-admin";
 import { FormulaireProduit, EditeurPaliers } from "@/components/admin/FormulaireProduit";
 import { Modal } from "@/components/ui/Modal";
 
@@ -36,14 +37,6 @@ interface GestionCatalogueProps {
   produitInitial?: string;
 }
 
-// Raffinement Design — le catalogue se navigue par section (une par catégorie racine), même idiome que
-// les onglets de filtre de TraitementDevis.tsx (En attente / Répondus / …) : un seul onglet actif à la
-// fois, plutôt qu'une liste plate mélangeant les 3 familles de produits (Énergie solaire, Climatisation,
-// Sécurité — Packages n'est pas une catégorie du catalogue, cf. Header.tsx). Ordre identique à la
-// navigation publique du site, pas l'ordre brut de lib/mock-data/categories.ts (où Sécurité précède
-// Climatisation).
-const ORDRE_SLUGS_ONGLETS = ["energie-solaire", "climatisation", "securite"];
-
 export function GestionCatalogue({
   produits,
   stock,
@@ -57,12 +50,7 @@ export function GestionCatalogue({
   const [recherche, setRecherche] = useState("");
   const [produitOuvertId, setProduitOuvertId] = useState<string | null>(produitInitial ?? null);
 
-  const categoriesRacines = useMemo(() => {
-    const racines = categories.filter((c) => !c.parent_id);
-    return ORDRE_SLUGS_ONGLETS.map((slug) => racines.find((c) => c.slug === slug)).filter(
-      (c): c is Categorie => Boolean(c)
-    );
-  }, [categories]);
+  const categoriesRacines = useMemo(() => categoriesRacinesOrdonnees(categories), [categories]);
   const [ongletId, setOngletId] = useState<string | undefined>(
     () => categoriesRacines.find((c) => c.slug === ongletInitial)?.id ?? categoriesRacines[0]?.id
   );
@@ -84,13 +72,10 @@ export function GestionCatalogue({
     setProduitOuvertId(produitInitial ?? null);
   }
 
-  // Une catégorie racine (ex. Énergie solaire) regroupe aussi les produits de ses sous-catégories (ex.
-  // Panneaux, Batteries) — même agrégation que lib/services/produits.ts (listerProduitsParCategorieSlug).
-  const idsCategorieOnglet = useMemo(() => {
-    if (!ongletId) return new Set<string>();
-    const enfants = categories.filter((c) => c.parent_id === ongletId).map((c) => c.id);
-    return new Set([ongletId, ...enfants]);
-  }, [categories, ongletId]);
+  const idsCategorieOnglet = useMemo(
+    () => (ongletId ? idsCategorieEtEnfants(categories, ongletId) : new Set<string>()),
+    [categories, ongletId]
+  );
 
   const produitsFiltres = useMemo(() => {
     const terme = recherche.trim().toLowerCase();

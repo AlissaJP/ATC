@@ -352,3 +352,22 @@ export interface LogAudit {
 
 // Calculé dynamiquement, jamais stocké — RG-03-002
 export type NiveauAlerteStock = "en_stock" | "alerte_orange" | "alerte_rouge" | "rupture";
+
+export type TypeMouvementStock = "entree" | "sortie";
+
+// Mouvement de stock (entrée/sortie), décision actée n°47 — Raffinement Design : journal des transactions
+// liées au stock (réassorts, sorties), pour une vue globale par catégorie (/admin/stock,
+// SuiviStock.tsx). Structure pensée pour correspondre directement à une future table `stock_movements`
+// PostgreSQL (produit_id/variante_id en clé étrangère), même idiome que JournalActionAgentSav pour les
+// actions SAV (point #27).
+export interface MouvementStock {
+  id: string;
+  produit_id: string;
+  // Présent seulement pour un mouvement sur une variante (point #29) — le stock d'une variante vit dans
+  // Produit.variantes[].stock plutôt que dans le tableau Stock séparé (lib/mock-data/stock.ts).
+  variante_id?: string;
+  type: TypeMouvementStock;
+  quantite: number;
+  date: string; // ISO
+  reference?: string; // ex. "Réassort fournisseur", "Commande #4F2A9C1B"
+}
