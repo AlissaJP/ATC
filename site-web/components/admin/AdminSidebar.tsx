@@ -75,7 +75,19 @@ const GROUPES: { titre: string; liens: LienAdmin[] }[] = [
           { href: "/admin/catalogue?categorie=securite", label: "Sécurité" },
         ],
       },
-      { href: "/admin/stock", label: "Stock", icone: Warehouse, rolesAutorises: ["general"] },
+      {
+        // Raffinement Design — mêmes 3 sous-éléments catégorie que Catalogue (même paramètre `categorie`,
+        // SuiviStock.tsx s'aligne désormais sur GestionCatalogue.tsx).
+        href: "/admin/stock",
+        label: "Stock",
+        icone: Warehouse,
+        rolesAutorises: ["general"],
+        sousLiens: [
+          { href: "/admin/stock?categorie=energie-solaire", label: "Énergie solaire" },
+          { href: "/admin/stock?categorie=climatisation", label: "Climatisation" },
+          { href: "/admin/stock?categorie=securite", label: "Sécurité" },
+        ],
+      },
       { href: "/admin/packages", label: "Packages", icone: Boxes, rolesAutorises: ["general"] },
       {
         href: "/admin/devis",
@@ -126,19 +138,36 @@ const GROUPES: { titre: string; liens: LienAdmin[] }[] = [
           { href: "/admin/entreprises", label: "Entreprises", badge: true },
         ],
       },
-      { href: "/admin/avis", label: "Avis clients", icone: Star, rolesAutorises: ["general", "agent_sav"] },
+      {
+        href: "/admin/avis",
+        label: "Avis clients",
+        icone: Star,
+        rolesAutorises: ["general", "agent_sav"],
+        sousLiens: [
+          { href: "/admin/avis?statut=en_attente_moderation", label: "En attente" },
+          { href: "/admin/avis?statut=publie", label: "Publiés" },
+          { href: "/admin/avis?statut=rejete", label: "Rejetés" },
+        ],
+      },
     ],
   },
   {
     titre: "SUPPORT",
     liens: [
       {
+        // Raffinement Design — sous-éléments = statuts des tickets (GestionSAV.tsx, même paramètre
+        // `statut` que Devis/Commandes), plus « Installations planifiées » qui reste une page distincte
+        // (autre modèle de données, cf. app/admin/installations/page.tsx). « Fermés » et « Tous » restent
+        // accessibles via les pastilles de filtre en haut de la page, pas dans la sidebar (même choix que
+        // pour Paiements/Devis, pour ne pas surcharger le menu).
         href: "/admin/sav",
         label: "Assistance / SAV",
         icone: LifeBuoy,
         rolesAutorises: ["general", "agent_sav"],
         sousLiens: [
-          { href: "/admin/sav", label: "Tickets SAV" },
+          { href: "/admin/sav?statut=ouvert", label: "Ouverts" },
+          { href: "/admin/sav?statut=en_cours", label: "En cours" },
+          { href: "/admin/sav?statut=resolu", label: "Résolus" },
           { href: "/admin/installations", label: "Installations planifiées" },
         ],
       },

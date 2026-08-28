@@ -11,7 +11,13 @@ import { GardeRoleAdmin } from "@/components/admin/GardeRoleAdmin";
 // décision actée n°47) pour une vue globale des transactions. Éditable directement ici (bouton
 // "Mouvement" par ligne) — c'est la seule section pour gérer le stock, le Catalogue ne le montre plus
 // (cf. GestionCatalogue.tsx).
-export default function AdminStockPage() {
+//
+// `categorie` (slug) : reçu des sous-liens de la sidebar (Section Administration, Raffinement Design),
+// même idiome que /admin/catalogue.
+export default async function AdminStockPage(props: PageProps<"/admin/stock">) {
+  const { categorie } = await props.searchParams;
+  const ongletInitial = typeof categorie === "string" ? categorie : undefined;
+
   return (
     <main className="mx-auto w-full max-w-5xl px-4 py-8 md:px-6">
       <h1 className="mb-2 font-titres text-2xl font-bold text-texte-principal">Stock</h1>
@@ -19,7 +25,13 @@ export default function AdminStockPage() {
         Par catégorie, avec statut coloré et historique des entrées/sorties (RG-03-002).
       </p>
       <GardeRoleAdmin rolesAutorises={["general"]}>
-        <SuiviStock produits={produits} stock={stock} categories={categories} mouvements={mouvementsStock} />
+        <SuiviStock
+          produits={produits}
+          stock={stock}
+          categories={categories}
+          mouvements={mouvementsStock}
+          ongletInitial={ongletInitial}
+        />
       </GardeRoleAdmin>
     </main>
   );

@@ -56,10 +56,21 @@ function LigneTicket({ ticket, utilisateursDynamiques }: { ticket: TicketSAV; ut
   );
 }
 
-export function GestionSAV() {
+// filtreInitial : reçu de la page (Server Component, lit searchParams) pour les sous-liens de la
+// navigation latérale (Section Administration, Raffinement Design).
+export function GestionSAV({ filtreInitial = "ouvert" }: { filtreInitial?: StatutTicketSAV | "tous" }) {
   const tickets = useSavStore((s) => s.tickets);
   const utilisateursDynamiques = useComptesStore((s) => s.utilisateurs);
-  const [filtre, setFiltre] = useState<StatutTicketSAV | "tous">("ouvert");
+  const [filtre, setFiltre] = useState<StatutTicketSAV | "tous">(filtreInitial);
+
+  // Un clic sur un sous-lien de la sidebar navigue vers la même route avec un `statut` différent : React
+  // ne réinitialise pas l'état local de ce composant client pour autant, donc on resynchronise le filtre
+  // pendant le rendu plutôt qu'un useEffect (même correction que TraitementDevis.tsx/GestionCatalogue.tsx).
+  const [filtreInitialTraite, setFiltreInitialTraite] = useState(filtreInitial);
+  if (filtreInitial !== filtreInitialTraite) {
+    setFiltreInitialTraite(filtreInitial);
+    setFiltre(filtreInitial);
+  }
 
   const filtres: { valeur: StatutTicketSAV | "tous"; label: string }[] = [
     { valeur: "ouvert", label: "Ouverts" },

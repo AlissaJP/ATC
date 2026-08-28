@@ -75,10 +75,21 @@ function LigneAvis({ avis, utilisateursDynamiques }: { avis: AvisClient; utilisa
   );
 }
 
-export function ModerationAvis() {
+// filtreInitial : reçu de la page (Server Component, lit searchParams) pour les sous-liens de la
+// navigation latérale (Section Administration, Raffinement Design).
+export function ModerationAvis({ filtreInitial = "en_attente_moderation" }: { filtreInitial?: StatutAvis | "tous" }) {
   const tousLesAvis = useAvisStore((s) => s.avis);
   const utilisateursDynamiques = useComptesStore((s) => s.utilisateurs);
-  const [filtre, setFiltre] = useState<StatutAvis | "tous">("en_attente_moderation");
+  const [filtre, setFiltre] = useState<StatutAvis | "tous">(filtreInitial);
+
+  // Un clic sur un sous-lien de la sidebar navigue vers la même route avec un `statut` différent : React
+  // ne réinitialise pas l'état local de ce composant client pour autant, donc on resynchronise le filtre
+  // pendant le rendu plutôt qu'un useEffect (même correction que TraitementDevis.tsx/GestionCatalogue.tsx).
+  const [filtreInitialTraite, setFiltreInitialTraite] = useState(filtreInitial);
+  if (filtreInitial !== filtreInitialTraite) {
+    setFiltreInitialTraite(filtreInitial);
+    setFiltre(filtreInitial);
+  }
 
   const filtres: { valeur: StatutAvis | "tous"; label: string }[] = [
     { valeur: "en_attente_moderation", label: "En attente" },

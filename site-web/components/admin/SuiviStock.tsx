@@ -43,18 +43,33 @@ export function SuiviStock({
   stock,
   categories,
   mouvements,
+  ongletInitial,
 }: {
   produits: Produit[];
   stock: Stock[];
   categories: Categorie[];
   mouvements: MouvementStock[];
+  // Slug de catégorie racine reçu de la page (Server Component, lit searchParams) pour les sous-liens de
+  // la sidebar — même idiome que GestionCatalogue.tsx. undefined/inconnu retombe sur le premier onglet.
+  ongletInitial?: string;
 }) {
   const router = useRouter();
   const categoriesRacines = useMemo(() => categoriesRacinesOrdonnees(categories), [categories]);
-  const [ongletId, setOngletId] = useState<string | undefined>(() => categoriesRacines[0]?.id);
+  const [ongletId, setOngletId] = useState<string | undefined>(
+    () => categoriesRacines.find((c) => c.slug === ongletInitial)?.id ?? categoriesRacines[0]?.id
+  );
   const [ligneMouvement, setLigneMouvement] = useState<LigneSuiviStock | null>(null);
   const [typeFiltre, setTypeFiltre] = useState<TypeMouvementStock | "">("");
   const [periode, setPeriode] = useState<Periode>("30");
+
+  // Un clic sur un sous-lien de la sidebar navigue vers la même route avec un `categorie` différent :
+  // React ne réinitialise pas l'état local de ce composant client pour autant, donc on resynchronise
+  // l'onglet actif pendant le rendu plutôt qu'un useEffect (même correction que GestionCatalogue.tsx).
+  const [ongletInitialTraite, setOngletInitialTraite] = useState(ongletInitial);
+  if (ongletInitial !== ongletInitialTraite) {
+    setOngletInitialTraite(ongletInitial);
+    setOngletId(categoriesRacines.find((c) => c.slug === ongletInitial)?.id ?? categoriesRacines[0]?.id);
+  }
 
   const idsCategorieOnglet = useMemo(
     () => (ongletId ? idsCategorieEtEnfants(categories, ongletId) : new Set<string>()),
