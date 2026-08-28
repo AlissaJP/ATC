@@ -8,8 +8,9 @@
 // administrateurs (gestion des prix + Paramètres généraux exclus par la règle ; Paiements et
 // Statistiques suivent la même logique — signalé, aucune section du Cahier ne le précise explicitement
 // pour ces deux derniers).
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   BarChart3,
   Boxes,
@@ -197,7 +198,7 @@ const LIENS_BAS_DE_PAGE: LienAdmin[] = [
 ];
 
 function chemin(href: string): string {
-  return href.split("?")[0];
+  return href.split("?")[0].split("#")[0];
 }
 
 function estActif(pathname: string, href: string): boolean {
@@ -205,10 +206,47 @@ function estActif(pathname: string, href: string): boolean {
   return cible === "/admin" ? pathname === "/admin" : pathname.startsWith(cible);
 }
 
+// Raffinement Design — correspondance stricte pour un sous-lien, contrairement à estActif ci-dessus
+// (préfixe large, pour savoir si la section parente doit être dépliée/surlignée) : un sous-lien ne doit
+// être surligné en bleu que si l'URL courante correspond exactement à SON état (même chemin, même valeur
+// du paramètre de requête distinctif — categorie/statut/methode/type/onglet selon la section — ou même
+// ancre pour Paramètres généraux). Un sous-lien sans paramètre (ex. « Tous les paiements ») n'est actif
+// que si l'URL actuelle n'a elle-même aucun paramètre de requête pour ce chemin, sinon un autre sous-lien
+// du même groupe est plus spécifique et doit être surligné à sa place.
+function estSousLienActif(pathname: string, searchParams: URLSearchParams, hashActuel: string, href: string): boolean {
+  const [avantHash, hashPart] = href.includes("#") ? href.split("#") : [href, undefined];
+  const [hrefPath, hrefQuery] = avantHash.split("?");
+
+  if (pathname !== hrefPath) return false;
+  if (hashPart !== undefined) return hashActuel === `#${hashPart}`;
+
+  const hrefParams = new URLSearchParams(hrefQuery ?? "");
+  const clesHref = [...hrefParams.keys()];
+  if (clesHref.length === 0) return [...searchParams.keys()].length === 0;
+  return clesHref.every((cle) => searchParams.get(cle) === hrefParams.get(cle));
+}
+
 // Un parent se déplie aussi si l'URL active correspond à l'un de ses sous-liens — nécessaire pour
 // « Entreprises » (sous /admin/entreprises, hors préfixe /admin/clients) et « Installations planifiées »
 // (sous /admin/installations, hors préfixe /admin/sav).
-function LienPrincipal({ lien, pathname, badge }: { lien: LienAdmin; pathname: string; badge?: number }) {
+function LienPrincipal({
+  lien,
+  pathname,
+  searchParams,
+  hashActuel,
+  onHashClique,
+  badge,
+}: {
+  lien: LienAdmin;
+  pathname: string;
+  searchParams: URLSearchParams;
+  hashActuel: string;
+  // La navigation Next.js (<Link>) passe par history.pushState(), qui ne déclenche PAS l'évènement natif
+  // hashchange (contrairement à un vrai changement de page ou history.back/forward) — sans ce callback,
+  // un clic sur un sous-lien d'ancre ne mettrait à jour le surlignage qu'après un rechargement complet.
+  onHashClique: (hash: string) => void;
+  badge?: number;
+}) {
   const actif =
     estActif(pathname, lien.href) || (lien.sousLiens?.some((sl) => estActif(pathname, sl.href)) ?? false);
   const Icone = lien.icone;
@@ -228,20 +266,27 @@ function LienPrincipal({ lien, pathname, badge }: { lien: LienAdmin; pathname: s
       </Link>
       {actif && lien.sousLiens && (
         <div className="mt-1 flex flex-col gap-0.5 border-l border-bordure pl-4">
-          {lien.sousLiens.map((sl) => (
-            <Link
-              key={sl.href}
-              href={sl.href}
-              className="flex items-center gap-2 rounded-md px-3 py-1.5 text-sm text-texte-secondaire transition-colors hover:bg-background hover:text-texte-principal"
-            >
-              <span className="flex-1">{sl.label}</span>
-              {sl.badge && !!badge && (
-                <span className="rounded-full bg-accent px-1.5 py-0.5 text-[11px] font-semibold text-white">
-                  {badge}
-                </span>
-              )}
-            </Link>
-          ))}
+          {lien.sousLiens.map((sl) => {
+            const slActif = estSousLienActif(pathname, searchParams, hashActuel, sl.href);
+            const indexAncre = sl.href.indexOf("#");
+            return (
+              <Link
+                key={sl.href}
+                href={sl.href}
+                onClick={indexAncre !== -1 ? () => onHashClique(sl.href.slice(indexAncre)) : undefined}
+                className={`flex items-center gap-2 rounded-md px-3 py-1.5 text-sm transition-colors ${
+                  slActif ? "bg-primaire text-white font-medium" : "text-texte-secondaire hover:bg-background hover:text-texte-principal"
+                }`}
+              >
+                <span className="flex-1">{sl.label}</span>
+                {sl.badge && !!badge && (
+                  <span className="rounded-full bg-accent px-1.5 py-0.5 text-[11px] font-semibold text-white">
+                    {badge}
+                  </span>
+                )}
+              </Link>
+            );
+          })}
         </div>
       )}
     </div>
@@ -250,8 +295,25 @@ function LienPrincipal({ lien, pathname, badge }: { lien: LienAdmin; pathname: s
 
 export function AdminSidebar({ role }: { role: RoleAdmin }) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const router = useRouter();
   const deconnecter = useSessionStore((s) => s.deconnecter);
+
+  // Les sous-liens de Paramètres généraux pointent vers des ancres (#langues, #taux-change), pas des
+  // paramètres de requête — usePathname()/useSearchParams() ne les voient pas, donc on lit
+  // window.location.hash directement. L'évènement hashchange couvre une navigation directe avec ancre
+  // dans l'URL ; le clic sur un sous-lien depuis la page (LienPrincipal, onHashClique ci-dessous) met à
+  // jour ce state explicitement, car <Link> navigue via history.pushState() qui NE déclenche PAS
+  // hashchange (contrairement à un vrai rechargement ou history.back/forward).
+  const [hashActuel, setHashActuel] = useState("");
+  useEffect(() => {
+    function lireHash() {
+      setHashActuel(window.location.hash);
+    }
+    lireHash();
+    window.addEventListener("hashchange", lireHash);
+    return () => window.removeEventListener("hashchange", lireHash);
+  }, [pathname]);
 
   const profilsDynamiques = useComptesStore((s) => s.profilsEntreprise);
   const nombreEnAttente = (() => {
@@ -268,7 +330,14 @@ export function AdminSidebar({ role }: { role: RoleAdmin }) {
     <nav className="flex shrink-0 flex-col gap-4 border-b border-bordure bg-fond px-3 py-3 md:w-64 md:border-b-0 md:border-r md:px-3 md:py-6">
       <div>
         {filtrerParRole([LIEN_TABLEAU_DE_BORD]).map((l) => (
-          <LienPrincipal key={l.href} lien={l} pathname={pathname} />
+          <LienPrincipal
+            key={l.href}
+            lien={l}
+            pathname={pathname}
+            searchParams={searchParams}
+            hashActuel={hashActuel}
+            onHashClique={setHashActuel}
+          />
         ))}
       </div>
 
@@ -286,6 +355,9 @@ export function AdminSidebar({ role }: { role: RoleAdmin }) {
                   key={l.href}
                   lien={l}
                   pathname={pathname}
+                  searchParams={searchParams}
+                  hashActuel={hashActuel}
+                  onHashClique={setHashActuel}
                   badge={l.href === "/admin/clients" ? nombreEnAttente : undefined}
                 />
               ))}
@@ -296,7 +368,14 @@ export function AdminSidebar({ role }: { role: RoleAdmin }) {
 
       <div className="mt-auto flex flex-col gap-1 border-t border-bordure pt-3">
         {filtrerParRole(LIENS_BAS_DE_PAGE).map((l) => (
-          <LienPrincipal key={l.href} lien={l} pathname={pathname} />
+          <LienPrincipal
+            key={l.href}
+            lien={l}
+            pathname={pathname}
+            searchParams={searchParams}
+            hashActuel={hashActuel}
+            onHashClique={setHashActuel}
+          />
         ))}
         <button
           type="button"
