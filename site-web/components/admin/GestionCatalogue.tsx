@@ -32,6 +32,10 @@ interface GestionCatalogueProps {
   paliers: PalierPrixB2B[];
   categories: Categorie[];
   marques: Marque[];
+  // Slug de catégorie racine reçu de la page (Server Component, lit searchParams) pour les raccourcis de
+  // la navigation latérale (sous-éléments de Catalogue, Raffinement Design) — même idiome que
+  // TraitementDevis.tsx. undefined/inconnu retombe sur le premier onglet (Énergie solaire).
+  ongletInitial?: string;
 }
 
 const FORM_VIDE: ProduitInputMock = {
@@ -53,7 +57,7 @@ const FORM_VIDE: ProduitInputMock = {
 // Climatisation).
 const ORDRE_SLUGS_ONGLETS = ["energie-solaire", "climatisation", "securite"];
 
-export function GestionCatalogue({ produits, stock, paliers, categories, marques }: GestionCatalogueProps) {
+export function GestionCatalogue({ produits, stock, paliers, categories, marques, ongletInitial }: GestionCatalogueProps) {
   const router = useRouter();
   const [recherche, setRecherche] = useState("");
   // Raffinement Design — aucune sélection par défaut : la section de modification (formulaire produit,
@@ -67,7 +71,22 @@ export function GestionCatalogue({ produits, stock, paliers, categories, marques
       (c): c is Categorie => Boolean(c)
     );
   }, [categories]);
-  const [ongletId, setOngletId] = useState<string | undefined>(() => categoriesRacines[0]?.id);
+  const [ongletId, setOngletId] = useState<string | undefined>(
+    () => categoriesRacines.find((c) => c.slug === ongletInitial)?.id ?? categoriesRacines[0]?.id
+  );
+
+  // Un clic sur un sous-lien de la sidebar (Raffinement Design) navigue vers la même route avec un
+  // `categorie` différent : React ne réinitialise pas l'état local de ce composant client pour autant
+  // (pas de changement de clé), donc on resynchronise l'onglet actif pendant le rendu — pattern recommandé
+  // par React pour « ajuster un state quand une prop change » plutôt qu'un useEffect (qui provoquerait un
+  // second rendu/commit inutile ici, cf. règle react-hooks/set-state-in-effect).
+  const [ongletInitialTraite, setOngletInitialTraite] = useState(ongletInitial);
+  if (ongletInitial !== ongletInitialTraite) {
+    setOngletInitialTraite(ongletInitial);
+    setOngletId(categoriesRacines.find((c) => c.slug === ongletInitial)?.id ?? categoriesRacines[0]?.id);
+    setModeCreation(false);
+    setSelectionId(null);
+  }
 
   // Une catégorie racine (ex. Énergie solaire) regroupe aussi les produits de ses sous-catégories (ex.
   // Panneaux, Batteries) — même agrégation que lib/services/produits.ts (listerProduitsParCategorieSlug).

@@ -9,7 +9,14 @@ import { GardeRoleAdmin } from "@/components/admin/GardeRoleAdmin";
 // ECR-12-002 — Gestion catalogue / stock / barème B2B (back-office, Général uniquement — RG-12-001).
 // Server Component : lit les tableaux mock-data côté serveur à chaque requête, pour que les mutations
 // admin (lib/actions/catalogue-admin.ts) restent visibles sans redémarrage du serveur de dev.
-export default function AdminCataloguePage() {
+//
+// `categorie` (slug) : reçu de la navigation latérale (sous-éléments de Catalogue, Raffinement Design),
+// même idiome que `statut` sur /admin/devis — GestionCatalogue valide lui-même le slug contre ses 3
+// onglets connus et retombe sur le premier si absent/inconnu.
+export default async function AdminCataloguePage(props: PageProps<"/admin/catalogue">) {
+  const { categorie } = await props.searchParams;
+  const ongletInitial = typeof categorie === "string" ? categorie : undefined;
+
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-8 md:px-6">
       <h1 className="mb-6 font-titres text-2xl font-bold text-texte-principal">Catalogue</h1>
@@ -20,6 +27,7 @@ export default function AdminCataloguePage() {
           paliers={paliersPrixB2B}
           categories={categories}
           marques={marques}
+          ongletInitial={ongletInitial}
         />
       </GardeRoleAdmin>
     </main>

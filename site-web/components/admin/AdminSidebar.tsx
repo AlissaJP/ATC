@@ -60,14 +60,19 @@ const GROUPES: { titre: string; liens: LienAdmin[] }[] = [
     titre: "VENTES",
     liens: [
       {
-        // Raffinement Design — plus de sous-éléments ici (Produits/Barèmes B2B/Stock pointaient tous les
-        // 3 vers cette même page) : le Catalogue affiche directement ses 3 onglets par catégorie
-        // (Énergie solaire / Climatisation / Sécurité, cf. GestionCatalogue.tsx). Stock est désormais sa
-        // propre section (vue d'ensemble tous produits confondus), pas un sous-élément du Catalogue.
+        // Raffinement Design — sous-éléments = raccourcis vers les 3 onglets catégorie de la page
+        // (GestionCatalogue.tsx), même idiome que Devis ci-dessous (paramètre de requête lu côté serveur
+        // par app/admin/catalogue/page.tsx). Stock reste sa propre section (vue d'ensemble tous produits
+        // confondus), pas un sous-élément du Catalogue.
         href: "/admin/catalogue",
         label: "Catalogue",
         icone: Tags,
         rolesAutorises: ["general"],
+        sousLiens: [
+          { href: "/admin/catalogue?categorie=energie-solaire", label: "Énergie solaire" },
+          { href: "/admin/catalogue?categorie=climatisation", label: "Climatisation" },
+          { href: "/admin/catalogue?categorie=securite", label: "Sécurité" },
+        ],
       },
       { href: "/admin/stock", label: "Stock", icone: Warehouse, rolesAutorises: ["general"] },
       { href: "/admin/packages", label: "Packages", icone: Boxes, rolesAutorises: ["general"] },
