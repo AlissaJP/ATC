@@ -13,9 +13,13 @@ import { GardeRoleAdmin } from "@/components/admin/GardeRoleAdmin";
 // `categorie` (slug) : reçu de la navigation latérale (sous-éléments de Catalogue, Raffinement Design),
 // même idiome que `statut` sur /admin/devis — GestionCatalogue valide lui-même le slug contre ses 3
 // onglets connus et retombe sur le premier si absent/inconnu.
+//
+// `produit` (id) : reçu de CreationProduit.tsx après une création réussie, pour ouvrir directement la
+// fenêtre d'édition du produit nouvellement créé (barème B2B compris).
 export default async function AdminCataloguePage(props: PageProps<"/admin/catalogue">) {
-  const { categorie } = await props.searchParams;
+  const { categorie, produit } = await props.searchParams;
   const ongletInitial = typeof categorie === "string" ? categorie : undefined;
+  const produitInitial = typeof produit === "string" ? produit : undefined;
 
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-8 md:px-6">
@@ -28,6 +32,7 @@ export default async function AdminCataloguePage(props: PageProps<"/admin/catalo
           categories={categories}
           marques={marques}
           ongletInitial={ongletInitial}
+          produitInitial={produitInitial}
         />
       </GardeRoleAdmin>
     </main>
