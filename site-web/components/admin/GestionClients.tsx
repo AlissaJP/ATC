@@ -14,7 +14,7 @@
 // La fenêtre d'édition porte les actions (suspendre/réactiver, supprimer, approuver/rejeter un dossier
 // B2B) — Général et Agent SAV y ont accès, comme au reste de cette page (RG-12-001).
 import { useMemo, useState } from "react";
-import { Building2, Check, RotateCcw, ShieldOff, Trash2, User, X } from "lucide-react";
+import { Building2, Check, Clock, RotateCcw, ShieldOff, Trash2, User, X } from "lucide-react";
 import { useComptesStore } from "@/lib/store/comptes-store";
 import { utilisateurs as utilisateursSeed, profilsEntreprise as profilsEntrepriseSeed } from "@/lib/mock-data/utilisateurs";
 import type { ProfilEntreprise, StatutValidationEntreprise, TypeCompte, Utilisateur } from "@/lib/types/entities";
@@ -36,6 +36,14 @@ export function GestionClients({ filtreInitial = "tous" }: { filtreInitial?: Typ
   const [filtre, setFiltre] = useState<TypeCompte | "tous">(filtreInitial);
   const [recherche, setRecherche] = useState("");
   const [clientOuvertId, setClientOuvertId] = useState<string | null>(null);
+  // Sous-filtre par statut B2B, uniquement pertinent quand filtre === "entreprise" — fusionne ici l'ancien
+  // écran séparé ValidationEntreprises.tsx (« Dossiers Entreprise »), pour que le sous-lien « Entreprises »
+  // de la sidebar montre exactement la même chose que la pastille « Entreprise » de cette page (Raffinement
+  // Design). Comme sur l'ancien écran, "En attente" reste le filtre par défaut.
+  const [statutB2BFiltre, setStatutB2BFiltre] = useState<StatutValidationEntreprise | "tous">("en_attente");
+  // Capturé une seule fois via l'initialiseur (échappatoire documentée pour un appel impur pendant le
+  // rendu) plutôt qu'un Date.now() direct dans la boucle .map() ci-dessous.
+  const [maintenant] = useState(() => Date.now());
 
   // Un clic sur un sous-lien de la sidebar navigue vers la même route avec un `type` différent : React
   // ne réinitialise pas l'état local de ce composant client pour autant, donc on resynchronise le filtre
@@ -63,8 +71,13 @@ export function GestionClients({ filtreInitial = "tous" }: { filtreInitial?: Typ
     return tousLesUtilisateurs
       .filter((u) => filtre === "tous" || u.type_compte === filtre)
       .filter((u) => !terme || u.nom.toLowerCase().includes(terme) || u.email.toLowerCase().includes(terme))
+      .filter((u) => {
+        if (filtre !== "entreprise" || statutB2BFiltre === "tous") return true;
+        const profil = tousLesProfils.find((p) => p.utilisateur_id === u.id);
+        return profil?.statut_validation === statutB2BFiltre;
+      })
       .sort((a, b) => new Date(b.date_creation).getTime() - new Date(a.date_creation).getTime());
-  }, [tousLesUtilisateurs, filtre, recherche]);
+  }, [tousLesUtilisateurs, tousLesProfils, filtre, statutB2BFiltre, recherche]);
 
   const clientOuvert = clientOuvertId ? tousLesUtilisateurs.find((u) => u.id === clientOuvertId) : undefined;
   const profilOuvert = clientOuvert ? tousLesProfils.find((p) => p.utilisateur_id === clientOuvert.id) : undefined;
@@ -94,6 +107,25 @@ export function GestionClients({ filtreInitial = "tous" }: { filtreInitial?: Typ
           ))}
         </div>
       </div>
+
+      {/* Sous-filtre par statut B2B — uniquement pour la pastille « Entreprise » (fusion de l'ancien
+          écran ValidationEntreprises.tsx, « Dossiers Entreprise »). */}
+      {filtre === "entreprise" && (
+        <div className="mb-4 flex flex-wrap gap-2">
+          {(["en_attente", "valide", "rejete", "complement_demande", "tous"] as const).map((s) => (
+            <button
+              key={s}
+              type="button"
+              onClick={() => setStatutB2BFiltre(s)}
+              className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
+                statutB2BFiltre === s ? "bg-primaire text-white" : "bg-fond text-texte-secondaire"
+              }`}
+            >
+              {s === "tous" ? "Tous" : LIBELLES_STATUT[s].label}
+            </button>
+          ))}
+        </div>
+      )}
 
       {clients.length === 0 ? (
         <p className="text-sm text-texte-secondaire">Aucun client trouvé.</p>
@@ -129,6 +161,13 @@ export function GestionClients({ filtreInitial = "tous" }: { filtreInitial?: Typ
                       {LIBELLES_STATUT[profil.statut_validation].label}
                     </span>
                   )}
+                  {profil?.statut_validation === "en_attente" &&
+                    Math.floor((maintenant - new Date(profil.date_soumission).getTime()) / (1000 * 60 * 60 * 24)) >= 2 && (
+                      <span className="flex items-center gap-1 text-[10px] font-medium text-danger">
+                        <Clock size={10} />
+                        {Math.floor((maintenant - new Date(profil.date_soumission).getTime()) / (1000 * 60 * 60 * 24))} j
+                      </span>
+                    )}
                 </div>
               </button>
             );

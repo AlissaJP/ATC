@@ -152,7 +152,7 @@ export function TableauDeBord() {
         </Link>
 
         {role === "general" && (
-          <Link href="/admin/entreprises" className="rounded-xl border border-bordure bg-background p-5 transition-colors hover:border-primaire">
+          <Link href="/admin/clients?type=entreprise" className="rounded-xl border border-bordure bg-background p-5 transition-colors hover:border-primaire">
             <p className="text-xs font-semibold uppercase tracking-wide text-texte-secondaire">Comptes Entreprise actifs</p>
             <p className="mt-2 font-titres text-2xl font-bold text-texte-principal">{comptesEntrepriseActifs}</p>
             <p className="mt-1 text-xs text-texte-secondaire">
@@ -232,7 +232,7 @@ export function TableauDeBord() {
                 ))}
               </div>
             )}
-            <Link href="/admin/entreprises" className="mt-3 block text-sm font-medium text-primaire hover:underline">
+            <Link href="/admin/clients?type=entreprise" className="mt-3 block text-sm font-medium text-primaire hover:underline">
               Voir tous les dossiers
             </Link>
           </div>

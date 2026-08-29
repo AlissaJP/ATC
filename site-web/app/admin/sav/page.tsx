@@ -11,7 +11,9 @@ export default async function AdminSavPage(props: PageProps<"/admin/sav">) {
   const { statut } = await props.searchParams;
   const filtreInitial: StatutTicketSAV | "tous" = FILTRES_VALIDES.includes(statut as StatutTicketSAV)
     ? (statut as StatutTicketSAV)
-    : "ouvert";
+    : statut === "tous"
+      ? "tous"
+      : "ouvert";
 
   return (
     <main className="mx-auto w-full max-w-4xl px-4 py-8 md:px-6">

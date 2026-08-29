@@ -101,7 +101,7 @@ export function AdminTopBar({ administrateur }: { administrateur: Administrateur
     administrateur.role === "general" &&
       dossiersEntreprisePlus48h > 0 && {
         texte: `${dossiersEntreprisePlus48h} dossier(s) Entreprise en attente depuis plus de 48h`,
-        lien: "/admin/entreprises",
+        lien: "/admin/clients?type=entreprise",
       },
     ticketsOuverts > 0 && { texte: `${ticketsOuverts} ticket(s) SAV ouvert(s)`, lien: "/admin/sav" },
   ].filter(Boolean) as { texte: string; lien: string }[];
@@ -162,7 +162,7 @@ export function AdminTopBar({ administrateur }: { administrateur: Administrateur
                 {clientsTrouves.map((u) => (
                   <Link
                     key={u.id}
-                    href={u.type_compte === "entreprise" ? "/admin/entreprises" : "/admin/clients?type=particulier"}
+                    href={u.type_compte === "entreprise" ? "/admin/clients?type=entreprise" : "/admin/clients?type=particulier"}
                     onClick={() => setRechercheOuverte(false)}
                     className="flex items-center justify-between px-3 py-2 text-sm hover:bg-fond"
                   >

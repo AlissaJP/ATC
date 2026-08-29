@@ -11,7 +11,9 @@ export default async function AdminAvisPage(props: PageProps<"/admin/avis">) {
   const { statut } = await props.searchParams;
   const filtreInitial: StatutAvis | "tous" = FILTRES_VALIDES.includes(statut as StatutAvis)
     ? (statut as StatutAvis)
-    : "en_attente_moderation";
+    : statut === "tous"
+      ? "tous"
+      : "en_attente_moderation";
 
   return (
     <main className="mx-auto w-full max-w-4xl px-4 py-8 md:px-6">

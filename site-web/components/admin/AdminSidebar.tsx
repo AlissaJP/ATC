@@ -98,6 +98,7 @@ const GROUPES: { titre: string; liens: LienAdmin[] }[] = [
           { href: "/admin/devis?statut=en_attente", label: "En attente" },
           { href: "/admin/devis?statut=repondu", label: "Répondus" },
           { href: "/admin/devis?statut=resolu", label: "Acceptés / Expirés" },
+          { href: "/admin/devis?statut=tous", label: "Tous" },
         ],
       },
       {
@@ -109,6 +110,7 @@ const GROUPES: { titre: string; liens: LienAdmin[] }[] = [
           { href: "/admin/commandes?statut=en_preparation", label: "En préparation" },
           { href: "/admin/commandes?statut=prete_retrait", label: "Prêtes pour retrait" },
           { href: "/admin/commandes?statut=retiree", label: "Retirées" },
+          { href: "/admin/commandes?statut=tous", label: "Toutes" },
         ],
       },
       {
@@ -135,7 +137,7 @@ const GROUPES: { titre: string; liens: LienAdmin[] }[] = [
         rolesAutorises: ["general", "agent_sav"],
         sousLiens: [
           { href: "/admin/clients?type=particulier", label: "Particuliers" },
-          { href: "/admin/entreprises", label: "Entreprises", badge: true },
+          { href: "/admin/clients?type=entreprise", label: "Entreprises", badge: true },
         ],
       },
       {
@@ -147,6 +149,7 @@ const GROUPES: { titre: string; liens: LienAdmin[] }[] = [
           { href: "/admin/avis?statut=en_attente_moderation", label: "En attente" },
           { href: "/admin/avis?statut=publie", label: "Publiés" },
           { href: "/admin/avis?statut=rejete", label: "Rejetés" },
+          { href: "/admin/avis?statut=tous", label: "Tous" },
         ],
       },
     ],
@@ -157,9 +160,7 @@ const GROUPES: { titre: string; liens: LienAdmin[] }[] = [
       {
         // Raffinement Design — sous-éléments = statuts des tickets (GestionSAV.tsx, même paramètre
         // `statut` que Devis/Commandes), plus « Installations planifiées » qui reste une page distincte
-        // (autre modèle de données, cf. app/admin/installations/page.tsx). « Fermés » et « Tous » restent
-        // accessibles via les pastilles de filtre en haut de la page, pas dans la sidebar (même choix que
-        // pour Paiements/Devis, pour ne pas surcharger le menu).
+        // (autre modèle de données, cf. app/admin/installations/page.tsx).
         href: "/admin/sav",
         label: "Assistance / SAV",
         icone: LifeBuoy,
@@ -168,6 +169,8 @@ const GROUPES: { titre: string; liens: LienAdmin[] }[] = [
           { href: "/admin/sav?statut=ouvert", label: "Ouverts" },
           { href: "/admin/sav?statut=en_cours", label: "En cours" },
           { href: "/admin/sav?statut=resolu", label: "Résolus" },
+          { href: "/admin/sav?statut=ferme", label: "Fermés" },
+          { href: "/admin/sav?statut=tous", label: "Tous" },
           { href: "/admin/installations", label: "Installations planifiées" },
         ],
       },
@@ -182,10 +185,13 @@ const GROUPES: { titre: string; liens: LienAdmin[] }[] = [
         icone: FileQuestion,
         rolesAutorises: ["general", "agent_sav"],
         // "Blog" (ECR-11-002) volontairement omis : la page n'existe pas (hors périmètre, cf. Axe 1
-        // de l'audit qualité) — un sous-lien mènerait à une 404.
+        // de l'audit qualité) — un sous-lien mènerait à une 404. Un sous-lien par onglet en page
+        // (GestionContenu.tsx), même granularité que ses 4 pastilles.
         sousLiens: [
           { href: "/admin/contenu?onglet=faq", label: "FAQ" },
-          { href: "/admin/contenu?onglet=cgv", label: "Mentions légales & CGV" },
+          { href: "/admin/contenu?onglet=cgv", label: "CGV" },
+          { href: "/admin/contenu?onglet=confidentialite", label: "Confidentialité" },
+          { href: "/admin/contenu?onglet=mentions-legales", label: "Mentions légales" },
         ],
       },
     ],
@@ -208,9 +214,11 @@ const LIENS_BAS_DE_PAGE: LienAdmin[] = [
     rolesAutorises: ["general"],
     // "Notifications" volontairement omis : pas d'infrastructure d'envoi réel dans cette démo, déjà
     // signalé dans app/admin/parametres/page.tsx — un sous-lien vers un réglage sans effet aurait été trompeur.
+    // Raffinement Design — Taux de change et Langues sont désormais 2 onglets séparés (paramètre
+    // `onglet`, GestionParametres.tsx) plutôt que 2 blocs reliés par ancre sur la même page.
     sousLiens: [
-      { href: "/admin/parametres#langues", label: "Langues" },
-      { href: "/admin/parametres#taux-change", label: "Taux de change" },
+      { href: "/admin/parametres?onglet=taux-change", label: "Taux de change" },
+      { href: "/admin/parametres?onglet=langues", label: "Langues" },
     ],
   },
   { href: "/admin/comptes", label: "Comptes administrateurs", icone: ShieldCheck, rolesAutorises: ["general"] },
@@ -256,8 +264,7 @@ function estSousLienActif(pathname: string, searchParams: URLSearchParams, hashA
 }
 
 // Un parent se déplie aussi si l'URL active correspond à l'un de ses sous-liens — nécessaire pour
-// « Entreprises » (sous /admin/entreprises, hors préfixe /admin/clients) et « Installations planifiées »
-// (sous /admin/installations, hors préfixe /admin/sav).
+// « Installations planifiées » (sous /admin/installations, hors préfixe /admin/sav).
 function LienPrincipal({
   lien,
   pathname,
