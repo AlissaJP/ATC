@@ -225,11 +225,22 @@ export interface Administrateur {
 // PostgreSQL lors de l'intégration d'une vraie base, sans changer ce modèle. Décision actée n°45.
 export type StatutCompteAgentSav = "actif" | "inactif";
 
+// Domaine de spécialité — mêmes 3 catégories que le catalogue (cf. lib/services/categories-admin.ts),
+// « généraliste » pour un agent non spécialisé. Raffinement Design (point #26, complété).
+export type SpecialiteAgentSav = "energie-solaire" | "climatisation" | "securite" | "generaliste";
+
+// Fiche agent élargie (décision actée n°48, Raffinement Design) : au-delà de nom/email/statut, une fiche
+// de suivi RH minimale (téléphone, date d'embauche, spécialité, ville de rattachement, notes internes).
 export interface CompteAgentSav {
   id: string;
-  codeAgent: string; // ex. "SAV-0001"
+  codeAgent: string; // ex. "WL-ATC-001" — initiales du nom complet + sigle ATC + numéro (décision n°48)
   nom: string;
   email: string;
+  telephone: string;
+  date_embauche: string; // ISO
+  specialite: SpecialiteAgentSav;
+  ville: string;
+  notes?: string;
   statut: StatutCompteAgentSav;
 }
 

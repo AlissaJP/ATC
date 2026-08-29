@@ -28,8 +28,17 @@ export async function creerAgentSavAction(
   if (agentsSav.some((a) => a.email.toLowerCase() === input.email.trim().toLowerCase())) {
     return { succes: false, erreur: "Un agent avec cet e-mail existe déjà." };
   }
+  if (!input.telephone.trim()) return { succes: false, erreur: "Le téléphone est obligatoire." };
+  if (!input.date_embauche) return { succes: false, erreur: "La date d'embauche est obligatoire." };
+  if (!input.ville.trim()) return { succes: false, erreur: "La ville de rattachement est obligatoire." };
 
-  const agent = creerAgentSavMock({ ...input, nom: input.nom.trim(), email: input.email.trim() });
+  const agent = creerAgentSavMock({
+    ...input,
+    nom: input.nom.trim(),
+    email: input.email.trim(),
+    telephone: input.telephone.trim(),
+    ville: input.ville.trim(),
+  });
   revaliderAgentsSav();
   return { succes: true, donnees: { id: agent.id, codeAgent: agent.codeAgent } };
 }
@@ -43,6 +52,12 @@ export async function modifierAgentSavAction(id: string, patch: Partial<AgentSav
     if (agentsSav.some((a) => a.id !== id && a.email.toLowerCase() === patch.email!.trim().toLowerCase())) {
       return { succes: false, erreur: "Un autre agent utilise déjà cet e-mail." };
     }
+  }
+  if (patch.telephone !== undefined && !patch.telephone.trim()) {
+    return { succes: false, erreur: "Le téléphone est obligatoire." };
+  }
+  if (patch.ville !== undefined && !patch.ville.trim()) {
+    return { succes: false, erreur: "La ville de rattachement est obligatoire." };
   }
 
   const agent = modifierAgentSavMock(id, patch);
