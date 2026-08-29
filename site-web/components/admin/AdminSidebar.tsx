@@ -2,8 +2,9 @@
 
 // RG-12-001 — Navigation back-office par module, visibilité adaptée au rôle (2 rôles stricts, décision
 // actée n°20). Structure groupée avec sous-éléments (Raffinement Design, Section Administration,
-// validé) : chaque section principale peut déplier des sous-éléments, affichés uniquement quand la
-// section est active (même comportement que la référence Stripe fournie), pas par bascule manuelle.
+// validé) : chaque section principale déplie ses sous-éléments quand elle est active, avec bascule
+// manuelle (reclic sur la section active = replie/déplie directement, sans navigation) et un bouton global
+// de repli en rail d'icônes (même comportement que la référence Stripe fournie).
 // L'Agent SAV ne voit pas Catalogue / Paiements / Statistiques / Paramètres généraux / Comptes
 // administrateurs (gestion des prix + Paramètres généraux exclus par la règle ; Paiements et
 // Statistiques suivent la même logique — signalé, aucune section du Cahier ne le précise explicitement
@@ -14,6 +15,8 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   BarChart3,
   Boxes,
+  ChevronsDownUp,
+  ChevronsUpDown,
   CreditCard,
   FileBarChart,
   FileQuestion,
@@ -64,8 +67,10 @@ const GROUPES: { titre: string; liens: LienAdmin[] }[] = [
         // Raffinement Design — sous-éléments = raccourcis vers les 3 onglets catégorie de la page
         // (GestionCatalogue.tsx), même idiome que Devis ci-dessous (paramètre de requête lu côté serveur
         // par app/admin/catalogue/page.tsx). Stock reste sa propre section (vue d'ensemble tous produits
-        // confondus), pas un sous-élément du Catalogue.
-        href: "/admin/catalogue",
+        // confondus), pas un sous-élément du Catalogue. Le lien parent pointe directement vers le premier
+        // sous-élément (même état que « Paiements ») pour que ce sous-élément soit déjà surligné au clic
+        // sur la section.
+        href: "/admin/catalogue?categorie=energie-solaire",
         label: "Catalogue",
         icone: Tags,
         rolesAutorises: ["general"],
@@ -78,7 +83,7 @@ const GROUPES: { titre: string; liens: LienAdmin[] }[] = [
       {
         // Raffinement Design — mêmes 3 sous-éléments catégorie que Catalogue (même paramètre `categorie`,
         // SuiviStock.tsx s'aligne désormais sur GestionCatalogue.tsx).
-        href: "/admin/stock",
+        href: "/admin/stock?categorie=energie-solaire",
         label: "Stock",
         icone: Warehouse,
         rolesAutorises: ["general"],
@@ -90,7 +95,7 @@ const GROUPES: { titre: string; liens: LienAdmin[] }[] = [
       },
       { href: "/admin/packages", label: "Packages", icone: Boxes, rolesAutorises: ["general"] },
       {
-        href: "/admin/devis",
+        href: "/admin/devis?statut=en_attente",
         label: "Devis",
         icone: FileText,
         rolesAutorises: ["general", "agent_sav"],
@@ -102,7 +107,7 @@ const GROUPES: { titre: string; liens: LienAdmin[] }[] = [
         ],
       },
       {
-        href: "/admin/commandes",
+        href: "/admin/commandes?statut=en_preparation",
         label: "Commandes",
         icone: Package,
         rolesAutorises: ["general", "agent_sav"],
@@ -131,7 +136,7 @@ const GROUPES: { titre: string; liens: LienAdmin[] }[] = [
     titre: "CLIENTS",
     liens: [
       {
-        href: "/admin/clients",
+        href: "/admin/clients?type=particulier",
         label: "Clients",
         icone: Users,
         rolesAutorises: ["general", "agent_sav"],
@@ -141,7 +146,7 @@ const GROUPES: { titre: string; liens: LienAdmin[] }[] = [
         ],
       },
       {
-        href: "/admin/avis",
+        href: "/admin/avis?statut=en_attente_moderation",
         label: "Avis clients",
         icone: Star,
         rolesAutorises: ["general", "agent_sav"],
@@ -161,7 +166,7 @@ const GROUPES: { titre: string; liens: LienAdmin[] }[] = [
         // Raffinement Design — sous-éléments = statuts des tickets (GestionSAV.tsx, même paramètre
         // `statut` que Devis/Commandes), plus « Installations planifiées » qui reste une page distincte
         // (autre modèle de données, cf. app/admin/installations/page.tsx).
-        href: "/admin/sav",
+        href: "/admin/sav?statut=ouvert",
         label: "Assistance / SAV",
         icone: LifeBuoy,
         rolesAutorises: ["general", "agent_sav"],
@@ -180,7 +185,7 @@ const GROUPES: { titre: string; liens: LienAdmin[] }[] = [
     titre: "CONTENU",
     liens: [
       {
-        href: "/admin/contenu",
+        href: "/admin/contenu?onglet=faq",
         label: "Contenu",
         icone: FileQuestion,
         rolesAutorises: ["general", "agent_sav"],
@@ -208,7 +213,7 @@ const GROUPES: { titre: string; liens: LienAdmin[] }[] = [
 // Bas de page, sans groupe.
 const LIENS_BAS_DE_PAGE: LienAdmin[] = [
   {
-    href: "/admin/parametres",
+    href: "/admin/parametres?onglet=taux-change",
     label: "Paramètres généraux",
     icone: ShieldCheck,
     rolesAutorises: ["general"],
@@ -271,6 +276,10 @@ function LienPrincipal({
   searchParams,
   hashActuel,
   onHashClique,
+  replie,
+  sectionsRepliees,
+  onBasculerSection,
+  onEntreeSection,
   badge,
 }: {
   lien: LienAdmin;
@@ -281,26 +290,51 @@ function LienPrincipal({
   // hashchange (contrairement à un vrai changement de page ou history.back/forward) — sans ce callback,
   // un clic sur un sous-lien d'ancre ne mettrait à jour le surlignage qu'après un rechargement complet.
   onHashClique: (hash: string) => void;
+  // Rail d'icônes (bouton global en haut de la sidebar) : plus aucun sous-lien nulle part tant qu'il est actif.
+  replie: boolean;
+  // Repli manuel par section (reclic sur une section déjà active), indépendant du rail global — clé =
+  // chemin(lien.href), stable même si l'URL du lien porte un paramètre de requête.
+  sectionsRepliees: Set<string>;
+  onBasculerSection: (cle: string) => void;
+  onEntreeSection: (cle: string) => void;
   badge?: number;
 }) {
   const actif =
     estActif(pathname, lien.href) || (lien.sousLiens?.some((sl) => estActif(pathname, sl.href)) ?? false);
+  const cle = chemin(lien.href);
+  const deplie = actif && !replie && !sectionsRepliees.has(cle);
   const Icone = lien.icone;
+
+  function onClicParent(e: React.MouseEvent<HTMLAnchorElement>) {
+    if (replie || !lien.sousLiens) return; // rail d'icônes ou rien à replier : navigation normale
+    if (actif) {
+      // Déjà sur cette section : un reclic replie/déplie directement plutôt que de renaviguer sur place.
+      e.preventDefault();
+      onBasculerSection(cle);
+    } else {
+      // Nouvelle section : on s'assure qu'elle s'affiche dépliée (pas de repli résiduel d'une visite précédente).
+      onEntreeSection(cle);
+    }
+  }
+
   return (
     <div>
       <Link
         href={lien.href}
-        className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+        onClick={onClicParent}
+        title={replie ? lien.label : undefined}
+        className={`relative flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
           actif ? "bg-primaire text-white" : "text-texte-principal hover:bg-background"
-        }`}
+        } ${replie ? "justify-center" : ""}`}
       >
-        <Icone size={17} />
-        <span className="flex-1">{lien.label}</span>
-        {!!badge && (
+        <Icone size={17} className="shrink-0" />
+        {!replie && <span className="flex-1">{lien.label}</span>}
+        {!replie && !!badge && (
           <span className="rounded-full bg-accent px-1.5 py-0.5 text-[11px] font-semibold text-white">{badge}</span>
         )}
+        {replie && !!badge && <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-accent" />}
       </Link>
-      {actif && lien.sousLiens && (
+      {deplie && lien.sousLiens && (
         <div className="mt-1 flex flex-col gap-0.5 border-l border-bordure pl-4">
           {lien.sousLiens.map((sl) => {
             const slActif = estSousLienActif(pathname, searchParams, hashActuel, sl.href);
@@ -351,6 +385,27 @@ export function AdminSidebar({ role }: { role: RoleAdmin }) {
     return () => window.removeEventListener("hashchange", lireHash);
   }, [pathname]);
 
+  // Raffinement Design — bouton global (rail d'icônes, desktop uniquement — la barre mobile en haut de
+  // page suit déjà une mise en page différente) + repli manuel par section (reclic sur la section active).
+  const [replie, setReplie] = useState(false);
+  const [sectionsRepliees, setSectionsRepliees] = useState<Set<string>>(new Set());
+  function basculerSection(cle: string) {
+    setSectionsRepliees((prev) => {
+      const suivant = new Set(prev);
+      if (suivant.has(cle)) suivant.delete(cle);
+      else suivant.add(cle);
+      return suivant;
+    });
+  }
+  function entrerDansSection(cle: string) {
+    setSectionsRepliees((prev) => {
+      if (!prev.has(cle)) return prev;
+      const suivant = new Set(prev);
+      suivant.delete(cle);
+      return suivant;
+    });
+  }
+
   const profilsDynamiques = useComptesStore((s) => s.profilsEntreprise);
   const nombreEnAttente = (() => {
     const idsDynamiques = new Set(profilsDynamiques.map((p) => p.id));
@@ -363,7 +418,24 @@ export function AdminSidebar({ role }: { role: RoleAdmin }) {
   }
 
   return (
-    <nav className="flex shrink-0 flex-col gap-4 border-b border-bordure bg-fond px-3 py-3 md:w-64 md:border-b-0 md:border-r md:px-3 md:py-6">
+    <nav
+      className={`flex shrink-0 flex-col gap-4 border-b border-bordure bg-fond px-3 py-3 md:border-b-0 md:border-r md:px-3 md:py-6 ${
+        replie ? "md:w-16" : "md:w-64"
+      }`}
+    >
+      <div className="hidden items-center justify-between px-1 md:flex">
+        {!replie && <span className="text-xs font-semibold uppercase tracking-wide text-texte-secondaire">Menu</span>}
+        <button
+          type="button"
+          onClick={() => setReplie((r) => !r)}
+          aria-label={replie ? "Déplier le menu" : "Replier le menu"}
+          title={replie ? "Déplier le menu" : "Replier le menu"}
+          className={`rounded-md p-1.5 text-texte-secondaire hover:bg-background hover:text-texte-principal ${replie ? "mx-auto" : ""}`}
+        >
+          {replie ? <ChevronsUpDown size={16} /> : <ChevronsDownUp size={16} />}
+        </button>
+      </div>
+
       <div>
         {filtrerParRole([LIEN_TABLEAU_DE_BORD]).map((l) => (
           <LienPrincipal
@@ -373,6 +445,10 @@ export function AdminSidebar({ role }: { role: RoleAdmin }) {
             searchParams={searchParams}
             hashActuel={hashActuel}
             onHashClique={setHashActuel}
+            replie={replie}
+            sectionsRepliees={sectionsRepliees}
+            onBasculerSection={basculerSection}
+            onEntreeSection={entrerDansSection}
           />
         ))}
       </div>
@@ -382,9 +458,11 @@ export function AdminSidebar({ role }: { role: RoleAdmin }) {
         if (liens.length === 0) return null;
         return (
           <div key={groupe.titre}>
-            <p className="mb-1 px-3 text-xs font-semibold uppercase tracking-wide text-texte-secondaire">
-              {groupe.titre}
-            </p>
+            {!replie && (
+              <p className="mb-1 px-3 text-xs font-semibold uppercase tracking-wide text-texte-secondaire">
+                {groupe.titre}
+              </p>
+            )}
             <div className="flex flex-col gap-1">
               {liens.map((l) => (
                 <LienPrincipal
@@ -394,7 +472,11 @@ export function AdminSidebar({ role }: { role: RoleAdmin }) {
                   searchParams={searchParams}
                   hashActuel={hashActuel}
                   onHashClique={setHashActuel}
-                  badge={l.href === "/admin/clients" ? nombreEnAttente : undefined}
+                  replie={replie}
+                  sectionsRepliees={sectionsRepliees}
+                  onBasculerSection={basculerSection}
+                  onEntreeSection={entrerDansSection}
+                  badge={chemin(l.href) === "/admin/clients" ? nombreEnAttente : undefined}
                 />
               ))}
             </div>
@@ -411,6 +493,10 @@ export function AdminSidebar({ role }: { role: RoleAdmin }) {
             searchParams={searchParams}
             hashActuel={hashActuel}
             onHashClique={setHashActuel}
+            replie={replie}
+            sectionsRepliees={sectionsRepliees}
+            onBasculerSection={basculerSection}
+            onEntreeSection={entrerDansSection}
           />
         ))}
         <button
@@ -419,10 +505,13 @@ export function AdminSidebar({ role }: { role: RoleAdmin }) {
             deconnecter();
             router.push("/");
           }}
-          className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm font-medium text-danger hover:bg-background"
+          title={replie ? "Déconnexion" : undefined}
+          className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm font-medium text-danger hover:bg-background ${
+            replie ? "justify-center" : ""
+          }`}
         >
-          <LogOut size={17} />
-          Déconnexion
+          <LogOut size={17} className="shrink-0" />
+          {!replie && "Déconnexion"}
         </button>
       </div>
     </nav>
