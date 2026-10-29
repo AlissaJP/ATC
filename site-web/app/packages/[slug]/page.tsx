@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { AjouterPackageBouton } from "@/components/packages/AjouterPackageBouton";
 import { obtenirPackageParSlug, packageEstDisponible, compositionDetaillee } from "@/lib/services/packages";
+import { formaterPrix } from "@/lib/services/prix";
 
 export default async function PackageDetailPage(props: PageProps<"/packages/[slug]">) {
   const { slug } = await props.params;
@@ -34,9 +35,11 @@ export default async function PackageDetailPage(props: PageProps<"/packages/[slu
           <p className="mt-3 text-texte-secondaire">{pkg.description}</p>
 
           <p className="mt-6 font-titres text-3xl font-bold text-primaire">
-            ${pkg.prix_total.toFixed(2)} <span className="text-base font-normal text-texte-secondaire">tout compris</span>
+            {formaterPrix(pkg.prix_total)}
+            {pkg.prix_total !== null && <span className="text-base font-normal text-texte-secondaire"> tout compris</span>}
           </p>
-          {!disponible && (
+          {/* Composition vide = package proposé, pas encore composé : rien à déclarer en rupture. */}
+          {!disponible && pkg.produits.length > 0 && (
             <p className="mt-2 text-sm font-medium text-danger">
               Un ou plusieurs composants sont actuellement en rupture de stock.
             </p>

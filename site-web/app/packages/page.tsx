@@ -4,6 +4,7 @@ import Link from "next/link";
 import { PackageCheck } from "lucide-react";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { listerPackages, packageEstDisponible } from "@/lib/services/packages";
+import { formaterPrix } from "@/lib/services/prix";
 
 export default async function PackagesPage() {
   const packages = await listerPackages();
@@ -68,7 +69,8 @@ export default async function PackagesPage() {
                   <h2 className="font-titres text-base font-semibold text-texte-principal">{pkg.nom}</h2>
                   <p className="text-sm text-texte-secondaire">{pkg.description}</p>
                   <p className="mt-auto pt-2 font-titres text-lg font-bold text-primaire">
-                    ${pkg.prix_total.toFixed(2)} <span className="text-sm font-normal text-texte-secondaire">tout compris</span>
+                    {formaterPrix(pkg.prix_total)}
+                    {pkg.prix_total !== null && <span className="text-sm font-normal text-texte-secondaire"> tout compris</span>}
                   </p>
                 </div>
               </Link>

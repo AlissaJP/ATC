@@ -13,6 +13,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { AvisClient, StatutAvis } from "@/lib/types/entities";
+import { VERSION_CATALOGUE, referenceProduitConnue } from "@/lib/store/migration-catalogue";
 
 interface AvisState {
   avis: AvisClient[];
@@ -63,39 +64,30 @@ export const useAvisStore = create<AvisState>()(
           avis: state.avis.map((a) => (a.id === avisId ? { ...a, statut: "rejete" as StatutAvis } : a)),
         })),
     }),
-    { name: "atc-avis" }
+    {
+      name: "atc-avis",
+      version: VERSION_CATALOGUE,
+      // Catalogue ATC : avis sur des produits supprimés écartés, avis de démonstration ressemés.
+      migrate: (persiste) => {
+        const { avis = [] } = (persiste ?? {}) as Partial<Pick<AvisState, "avis">>;
+        const conserves = avis.filter((a) => !a.id.startsWith("avis-seed") && referenceProduitConnue(a.produit_id));
+        return { avis: [...seedAvis(), ...conserves] } as AvisState;
+      },
+    }
   )
 );
 
 // Avis pré-existants pour enrichir la démo (indépendants de l'historique d'achat live du panier/commande-
 // store, comme les devis et commandes déjà seedés dans les autres stores).
+// Intégration du catalogue ATC : plus aucun avis publié semé — affiché sur un vrai produit, il passerait
+// pour un avis client réel. Seul l'avis en attente (visible uniquement dans la modération admin) reste.
 function seedAvis(): AvisClient[] {
   const maintenant = Date.now();
   const jours = (n: number) => new Date(maintenant - n * 24 * 60 * 60 * 1000).toISOString();
   return [
     {
-      id: "avis-seed-publie-1",
-      produit_id: "prod-panneau-405w",
-      utilisateur_id: "user-particulier-1",
-      note: 5,
-      titre: "Excellent rendement",
-      commentaire: "Installation simple et bon rendement, très satisfait après plusieurs mois d'usage.",
-      statut: "publie" as StatutAvis,
-      date_creation: jours(20),
-    },
-    {
-      id: "avis-seed-publie-2",
-      produit_id: "prod-panneau-405w",
-      utilisateur_id: "user-entreprise-verifiee",
-      note: 4,
-      titre: "Bon rapport qualité-prix",
-      commentaire: "Bon rapport qualité-prix pour un projet résidentiel.",
-      statut: "publie" as StatutAvis,
-      date_creation: jours(12),
-    },
-    {
       id: "avis-seed-attente",
-      produit_id: "prod-batterie-lithium-100ah",
+      produit_id: "ES-11",
       utilisateur_id: "user-particulier-1",
       note: 5,
       titre: "Très bonne autonomie",

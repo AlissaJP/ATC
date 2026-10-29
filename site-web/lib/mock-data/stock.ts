@@ -1,28 +1,29 @@
 // RG-03-002 — stock_reference par défaut 100 (décision actée n°28), sauf ajustement individuel.
-// Niveaux volontairement variés pour couvrir les 4 états (en_stock / alerte_orange / alerte_rouge / rupture),
-// avec deux cas limites exacts (40% et 15%) pour vérifier TC-03-001-b et TC-03-001-d.
+// Intégration du catalogue ATC (étape 4) : le client n'a communiqué aucune quantité. Chaque produit sans
+// variantes reçoit donc le stock de référence par défaut (100) et un stock_actuel null = non suivi
+// (« En stock », aucune quantité inventée). Les seuils d'alerte (≤ 40 % orange, ≤ 15 % rouge) s'appliquent
+// dès qu'une quantité réelle est saisie depuis /admin/stock. Pour un produit à variantes, le stock vit
+// dans Produit.variantes[].stock (point #29), pas ici.
 import type { Stock } from "@/lib/types/entities";
+import { produits } from "./produits";
 
-export const stock: Stock[] = [
-  // prod-panneau-405w : produit à variantes (point #29) — le stock par valeur vit directement dans
-  // Produit.variantes[].stock (lib/mock-data/produits.ts), pas ici.
-  { produit_id: "prod-batterie-lithium-100ah", stock_actuel: 12, stock_reference: 100 },
-  { produit_id: "prod-batterie-gel-200ah", stock_actuel: 0, stock_reference: 100 },
-  { produit_id: "prod-regulateur-mppt-60a", stock_actuel: 80, stock_reference: 100 },
-  { produit_id: "prod-onduleur-hybride-5kva", stock_actuel: 40, stock_reference: 100 },
-  { produit_id: "prod-kit-cables-mc4", stock_actuel: 200, stock_reference: 100 },
-  { produit_id: "prod-structure-montage", stock_actuel: 55, stock_reference: 100 },
-  { produit_id: "prod-kit-mise-a-la-terre", stock_actuel: 15, stock_reference: 100 },
-  { produit_id: "prod-sonnette-video", stock_actuel: 70, stock_reference: 100 },
-  // prod-camera-ptz-standard : produit à variantes (point #29) — idem, stock dans variantes[].stock.
-  { produit_id: "prod-camera-ptz-solaire", stock_actuel: 5, stock_reference: 50 },
-  { produit_id: "prod-climatiseur-split-12000", stock_actuel: 45, stock_reference: 100 },
-  { produit_id: "prod-climatiseur-split-18000", stock_actuel: 18, stock_reference: 100 },
-  { produit_id: "prod-climatiseur-tgm", stock_actuel: 0, stock_reference: 100 },
-];
+const STOCK_REFERENCE_PAR_DEFAUT = 100;
+
+export const stock: Stock[] = produits
+  .filter((p) => !p.variantes || p.variantes.length === 0)
+  .map((p) => ({ produit_id: p.id, stock_actuel: null, stock_reference: STOCK_REFERENCE_PAR_DEFAUT }));
 
 export function trouverStockParProduit(produitId: string): Stock | undefined {
   return stock.find((s) => s.produit_id === produitId);
+}
+
+// Quantité vendable d'un produit sans variantes. undefined = stock non suivi (stock_actuel null : aucun
+// plafond, même convention que stockEffectifVariante) ; 0 si le produit n'a aucune ligne de stock
+// (comportement historique : rupture).
+export function quantiteDisponible(produitId: string): number | undefined {
+  const s = trouverStockParProduit(produitId);
+  if (!s) return 0;
+  return s.stock_actuel ?? undefined;
 }
 
 // ECR-12-002 — édition stock_actuel / stock_reference depuis le back-office. Mutation en place

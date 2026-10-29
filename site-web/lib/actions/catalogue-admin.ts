@@ -108,7 +108,7 @@ export async function creerProduitAction(
         ajouterPalierMock({ produit_id: produit.id, ...p });
       }
     } else {
-      ajouterPaliersMock(genererPaliersParDefaut(produit.id, produit.prix_public));
+      ajouterPaliersMock(genererPaliersParDefaut(produit.id, input.prix_public));
     }
   }
 
@@ -131,7 +131,7 @@ export async function modifierProduitAction(
 
   // Un produit qui devient éligible B2B et n'a encore aucun palier reçoit le barème par défaut,
   // comme à la création (sinon un configurateur/devis B2B ne trouverait aucun prix applicable).
-  if (produit.eligible_b2b && paliersParProduit(id).length === 0) {
+  if (produit.eligible_b2b && produit.prix_public !== null && paliersParProduit(id).length === 0) {
     ajouterPaliersMock(genererPaliersParDefaut(id, produit.prix_public));
   }
 

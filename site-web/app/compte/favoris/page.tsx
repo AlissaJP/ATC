@@ -26,7 +26,8 @@ export default function FavorisPage() {
             const stock = trouverStockParProduit(produit.id);
             return {
               produit,
-              niveauStock: determinerNiveauAlerteStock(stock?.stock_actuel ?? 0, stock?.stock_reference ?? 100),
+              // Sans ligne de stock = rupture (0) ; stock_actuel null = non suivi (en stock).
+              niveauStock: determinerNiveauAlerteStock(stock ? stock.stock_actuel : 0, stock?.stock_reference ?? 100),
               paliers: paliersParProduit(produit.id),
             };
           });

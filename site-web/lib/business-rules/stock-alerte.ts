@@ -6,10 +6,12 @@ export function calculerPourcentageStock(stockActuel: number, stockReference: nu
   return (stockActuel / stockReference) * 100;
 }
 
+// stockActuel null = stock non suivi (quantité non communiquée par le client) : toujours "en_stock".
 export function determinerNiveauAlerteStock(
-  stockActuel: number,
+  stockActuel: number | null,
   stockReference: number
 ): NiveauAlerteStock {
+  if (stockActuel === null) return "en_stock";
   if (stockActuel <= 0) return "rupture";
 
   const pourcentage = calculerPourcentageStock(stockActuel, stockReference);

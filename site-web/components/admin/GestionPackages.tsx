@@ -59,7 +59,9 @@ export function GestionPackages({ packages, produits, packageInitial }: GestionP
             className="rounded-lg border border-bordure bg-background p-3 text-left transition-colors hover:border-primaire-clair"
           >
             <p className="text-sm font-medium text-texte-principal">{p.nom}</p>
-            <p className="text-xs text-texte-secondaire">${p.prix_total.toFixed(2)}</p>
+            <p className="text-xs text-texte-secondaire">
+              {p.prix_total === null ? "Prix sur demande" : `$${p.prix_total.toFixed(2)}`}
+            </p>
           </button>
         ))}
         {packages.length === 0 && <p className="text-sm text-texte-secondaire">Aucun package pour le moment.</p>}

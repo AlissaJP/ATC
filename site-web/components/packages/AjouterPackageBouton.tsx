@@ -24,7 +24,8 @@ export function AjouterPackageBouton({
     executerSiConnecte(() => {
       for (const { produit, quantite } of lignes) {
         // Prix fixé au tarif public du package ("tout compris") — jamais recalculé par le barème B2B.
-        ajouterLigne(produit.id, quantite, produit.prix_public);
+        // packageEstDisponible exclut déjà tout composant sans prix ; `?? undefined` ne sert qu'au typage.
+        ajouterLigne(produit.id, quantite, produit.prix_public ?? undefined);
       }
       setConfirmationVisible(true);
       setTimeout(() => setConfirmationVisible(false), 1500);

@@ -1,282 +1,115 @@
-// Catalogue produit fictif de démonstration — décision actée n°42, reflète le dictionnaire du Cahier 9.
-// BF-03-001 à BF-03-007.
+// Catalogue produit ATC — vrai catalogue client (intégration du catalogue ATC, étape 4), en remplacement
+// des produits fictifs de démonstration. Source de vérité : catalogue-atc.json (copie du
+// catalogue-data.json fourni par le client, prix en USD), converti ici vers le type Produit — même rôle
+// qu'un futur import vers les tables PostgreSQL `products` / `product_variants`. Pour mettre à jour un prix,
+// une description ou une photo : remplacer catalogue-atc.json, pas ce code. Les 7 packages
+// (categorie "packages-solaires") sont convertis dans packages-preconfigures.ts. BF-03-001 à BF-03-007.
 import type { Produit, StatutPublicationProduit, VarianteProduit } from "@/lib/types/entities";
+import catalogueAtc from "./catalogue-atc.json";
 
-const img = {
-  energie: (n: number) => `/images/energie-solaire/energie-${String(n).padStart(2, "0")}.webp`,
-  clim: (n: number) => `/images/climatisation/climatisation-${String(n).padStart(2, "0")}.webp`,
-  securite: (name: string) => `/images/securite/${name}`,
+export interface VarianteCatalogueAtc {
+  id: string;
+  attribut: string | null; // null = produit à prix unique (pas de sélecteur)
+  valeur: string | null;
+  prixUSD: number;
+  stock: number | null;
+}
+
+export interface EntreeCatalogueAtc {
+  ref: string;
+  categorie: string;
+  sousCategorie: string;
+  nom: string;
+  description: string;
+  caracteristiques: string;
+  prixUSD: number | null;
+  prixDisponible: boolean;
+  variantes: VarianteCatalogueAtc[];
+  image: string | null;
+  imageBanniere: string | null;
+}
+
+const catalogue = catalogueAtc as { devise: string; produits: EntreeCatalogueAtc[] };
+
+// Garde-fous d'import : une incohérence du fichier bloque le chargement plutôt que d'afficher un prix faux.
+function verifierEntree(e: EntreeCatalogueAtc): EntreeCatalogueAtc {
+  const prixVariantes = e.variantes.map((v) => v.prixUSD);
+  if (e.prixDisponible !== (e.prixUSD !== null)) {
+    throw new Error(`Catalogue ATC — ${e.ref} : prixDisponible incohérent avec prixUSD.`);
+  }
+  if (e.prixUSD === null ? prixVariantes.length > 0 : e.prixUSD !== Math.min(...prixVariantes)) {
+    throw new Error(`Catalogue ATC — ${e.ref} : prixUSD doit être le plus bas des prix de variantes.`);
+  }
+  return e;
+}
+
+if (catalogue.devise !== "USD") {
+  throw new Error(`Catalogue ATC — devise "${catalogue.devise}" non prise en charge : le site affiche ses prix en USD.`);
+}
+
+export const entreesCatalogueAtc: EntreeCatalogueAtc[] = catalogue.produits.map(verifierEntree);
+
+// Sous-catégorie du fichier client → sous-catégorie du site (lib/mock-data/categories.ts).
+const CATEGORIE_PAR_SOUS_CATEGORIE: Record<string, string> = {
+  "Panneaux solaires": "cat-panneaux",
+  Onduleurs: "cat-onduleurs",
+  "Batteries lithium": "cat-batteries-lithium",
+  "Stockage commercial et industriel": "cat-stockage-commercial",
+  "Structures et accessoires": "cat-structures-accessoires",
+  "Climatiseurs résidentiels (split mural)": "cat-climatiseurs-residentiels",
+  "Climatisation centrale et commerciale": "cat-climatisation-centrale",
+  "Gaines et distribution d'air": "cat-gaines",
+  "Service associé": "cat-service-climatisation",
+  Caméras: "cat-cameras",
 };
 
-export const produits: Produit[] = [
-  // --- Énergie solaire : panneaux ---
-  // Panneau solaire monocristallin — options de variantes avec prix (point #29, remplace le mécanisme à
-  // SKU séparés du point #23) : une seule fiche produit, deux valeurs de puissance imbriquées dans
-  // `variantes`, chacune avec son propre prix/stock. `puissance` retiré de specifications (déjà porté par
-  // le sélecteur, pas d'affichage en double).
-  {
-    id: "prod-panneau-405w",
-    slug: "panneau-solaire-monocristallin-405w",
-    nom: "Panneau solaire monocristallin",
-    description: "Panneau photovoltaïque monocristallin haute performance, plusieurs puissances disponibles.",
-    categorie_id: "cat-panneaux",
-    marque_id: "marque-solarmax",
-    prix_public: 189,
-    eligible_b2b: true,
-    eligible_package: true,
-    statut_publication: "publié",
-    images: [img.energie(17), img.energie(15)],
-    specifications: { technologie: "Monocristallin" },
-    accessoires_compatibles_ids: ["prod-regulateur-mppt-60a", "prod-kit-cables-mc4", "prod-structure-montage"],
-    variantes: [
-      {
-        id: "var-panneau-405w",
-        attribut: "Puissance",
-        valeur: "405 Wc",
-        prix: 189,
-        stock: 65,
-        description:
-          "405 Wc : très bon rapport qualité-prix, la puissance de référence pour la plupart des installations résidentielles et commerciales.",
-      },
-      {
-        id: "var-panneau-550w",
-        attribut: "Puissance",
-        valeur: "550 Wc",
-        prix: 245,
-        stock: 38,
-        description:
-          "550 Wc : puissance élevée pour maximiser la production sur une surface de toiture réduite, idéal si l'espace disponible est limité.",
-      },
-    ],
-  },
+export function slugifier(nom: string): string {
+  return nom
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
 
-  // --- Énergie solaire : batteries ---
-  {
-    id: "prod-batterie-lithium-100ah",
-    slug: "batterie-lithium-lifepo4-100ah",
-    nom: "Batterie lithium LiFePO4 100Ah",
-    description: "Batterie longue durée de vie, idéale pour le stockage solaire résidentiel.",
-    categorie_id: "cat-batteries",
-    marque_id: "marque-ecotech",
-    prix_public: 520,
-    eligible_b2b: true,
-    eligible_package: true,
-    statut_publication: "publié",
-    // Aucune photo propre disponible (visuels fournisseur avec marque tierce
-    // incohérente avec marque-ecotech) — placeholder "Image à venir" (Audit Axe 2).
-    images: [],
-    specifications: { capacite: "100 Ah", technologie: "LiFePO4", cycles: "6000+" },
-    accessoires_compatibles_ids: ["prod-onduleur-hybride-5kva", "prod-regulateur-mppt-60a"],
-  },
-  {
-    id: "prod-batterie-gel-200ah",
-    slug: "batterie-gel-200ah",
-    nom: "Batterie gel 200Ah",
-    description: "Batterie gel robuste, adaptée aux cycles de décharge profonds.",
-    categorie_id: "cat-batteries",
-    marque_id: "marque-ecotech",
-    prix_public: 410,
-    eligible_b2b: true,
-    eligible_package: true,
-    statut_publication: "publié",
-    images: [img.energie(2), img.energie(6)],
-    specifications: { capacite: "200 Ah", technologie: "Gel" },
-  },
+function versProduit(e: EntreeCatalogueAtc): Produit {
+  const categorieId = CATEGORIE_PAR_SOUS_CATEGORIE[e.sousCategorie];
+  if (!categorieId) throw new Error(`Catalogue ATC — ${e.ref} : sous-catégorie inconnue "${e.sousCategorie}".`);
 
-  // --- Énergie solaire : régulateurs / onduleurs ---
-  {
-    id: "prod-regulateur-mppt-60a",
-    slug: "regulateur-mppt-60a",
-    nom: "Régulateur de charge MPPT 60A",
-    description: "Régulateur MPPT haute efficacité pour optimiser la charge des batteries.",
-    categorie_id: "cat-regulateurs",
-    marque_id: "marque-ecotech",
-    prix_public: 165,
-    eligible_b2b: true,
-    eligible_package: true,
-    statut_publication: "publié",
-    images: [img.energie(7), img.energie(8)],
-    specifications: { courant: "60 A", technologie: "MPPT" },
-  },
-  {
-    id: "prod-onduleur-hybride-5kva",
-    slug: "onduleur-hybride-5kva",
-    nom: "Onduleur hybride 5kVA",
-    description: "Onduleur hybride pour installation solaire avec basculement automatique sur batterie.",
-    categorie_id: "cat-regulateurs",
-    marque_id: "marque-ecotech",
-    prix_public: 890,
-    eligible_b2b: true,
-    eligible_package: true,
-    statut_publication: "publié",
-    images: [img.energie(10), img.energie(11)],
-    specifications: { puissance: "5 kVA" },
-  },
+  // Une variante sans attribut est un produit à prix unique : son prix est porté par prix_public.
+  // Stock client non communiqué (null) = non suivi, donc champ `stock` omis.
+  const variantes: VarianteProduit[] = e.variantes.flatMap((v) =>
+    v.attribut !== null && v.valeur !== null
+      ? [{ id: v.id, attribut: v.attribut, valeur: v.valeur, prix: v.prixUSD, ...(v.stock !== null && { stock: v.stock }) }]
+      : []
+  );
 
-  // --- Énergie solaire : accessoires ---
-  {
-    id: "prod-kit-cables-mc4",
-    slug: "kit-cables-connecteurs-mc4",
-    nom: "Kit câbles & connecteurs MC4",
-    description: "Kit complet de câblage solaire avec connecteurs étanches MC4.",
-    categorie_id: "cat-accessoires-solaires",
-    prix_public: 35,
-    eligible_b2b: false,
-    eligible_package: true,
+  return {
+    id: e.ref, // la référence client sert d'identifiant stable
+    ref: e.ref,
+    slug: slugifier(e.nom),
+    nom: e.nom,
+    description: e.description,
+    caracteristiques: e.caracteristiques,
+    categorie_id: categorieId,
+    prix_public: e.prixUSD,
+    prix_disponible: e.prixDisponible,
+    eligible_b2b: false, // aucun palier B2B communiqué par le client : mécanisme conservé, sans palier
+    // Configurateur de package personnalisé : énergie solaire uniquement, et seulement avec un prix
+    // (un produit « Prix sur demande » n'y est pas sélectionnable, cf. ConfigurateurPackage.tsx).
+    eligible_package: e.categorie === "energies-solaires" && e.prixDisponible,
     statut_publication: "publié",
-    images: [img.energie(5)],
-  },
-  {
-    id: "prod-structure-montage",
-    slug: "structure-montage-toiture",
-    nom: "Structure de montage toiture",
-    description: "Structure de fixation en aluminium pour panneaux solaires en toiture inclinée.",
-    categorie_id: "cat-accessoires-solaires",
-    prix_public: 78,
-    eligible_b2b: false,
-    eligible_package: true,
-    statut_publication: "publié",
-    images: [img.energie(14)],
-  },
-  {
-    id: "prod-kit-mise-a-la-terre",
-    slug: "kit-mise-a-la-terre",
-    nom: "Kit de mise à la terre",
-    description: "Kit de protection et mise à la terre pour installation solaire conforme.",
-    categorie_id: "cat-accessoires-solaires",
-    prix_public: 42,
-    eligible_b2b: false,
-    eligible_package: true,
-    statut_publication: "publié",
-    images: [img.energie(12)],
-  },
+    images: e.image ? [e.image] : [],
+    image_banniere: e.imageBanniere ?? undefined,
+    variantes: variantes.length > 0 ? variantes : undefined,
+  };
+}
 
-  // --- Sécurité ---
-  {
-    id: "prod-sonnette-video",
-    slug: "sonnette-video-connectee",
-    nom: "Sonnette vidéo connectée",
-    description: "Sonnette intelligente en 1080p avec vision nocturne et détection de mouvement, notification mobile en temps réel.",
-    categorie_id: "cat-securite",
-    marque_id: "marque-securvision",
-    prix_public: 89,
-    eligible_b2b: true,
-    eligible_package: false,
-    statut_publication: "publié",
-    // Aucune photo propre disponible (visuels fournisseur : texte marketing
-    // anglais + logo "SMART+" tiers) — placeholder "Image à venir" (Audit Axe 2).
-    images: [],
-    // Résolution retirée des filtres de catalogue (Raffinement Design) — intégrée à la description
-    // ci-dessus plutôt qu'en critère de filtrage.
-    specifications: { alimentation: "Secteur" },
-  },
-  // Caméra PTZ standard — options de variantes avec prix (point #29, remplace le mécanisme à SKU
-  // séparés du point #23) : une seule fiche produit, trois valeurs de résolution imbriquées dans
-  // `variantes`, chacune avec son propre prix/stock/description.
-  {
-    id: "prod-camera-ptz-standard",
-    slug: "camera-ptz-standard",
-    nom: "Caméra PTZ standard",
-    description: "Caméra de surveillance motorisée (Pan-Tilt-Zoom), plusieurs résolutions disponibles, suivi automatique et vision nocturne inclus.",
-    categorie_id: "cat-securite",
-    marque_id: "marque-securvision",
-    prix_public: 99,
-    eligible_b2b: true,
-    eligible_package: false,
-    statut_publication: "publié",
-    // Aucune photo propre disponible (visuels fournisseur : texte marketing
-    // anglais + badges Tuya/Smart Life tiers) — placeholder "Image à venir" (Audit Axe 2).
-    images: [],
-    specifications: { alimentation: "Secteur" },
-    variantes: [
-      {
-        id: "var-camera-1080p",
-        attribut: "Résolution",
-        valeur: "1080p",
-        prix: 99,
-        stock: 60,
-        description: "1080p : bon rapport qualité-prix, adapté à une surveillance générale de proximité.",
-      },
-      {
-        id: "var-camera-2k",
-        attribut: "Résolution",
-        valeur: "2K",
-        prix: 145,
-        stock: 25,
-        description: "2K : définition intermédiaire offrant un bon équilibre netteté/coût, pour une surveillance résidentielle ou commerciale standard.",
-      },
-      {
-        id: "var-camera-4k",
-        attribut: "Résolution",
-        valeur: "4K",
-        prix: 199,
-        stock: 8,
-        description: "4K : détails ultra-nets, idéal pour l'identification de plaques d'immatriculation ou de visages à distance.",
-      },
-    ],
-  },
-  {
-    id: "prod-camera-ptz-solaire",
-    slug: "camera-ptz-solaire-autonome",
-    nom: "Caméra PTZ solaire autonome",
-    description: "Caméra de surveillance motorisée en définition 3 MP, alimentée par panneau solaire intégré, idéale pour sites isolés.",
-    categorie_id: "cat-securite",
-    marque_id: "marque-securvision",
-    prix_public: 310,
-    eligible_b2b: true,
-    eligible_package: false,
-    statut_publication: "publié",
-    // Une seule image du lot fournisseur est exploitable (produit-isole-03 :
-    // logo tiers uniquement, sans bandeau marketing anglais) ; les 4 autres
-    // ont été retirées (Audit Axe 2).
-    images: [img.securite("camera-ptz-solaire-produit-isole-produit-isole-03.webp")],
-    specifications: { alimentation: "Solaire" },
-  },
+export const produits: Produit[] = entreesCatalogueAtc.filter((e) => e.categorie !== "packages-solaires").map(versProduit);
 
-  // --- Climatisation ---
-  {
-    id: "prod-climatiseur-split-12000",
-    slug: "climatiseur-split-residentiel-carrier",
-    nom: "Climatiseur split résidentiel Carrier",
-    description: "Climatiseur split Carrier, basse consommation, idéal pour chambre ou petit bureau.",
-    categorie_id: "cat-climatisation",
-    marque_id: "marque-carrier",
-    prix_public: 425,
-    eligible_b2b: true,
-    eligible_package: false,
-    statut_publication: "publié",
-    images: [img.clim(6), img.clim(1)],
-    specifications: { puissance: "12000 BTU", technologie: "Split mural" },
-  },
-  {
-    id: "prod-climatiseur-split-18000",
-    slug: "climatisation-gainable-carrier",
-    nom: "Système de climatisation gainable Carrier",
-    description: "Système centralisé Carrier avec unité de traitement d'air et réseau de gaines, pour un confort homogène sur plusieurs pièces.",
-    categorie_id: "cat-climatisation",
-    marque_id: "marque-carrier",
-    prix_public: 610,
-    eligible_b2b: true,
-    eligible_package: false,
-    statut_publication: "publié",
-    images: [img.clim(5), img.clim(8)],
-    specifications: { puissance: "18000 BTU", technologie: "Gainable (centralisé)" },
-  },
-  {
-    id: "prod-climatiseur-tgm",
-    slug: "climatiseur-vertical-tgm",
-    nom: "Climatiseur vertical TGM",
-    description: "Unité verticale TGM pour bureaux et espaces commerciaux, installation murale sur conduit dédié.",
-    categorie_id: "cat-climatisation",
-    marque_id: "marque-tgm",
-    prix_public: 340,
-    eligible_b2b: true,
-    eligible_package: false,
-    statut_publication: "publié",
-    images: [img.clim(2), img.clim(3), img.clim(4)],
-    specifications: { type: "Unité verticale", usage: "Bureaux / commercial" },
-  },
-];
+if (new Set(produits.map((p) => p.slug)).size !== produits.length) {
+  throw new Error("Catalogue ATC — deux produits ont le même nom, donc la même URL.");
+}
 
 export function trouverProduitParSlug(slug: string): Produit | undefined {
   return produits.find((p) => p.slug === slug);
@@ -307,13 +140,7 @@ export interface ProduitInputMock {
 }
 
 function genererSlug(nom: string): string {
-  const base =
-    nom
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[̀-ͯ]/g, "")
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)/g, "") || "produit";
+  const base = slugifier(nom) || "produit";
   let slug = base;
   let compteur = 1;
   while (produits.some((p) => p.slug === slug)) {
@@ -338,6 +165,7 @@ export function creerProduitMock(input: ProduitInputMock): Produit {
     categorie_id: input.categorie_id,
     marque_id: input.marque_id,
     prix_public: input.prix_public,
+    prix_disponible: true, // l'admin saisit toujours un prix (> 0, lib/actions/catalogue-admin.ts)
     eligible_b2b: input.eligible_b2b,
     eligible_package: input.eligible_package,
     statut_publication: input.statut_publication,
@@ -353,6 +181,8 @@ export function modifierProduitMock(id: string, patch: Partial<ProduitInputMock>
   const index = produits.findIndex((p) => p.id === id);
   if (index === -1) return undefined;
   const maj: Produit = { ...produits[index], ...patch };
+  // Un prix saisi depuis l'admin rend le produit achetable : prix_disponible suit toujours prix_public.
+  maj.prix_disponible = maj.prix_public !== null;
   produits.splice(index, 1, maj);
   return maj;
 }

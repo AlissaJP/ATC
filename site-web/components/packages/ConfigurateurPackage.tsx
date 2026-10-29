@@ -2,12 +2,13 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
 import { Minus, Plus, Send } from "lucide-react";
+import { VisuelProduit } from "@/components/product/VisuelProduit";
 import { produits } from "@/lib/mock-data/produits";
 import { categories } from "@/lib/mock-data/categories";
-import { trouverStockParProduit } from "@/lib/mock-data/stock";
+import { quantiteDisponible } from "@/lib/mock-data/stock";
+import { formaterPrix } from "@/lib/services/prix";
 import { paliersParProduit } from "@/lib/mock-data/paliers-prix-b2b";
 import { trouverPalierApplicable } from "@/lib/business-rules/bareme-b2b";
 import {
@@ -21,9 +22,9 @@ import { usePackageDraftStore } from "@/lib/store/package-draft-store";
 
 const CATEGORIES_CONFIGURATEUR = [
   { id: "cat-panneaux", titre: "Panneaux solaires" },
-  { id: "cat-batteries", titre: "Batteries" },
-  { id: "cat-regulateurs", titre: "Régulateurs & onduleurs" },
-  { id: "cat-accessoires-solaires", titre: "Accessoires" },
+  { id: "cat-batteries-lithium", titre: "Batteries lithium" },
+  { id: "cat-onduleurs", titre: "Onduleurs" },
+  { id: "cat-structures-accessoires", titre: "Structures et accessoires" },
 ] as const;
 
 function prixUnitairePourSession(produitId: string, quantite: number, estB2B: boolean): number {
@@ -33,7 +34,8 @@ function prixUnitairePourSession(produitId: string, quantite: number, estB2B: bo
     const palier = trouverPalierApplicable(paliersParProduit(produitId), quantite);
     if (palier) return palier.prix_unitaire;
   }
-  return produit.prix_public;
+  // Un produit « Prix sur demande » n'est pas sélectionnable (voir plus bas) : ce 0 n'est jamais compté.
+  return produit.prix_public ?? 0;
 }
 
 // ECR-04-002 — Configurateur de package personnalisé. RG-04-002, RG-04-006, RG-03-004.
@@ -49,14 +51,17 @@ export function ConfigurateurPackage() {
   // setState synchrone dans un effet (react-hooks/set-state-in-effect).
   const [selection, setSelection] = useState<Record<string, number>>(() => {
     const initial: Record<string, number> = {};
-    for (const id of usePackageDraftStore.getState().produitsIds) initial[id] = 1;
+    for (const id of usePackageDraftStore.getState().produitsIds) {
+      // Même règle que la grille : un produit « Prix sur demande » n'entre pas dans le devis.
+      if (produits.find((p) => p.id === id)?.prix_disponible) initial[id] = 1;
+    }
     return initial;
   });
   const [envoye, setEnvoye] = useState(false);
 
   function modifierQuantite(produitId: string, delta: number) {
     setSelection((prev) => {
-      const quantiteMax = trouverStockParProduit(produitId)?.stock_actuel ?? 0;
+      const quantiteMax = quantiteDisponible(produitId) ?? Number.POSITIVE_INFINITY; // undefined = non suivi
       const actuelle = prev[produitId] ?? 0;
       const suivante = Math.min(Math.max(0, actuelle + delta), quantiteMax);
       const copie = { ...prev };
@@ -129,20 +134,21 @@ export function ConfigurateurPackage() {
               </h2>
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
                 {produitsCategorie.map((produit) => {
-                  const s = trouverStockParProduit(produit.id);
-                  const rupture = !s || s.stock_actuel <= 0;
+                  const stockMax = quantiteDisponible(produit.id) ?? Number.POSITIVE_INFINITY; // undefined = non suivi
+                  // « Prix sur demande » : non sélectionnable, la réponse au devis tarifie chaque ligne au prix
+                  // catalogue (devis-store, prixApplicablePourUtilisateur) et ne saurait pas le chiffrer.
+                  const rupture = stockMax <= 0;
+                  const indisponible = rupture || !produit.prix_disponible;
                   const quantite = selection[produit.id] ?? 0;
                   return (
                     <div
                       key={produit.id}
                       className={`flex flex-col overflow-hidden rounded-xl border ${
                         quantite > 0 ? "border-primaire ring-1 ring-primaire" : "border-bordure"
-                      } bg-background ${rupture ? "opacity-50" : ""}`}
+                      } bg-background ${indisponible ? "opacity-50" : ""}`}
                     >
                       <div className="relative aspect-square w-full bg-fond">
-                        {produit.images[0] && (
-                          <Image src={produit.images[0]} alt={produit.nom} fill className="object-cover" sizes="200px" />
-                        )}
+                        <VisuelProduit produit={produit} sizes="200px" />
                         {rupture && (
                           <span className="absolute left-1.5 top-1.5 rounded-full bg-danger px-2 py-0.5 text-[10px] font-semibold text-white">
                             Rupture
@@ -151,11 +157,11 @@ export function ConfigurateurPackage() {
                       </div>
                       <div className="flex flex-1 flex-col gap-1.5 p-2.5">
                         <p className="text-xs font-medium leading-snug text-texte-principal">{produit.nom}</p>
-                        <p className="text-xs text-texte-secondaire">${produit.prix_public.toFixed(2)}</p>
+                        <p className="text-xs text-texte-secondaire">{formaterPrix(produit.prix_public)}</p>
                         <div className="mt-auto flex items-center justify-between pt-1">
                           <button
                             type="button"
-                            disabled={rupture || quantite === 0}
+                            disabled={indisponible || quantite === 0}
                             aria-label={`Retirer ${produit.nom}`}
                             onClick={() => modifierQuantite(produit.id, -1)}
                             className="flex h-7 w-7 items-center justify-center rounded-md border border-bordure text-texte-principal disabled:opacity-30"
@@ -165,7 +171,7 @@ export function ConfigurateurPackage() {
                           <span className="text-sm font-semibold text-texte-principal">{quantite}</span>
                           <button
                             type="button"
-                            disabled={rupture || quantite >= (s?.stock_actuel ?? 0)}
+                            disabled={indisponible || quantite >= stockMax}
                             aria-label={`Ajouter ${produit.nom}`}
                             onClick={() => modifierQuantite(produit.id, 1)}
                             className="flex h-7 w-7 items-center justify-center rounded-md border border-bordure text-texte-principal disabled:opacity-30"

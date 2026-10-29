@@ -139,7 +139,8 @@ export function GestionCatalogue({
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {produitsFiltres.map((p) => {
           const s = stock.find((st) => st.produit_id === p.id);
-          const niveau = determinerNiveauAlerteStock(s?.stock_actuel ?? 0, s?.stock_reference ?? 100);
+          // Sans ligne de stock = rupture (historique) ; stock_actuel null = non suivi (en stock).
+          const niveau = determinerNiveauAlerteStock(s ? s.stock_actuel : 0, s?.stock_reference ?? 100);
           return (
             <button
               key={p.id}
@@ -148,7 +149,7 @@ export function GestionCatalogue({
               className="rounded-lg border border-bordure bg-background p-3 text-left transition-colors hover:border-primaire-clair"
             >
               <p className="text-sm font-medium text-texte-principal">{p.nom}</p>
-              <p className="text-xs text-texte-secondaire">{nomCategorie(p.categorie_id)} — ${p.prix_public}</p>
+              <p className="text-xs text-texte-secondaire">{nomCategorie(p.categorie_id)} — {p.prix_public === null ? "Prix sur demande" : `$${p.prix_public}`}</p>
               <div className="mt-1 flex flex-wrap items-center gap-1.5">
                 <span
                   className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${

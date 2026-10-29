@@ -6,6 +6,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { profilsEntreprise as profilsEntrepriseSeed, utilisateurs as utilisateursSeed } from "@/lib/mock-data/utilisateurs";
+import { VERSION_CATALOGUE, referenceProduitConnue } from "@/lib/store/migration-catalogue";
 import type {
   Adresse,
   DocumentEntreprise,
@@ -307,6 +308,15 @@ export const useComptesStore = create<ComptesState>()(
       retirerMoyenPaiement: (moyenId) =>
         set((state) => ({ moyensPaiement: state.moyensPaiement.filter((m) => m.id !== moyenId) })),
     }),
-    { name: "atc-comptes" }
+    {
+      name: "atc-comptes",
+      version: VERSION_CATALOGUE,
+      // Catalogue ATC : seuls les favoris pointant vers des produits supprimés sont retirés ; comptes,
+      // adresses et moyens de paiement sont conservés tels quels.
+      migrate: (persiste) => {
+        const etat = (persiste ?? {}) as Partial<ComptesState>;
+        return { ...etat, favoris: (etat.favoris ?? []).filter((f) => referenceProduitConnue(f.produit_id)) } as ComptesState;
+      },
+    }
   )
 );

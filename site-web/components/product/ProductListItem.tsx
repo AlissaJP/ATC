@@ -1,13 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { Check, Plus } from "lucide-react";
 import type { NiveauAlerteStock, PalierPrixB2B, Produit } from "@/lib/types/entities";
 import { StockBadge } from "./StockBadge";
 import { BoutonFavori } from "./BoutonFavori";
+import { VisuelProduit } from "./VisuelProduit";
 import { Etoiles } from "./Etoiles";
 import { useSessionStore, estClientB2BVerifie } from "@/lib/store/session-store";
 import { useCartStore } from "@/lib/store/cart-store";
@@ -16,6 +16,7 @@ import { trouverPalierApplicable } from "@/lib/business-rules/bareme-b2b";
 import { calculerAvisPublies } from "@/lib/services/avis";
 import { useGardeClient } from "@/lib/hooks/useGardeClient";
 import { prixDepart } from "@/lib/services/variantes";
+import { formaterPrix } from "@/lib/services/prix";
 import { Toast } from "@/components/ui/Toast";
 
 // ECR-01-002/ECR-02-001 — variante « vue liste » de ProductCard (bascule grille/liste, Raffinement Design).
@@ -45,13 +46,7 @@ export function ProductListItem({ produit, niveauStock, paliers }: ProductListIt
       className="group flex items-center gap-4 rounded-xl border border-bordure bg-background p-3 transition-shadow hover:shadow-md"
     >
       <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg bg-fond">
-        {produit.images[0] ? (
-          <Image src={produit.images[0]} alt={produit.nom} fill className="object-cover" sizes="80px" />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center text-center text-[10px] text-texte-secondaire">
-            Image à venir
-          </div>
-        )}
+        <VisuelProduit produit={produit} sizes="80px" />
       </div>
 
       <div className="min-w-0 flex-1">
@@ -69,12 +64,13 @@ export function ProductListItem({ produit, niveauStock, paliers }: ProductListIt
 
       <div className="flex shrink-0 items-center gap-2">
         <p className="font-titres text-base font-bold text-primaire">
-          {(aDesVariantes || palierDepart) && "À partir de "}${prixAffiche.toFixed(2)}
+          {prixAffiche !== null && (aDesVariantes || palierDepart) && "À partir de "}
+          {formaterPrix(prixAffiche)}
         </p>
         <BoutonFavori produitId={produit.id} className="static h-9 w-9" />
         {/* Point #29 — un produit à variantes exige de choisir une valeur avant l'ajout : pas de bouton
             d'ajout rapide ici, la ligne mène déjà à la fiche produit (sélecteur + description dédiée). */}
-        {!aDesVariantes && (
+        {!aDesVariantes && produit.prix_disponible && (
           <motion.button
             type="button"
             aria-label="Ajouter au panier"

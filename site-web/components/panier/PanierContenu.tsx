@@ -2,16 +2,16 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
 import { ChevronDown, Minus, Plus, ShoppingCart, Trash2 } from "lucide-react";
+import { VisuelProduit } from "@/components/product/VisuelProduit";
 import { useCartStore, type LignePanier } from "@/lib/store/cart-store";
 import { useSessionStore } from "@/lib/store/session-store";
 import { useCommandeStore } from "@/lib/store/commande-store";
 import { useFactureStore } from "@/lib/store/facture-store";
 import { produits } from "@/lib/mock-data/produits";
 import { categories } from "@/lib/mock-data/categories";
-import { trouverStockParProduit } from "@/lib/mock-data/stock";
+import { quantiteDisponible } from "@/lib/mock-data/stock";
 import { nomAffichageVariante, resoudreProduitEtVariante } from "@/lib/services/variantes";
 import { Toast } from "@/components/ui/Toast";
 import type { Categorie } from "@/lib/types/entities";
@@ -130,13 +130,11 @@ export function PanierContenu() {
                     const { produit, variante } = resolu;
                     const stockDisponible = variante
                       ? (variante.stock ?? Number.POSITIVE_INFINITY)
-                      : (trouverStockParProduit(ligne.produit_id)?.stock_actuel ?? 0);
+                      : (quantiteDisponible(ligne.produit_id) ?? Number.POSITIVE_INFINITY); // undefined = non suivi
                     return (
                       <div key={ligne.produit_id} className="flex items-center gap-3 p-4">
                         <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-fond">
-                          {produit.images[0] && (
-                            <Image src={produit.images[0]} alt={produit.nom} fill className="object-cover" sizes="64px" />
-                          )}
+                          <VisuelProduit produit={produit} sizes="64px" />
                         </div>
                         <div className="min-w-0 flex-1">
                           <Link href={`/produit/${produit.slug}`} className="truncate text-sm font-medium text-texte-principal hover:underline">

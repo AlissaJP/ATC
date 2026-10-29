@@ -28,4 +28,8 @@ describe("determinerNiveauAlerteStock — TC-03-001", () => {
   it("TC-03-001-f — stock nul -> rupture", () => {
     expect(determinerNiveauAlerteStock(0, ref)).toBe("rupture");
   });
+
+  it("stock non communiqué (null) -> en_stock, stock non suivi", () => {
+    expect(determinerNiveauAlerteStock(null, ref)).toBe("en_stock");
+  });
 });

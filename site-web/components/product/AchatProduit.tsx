@@ -13,13 +13,14 @@ import { usePackageDraftStore } from "@/lib/store/package-draft-store";
 import { trouverPalierApplicable } from "@/lib/business-rules/bareme-b2b";
 import { useGardeClient } from "@/lib/hooks/useGardeClient";
 import { construireIdLigne } from "@/lib/services/variantes";
+import { formaterPrix } from "@/lib/services/prix";
 import { Toast } from "@/components/ui/Toast";
 
 interface AchatProduitProps {
   produit: Produit;
   niveauStock: NiveauAlerteStock;
   paliers: PalierPrixB2B[];
-  stockActuel: number;
+  stockActuel: number | undefined; // undefined = stock non suivi (stock_actuel null)
   // Point #29 — options de variantes avec prix, imbriquées sur le produit (remplace le mécanisme à SKU
   // séparés du point #23). Jamais fourni si le produit a moins de 2 valeurs (cf. app/produit/[slug]/page.tsx).
   variantes?: VarianteProduit[];
@@ -67,9 +68,9 @@ export function AchatProduit({ produit, niveauStock, paliers, stockActuel, varia
       ? "rupture"
       : "en_stock"
     : niveauStock;
-  // undefined = stock non suivi pour cette variante (point #29) — pas de plafond réel, valeur haute
-  // uniquement pour borner le sélecteur de quantité de l'interface.
-  const stockActuelActif = varianteActive ? (varianteActive.stock ?? 99) : stockActuel;
+  // undefined = stock non suivi (variante, point #29, ou produit sans quantité communiquée) — pas de
+  // plafond réel, valeur haute uniquement pour borner le sélecteur de quantité de l'interface.
+  const stockActuelActif = varianteActive ? (varianteActive.stock ?? 99) : (stockActuel ?? 99);
 
   const rupture = niveauStockActif === "rupture";
   const quantiteMax = rupture ? 0 : stockActuelActif;
@@ -77,14 +78,15 @@ export function AchatProduit({ produit, niveauStock, paliers, stockActuel, varia
   const palierActif = estB2B && paliers.length > 0 && !varianteActive ? trouverPalierApplicable(paliers, quantite) : undefined;
   // Prix de variante fixe (point #29) — pas de barème B2B distinct par variante, pour rester simple.
   const prixUnitaire = varianteActive ? varianteActive.prix : palierActif ? palierActif.prix_unitaire : produit.prix_public;
-  const prixTotal = prixUnitaire * quantite;
+  // null = « Prix sur demande » : jamais ajoutable au panier.
+  const prixTotal = prixUnitaire === null ? null : prixUnitaire * quantite;
 
   function ajusterQuantite(delta: number) {
     setQuantite((q) => Math.min(Math.max(1, q + delta), Math.max(1, quantiteMax)));
   }
 
   function gererAjoutPanier() {
-    if (rupture) return;
+    if (rupture || prixUnitaire === null) return;
     executerSiConnecte(() => {
       ajouterLigne(construireIdLigne(produit.id, varianteActive?.id), quantite, prixUnitaire);
       setConfirmationVisible(true);
@@ -157,8 +159,8 @@ export function AchatProduit({ produit, niveauStock, paliers, stockActuel, varia
 
       <div className="flex items-center gap-3">
         <p className="font-titres text-2xl font-bold text-primaire md:text-3xl">
-          ${prixUnitaire.toFixed(2)}
-          {estB2B && <span className="ml-1 text-sm font-normal text-texte-secondaire">/ unité</span>}
+          {formaterPrix(prixUnitaire)}
+          {estB2B && prixUnitaire !== null && <span className="ml-1 text-sm font-normal text-texte-secondaire">/ unité</span>}
         </p>
         <StockBadge niveau={niveauStockActif} />
         <BoutonFavori produitId={produit.id} className="ml-auto border border-bordure" />
@@ -221,14 +223,16 @@ export function AchatProduit({ produit, niveauStock, paliers, stockActuel, varia
             <Plus size={16} />
           </button>
         </div>
-        {estB2B && <p className="font-titres text-lg font-bold text-texte-principal">Total : ${prixTotal.toFixed(2)}</p>}
+        {estB2B && prixTotal !== null && (
+          <p className="font-titres text-lg font-bold text-texte-principal">Total : ${prixTotal.toFixed(2)}</p>
+        )}
       </div>
 
       <div className="flex flex-col gap-3 sm:flex-row">
         <motion.button
           type="button"
           onClick={gererAjoutPanier}
-          disabled={rupture}
+          disabled={rupture || prixUnitaire === null}
           whileTap={{ scale: 0.97 }}
           className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-accent px-5 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
         >
@@ -247,7 +251,8 @@ export function AchatProduit({ produit, niveauStock, paliers, stockActuel, varia
           {confirmationVisible ? "Ajouté au panier" : rupture ? "Rupture de stock" : "Ajouter au panier"}
         </motion.button>
 
-        {produit.eligible_package && (
+        {/* « Prix sur demande » : non sélectionnable dans le configurateur (ConfigurateurPackage.tsx). */}
+        {produit.eligible_package && produit.prix_disponible && (
           <button
             type="button"
             onClick={gererAjoutPackage}

@@ -1,9 +1,9 @@
 "use client";
 
 import { useMemo } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { Check, FileText, MapPin, MessageCircle, Wallet } from "lucide-react";
+import { VisuelProduit } from "@/components/product/VisuelProduit";
 import { useCommandeStore } from "@/lib/store/commande-store";
 import { useFactureStore } from "@/lib/store/facture-store";
 import { useSessionStore, estClientB2BVerifie } from "@/lib/store/session-store";
@@ -118,8 +118,8 @@ export function CommandeConfirmation({ commandeId }: { commandeId: string }) {
             return (
               <li key={l.id} className="flex items-center gap-3 py-3">
                 <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-fond">
-                  {produit?.images[0] ? (
-                    <Image src={produit.images[0]} alt="" fill className="object-cover" sizes="48px" />
+                  {produit ? (
+                    <VisuelProduit produit={produit} sizes="48px" />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center text-[9px] text-texte-secondaire">
                       —

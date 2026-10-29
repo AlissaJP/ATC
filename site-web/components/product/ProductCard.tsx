@@ -1,13 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { Check, PackagePlus, Plus } from "lucide-react";
 import type { NiveauAlerteStock, PalierPrixB2B, Produit } from "@/lib/types/entities";
 import { StockBadge } from "./StockBadge";
 import { BoutonFavori } from "./BoutonFavori";
+import { VisuelProduit } from "./VisuelProduit";
 import { Etoiles } from "./Etoiles";
 import { useSessionStore, estClientB2BVerifie } from "@/lib/store/session-store";
 import { useCartStore } from "@/lib/store/cart-store";
@@ -16,6 +16,7 @@ import { trouverPalierApplicable } from "@/lib/business-rules/bareme-b2b";
 import { calculerAvisPublies } from "@/lib/services/avis";
 import { useGardeClient } from "@/lib/hooks/useGardeClient";
 import { prixDepart } from "@/lib/services/variantes";
+import { formaterPrix } from "@/lib/services/prix";
 import { Toast } from "@/components/ui/Toast";
 
 // RG-03-001 / RG-03-004 — prix public par défaut, ou prix de départ du barème si client B2B vérifié.
@@ -45,19 +46,11 @@ export function ProductCard({ produit, niveauStock, paliers }: ProductCardProps)
       className="group flex flex-col overflow-hidden rounded-xl border border-bordure bg-background transition-shadow hover:shadow-md"
     >
       <div className="relative aspect-square w-full overflow-hidden bg-fond">
-        {produit.images[0] ? (
-          <Image
-            src={produit.images[0]}
-            alt={produit.nom}
-            fill
-            className="object-cover transition-transform duration-200 group-hover:scale-[1.02]"
-            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-          />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center text-sm text-texte-secondaire">
-            Image à venir
-          </div>
-        )}
+        <VisuelProduit
+          produit={produit}
+          className="transition-transform duration-200 group-hover:scale-[1.02]"
+          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+        />
         {produit.eligible_package && (
           <span
             className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-full bg-background/90 px-2 py-1 text-[11px] font-semibold text-primaire shadow-sm"
@@ -81,13 +74,14 @@ export function ProductCard({ produit, niveauStock, paliers }: ProductCardProps)
         <div className="mt-auto flex items-center justify-between gap-2">
           <div className="flex flex-col">
             <p className="font-titres text-base font-bold text-primaire">
-              {(aDesVariantes || palierDepart) && "À partir de "}${prixAffiche.toFixed(2)}
+              {prixAffiche !== null && (aDesVariantes || palierDepart) && "À partir de "}
+              {formaterPrix(prixAffiche)}
             </p>
             <StockBadge niveau={niveauStock} />
           </div>
           {/* Point #29 — un produit à variantes exige de choisir une valeur avant l'ajout : pas de bouton
               d'ajout rapide ici, la carte mène déjà à la fiche produit (sélecteur + description dédiée). */}
-          {!aDesVariantes && (
+          {!aDesVariantes && produit.prix_disponible && (
             <motion.button
               type="button"
               aria-label="Ajouter au panier"

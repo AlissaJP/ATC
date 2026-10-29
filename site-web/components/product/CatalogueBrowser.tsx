@@ -61,6 +61,12 @@ function valeursDistinctes(produits: ProduitEnrichi[], cle: string): string[] {
   return Array.from(valeurs).sort();
 }
 
+// Tri par prix : les produits « Prix sur demande » (null) restent en fin de liste dans les deux sens.
+function comparerPrix(a: number | null, b: number | null, sens: 1 | -1): number {
+  if (a === null || b === null) return a === b ? 0 : a === null ? 1 : -1;
+  return (a - b) * sens;
+}
+
 export function CatalogueBrowser({ produits }: { produits: ProduitEnrichi[] }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -92,7 +98,7 @@ export function CatalogueBrowser({ produits }: { produits: ProduitEnrichi[] }) {
   );
   const packageDisponible = useMemo(() => produits.some((p) => p.produit.eligible_package), [produits]);
   const prixPlafondCatalogue = useMemo(
-    () => Math.ceil(Math.max(...produits.map((p) => p.produit.prix_public), 0)),
+    () => Math.ceil(Math.max(...produits.map((p) => p.produit.prix_public ?? 0), 0)),
     [produits]
   );
 
@@ -104,12 +110,13 @@ export function CatalogueBrowser({ produits }: { produits: ProduitEnrichi[] }) {
       }
       if (uniquementPackage && !produit.eligible_package) return false;
       if (uniquementEnStock && niveauStock === "rupture") return false;
-      if (prixMax !== null && produit.prix_public > prixMax) return false;
+      // « Prix sur demande » : rien ne garantit qu'il soit sous le plafond, exclu dès que le filtre est actif.
+      if (prixMax !== null && (produit.prix_public === null || produit.prix_public > prixMax)) return false;
       return true;
     });
 
-    if (tri === "prix-asc") liste = [...liste].sort((a, b) => a.produit.prix_public - b.produit.prix_public);
-    else if (tri === "prix-desc") liste = [...liste].sort((a, b) => b.produit.prix_public - a.produit.prix_public);
+    if (tri === "prix-asc") liste = [...liste].sort((a, b) => comparerPrix(a.produit.prix_public, b.produit.prix_public, 1));
+    else if (tri === "prix-desc") liste = [...liste].sort((a, b) => comparerPrix(a.produit.prix_public, b.produit.prix_public, -1));
     // "Nouveautés" — le catalogue n'a pas de champ date_creation (démo statique) ; l'ordre inverse du
     // tableau produits.ts (dernier ajouté = affiché en premier) sert d'approximation raisonnable.
     else if (tri === "nouveautes") liste = [...liste].reverse();

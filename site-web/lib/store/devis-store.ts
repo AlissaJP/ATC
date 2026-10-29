@@ -13,6 +13,7 @@ import { trouverPalierApplicable } from "@/lib/business-rules/bareme-b2b";
 import { calculerDateExpiration, devisEstEncoreValide } from "@/lib/business-rules/devis-expiration";
 import { useFactureStore } from "@/lib/store/facture-store";
 import { useCommandeStore } from "@/lib/store/commande-store";
+import { VERSION_CATALOGUE, referenceProduitConnue } from "@/lib/store/migration-catalogue";
 
 export interface LigneDevisDemandee {
   produit_id: string;
@@ -175,11 +176,30 @@ export const useDevisStore = create<DevisState>()(
       devisParUtilisateur: (utilisateurId) => get().devis.filter((d) => d.utilisateur_id === utilisateurId),
       lignesParDevis: (devisId) => get().lignesDevis.filter((l) => l.devis_id === devisId),
     }),
-    { name: "atc-devis" }
+    {
+      name: "atc-devis",
+      version: VERSION_CATALOGUE,
+      // Catalogue ATC : devis de démonstration ressemés sur les vrais produits ; un devis créé pendant la
+      // démo et contenant un produit supprimé est écarté (sa réponse le tarifierait à 0).
+      migrate: (persiste) => {
+        const { devis = [], lignesDevis = [] } = (persiste ?? {}) as Partial<Pick<DevisState, "devis" | "lignesDevis">>;
+        const devisOrphelins = new Set(
+          lignesDevis.filter((l) => !referenceProduitConnue(l.produit_id)).map((l) => l.devis_id)
+        );
+        const conserve = (devisId: string) => !devisId.startsWith("devis-seed") && !devisOrphelins.has(devisId);
+        return {
+          devis: [...seedDevis(), ...devis.filter((d) => conserve(d.id))],
+          lignesDevis: [...seedLignesDevis(), ...lignesDevis.filter((l) => conserve(l.devis_id))],
+        } as DevisState;
+      },
+    }
   )
 );
 
 // --- Jeu de données de démonstration : couvre les 6 statuts (RG-04-001) ---
+// Intégration du catalogue ATC : lignes sur les vrais produits avec prix (ES-01 panneau Trina à $151, prix
+// « à partir de » ; ES-02 $2389 ; ES-04 $2150 ; ES-11 $3900 ; ES-13 $1150). Aucun palier B2B n'est
+// défini pour ces produits : le prix public s'applique aussi aux Entreprises vérifiées.
 // Note sur le cas limite (décision actée n°32) : comme ce store est persisté (localStorage), une date de
 // réponse figée à "exactement J-3" ne resterait valide qu'à l'instant précis de la première initialisation.
 // Le devis "limite-j3" est donc semé avec une marge de quelques heures pour rester démontrable pendant
@@ -199,12 +219,12 @@ function seedDevis(): Devis[] {
       date_creation: jours(0.5),
     },
     {
-      // 10 × $225,40 (palier 10-49) + 1 × $520 (palier 1-9) + 1 × $165 (palier 1-9) + $250 installation.
+      // 10 × $151 + 1 × $3900 + 1 × $2150 + $250 installation.
       id: "devis-seed-repondu-valide",
       utilisateur_id: "user-entreprise-verifiee",
       type_origine: "configurateur_personnalise",
       statut: "repondu",
-      prix_total: 3189,
+      prix_total: 7810,
       cout_installation: 250,
       date_creation: jours(2),
       date_reponse: dateReponseValide.toISOString(),
@@ -217,7 +237,7 @@ function seedDevis(): Devis[] {
       utilisateur_id: "user-entreprise-verifiee",
       type_origine: "configurateur_personnalise",
       statut: "repondu",
-      prix_total: 945,
+      prix_total: 755, // 5 × $151
       cout_installation: 0,
       date_creation: jours(6),
       date_reponse: dateReponseLimite.toISOString(),
@@ -225,12 +245,12 @@ function seedDevis(): Devis[] {
       administrateur_id: "admin-general",
     },
     {
-      // 1 × $189 + 1 × $410 + 1 × $165 (prix public — Particulier, aucun palier B2B).
+      // 1 × $151 + 1 × $1150 + 1 × $2389 (prix public — Particulier).
       id: "devis-seed-accepte",
       utilisateur_id: "user-particulier-1",
       type_origine: "configurateur_personnalise",
       statut: "accepte",
-      prix_total: 764,
+      prix_total: 3690,
       cout_installation: 0,
       date_creation: jours(10),
       date_reponse: jours(9),
@@ -238,12 +258,12 @@ function seedDevis(): Devis[] {
       administrateur_id: "admin-general",
     },
     {
-      // 10 × $225,40 (palier 10-49) + 1 × $890 (palier 1-9) + $300 installation.
+      // 10 × $151 + 1 × $2389 + $300 installation.
       id: "devis-seed-refuse",
       utilisateur_id: "user-entreprise-verifiee",
       type_origine: "configurateur_personnalise",
       statut: "refuse",
-      prix_total: 3444,
+      prix_total: 4199,
       cout_installation: 300,
       date_creation: jours(15),
       date_reponse: jours(14),
@@ -251,12 +271,12 @@ function seedDevis(): Devis[] {
       administrateur_id: "admin-general",
     },
     {
-      // 2 × $165 + 4 × $35 (prix public — Particulier).
+      // 2 × $1150 (prix public — Particulier).
       id: "devis-seed-expire",
       utilisateur_id: "user-particulier-1",
       type_origine: "configurateur_personnalise",
       statut: "expire",
-      prix_total: 470,
+      prix_total: 2300,
       cout_installation: 0,
       date_creation: jours(20),
       date_reponse: jours(19),
@@ -268,23 +288,22 @@ function seedDevis(): Devis[] {
 
 function seedLignesDevis(): LigneDevis[] {
   return [
-    { id: "ligne-seed-1", devis_id: "devis-seed-en-attente", produit_id: "prod-panneau-405w", quantite: 2, prix_unitaire_applique: 0 },
-    { id: "ligne-seed-2", devis_id: "devis-seed-en-attente", produit_id: "prod-batterie-lithium-100ah", quantite: 1, prix_unitaire_applique: 0 },
+    { id: "ligne-seed-1", devis_id: "devis-seed-en-attente", produit_id: "ES-01", quantite: 2, prix_unitaire_applique: 0 },
+    { id: "ligne-seed-2", devis_id: "devis-seed-en-attente", produit_id: "ES-13", quantite: 1, prix_unitaire_applique: 0 },
 
-    { id: "ligne-seed-3", devis_id: "devis-seed-repondu-valide", produit_id: "prod-panneau-550w", quantite: 10, prix_unitaire_applique: 225.4 },
-    { id: "ligne-seed-4", devis_id: "devis-seed-repondu-valide", produit_id: "prod-batterie-lithium-100ah", quantite: 1, prix_unitaire_applique: 520 },
-    { id: "ligne-seed-5", devis_id: "devis-seed-repondu-valide", produit_id: "prod-regulateur-mppt-60a", quantite: 1, prix_unitaire_applique: 165 },
+    { id: "ligne-seed-3", devis_id: "devis-seed-repondu-valide", produit_id: "ES-01", quantite: 10, prix_unitaire_applique: 151 },
+    { id: "ligne-seed-4", devis_id: "devis-seed-repondu-valide", produit_id: "ES-11", quantite: 1, prix_unitaire_applique: 3900 },
+    { id: "ligne-seed-5", devis_id: "devis-seed-repondu-valide", produit_id: "ES-04", quantite: 1, prix_unitaire_applique: 2150 },
 
-    { id: "ligne-seed-6", devis_id: "devis-seed-repondu-limite-j3", produit_id: "prod-panneau-405w", quantite: 5, prix_unitaire_applique: 189 },
+    { id: "ligne-seed-6", devis_id: "devis-seed-repondu-limite-j3", produit_id: "ES-01", quantite: 5, prix_unitaire_applique: 151 },
 
-    { id: "ligne-seed-7", devis_id: "devis-seed-accepte", produit_id: "prod-panneau-405w", quantite: 1, prix_unitaire_applique: 189 },
-    { id: "ligne-seed-8", devis_id: "devis-seed-accepte", produit_id: "prod-batterie-gel-200ah", quantite: 1, prix_unitaire_applique: 410 },
-    { id: "ligne-seed-9", devis_id: "devis-seed-accepte", produit_id: "prod-regulateur-mppt-60a", quantite: 1, prix_unitaire_applique: 165 },
+    { id: "ligne-seed-7", devis_id: "devis-seed-accepte", produit_id: "ES-01", quantite: 1, prix_unitaire_applique: 151 },
+    { id: "ligne-seed-8", devis_id: "devis-seed-accepte", produit_id: "ES-13", quantite: 1, prix_unitaire_applique: 1150 },
+    { id: "ligne-seed-9", devis_id: "devis-seed-accepte", produit_id: "ES-02", quantite: 1, prix_unitaire_applique: 2389 },
 
-    { id: "ligne-seed-10", devis_id: "devis-seed-refuse", produit_id: "prod-panneau-550w", quantite: 10, prix_unitaire_applique: 225.4 },
-    { id: "ligne-seed-11", devis_id: "devis-seed-refuse", produit_id: "prod-onduleur-hybride-5kva", quantite: 1, prix_unitaire_applique: 890 },
+    { id: "ligne-seed-10", devis_id: "devis-seed-refuse", produit_id: "ES-01", quantite: 10, prix_unitaire_applique: 151 },
+    { id: "ligne-seed-11", devis_id: "devis-seed-refuse", produit_id: "ES-02", quantite: 1, prix_unitaire_applique: 2389 },
 
-    { id: "ligne-seed-12", devis_id: "devis-seed-expire", produit_id: "prod-regulateur-mppt-60a", quantite: 2, prix_unitaire_applique: 165 },
-    { id: "ligne-seed-13", devis_id: "devis-seed-expire", produit_id: "prod-kit-cables-mc4", quantite: 4, prix_unitaire_applique: 35 },
+    { id: "ligne-seed-12", devis_id: "devis-seed-expire", produit_id: "ES-13", quantite: 2, prix_unitaire_applique: 1150 },
   ];
 }

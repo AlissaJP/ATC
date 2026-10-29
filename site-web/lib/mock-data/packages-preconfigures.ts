@@ -1,69 +1,40 @@
 // ECR-04-001 — Catalogue de packages solaires pré-configurés. BF-04-001.
+// Intégration du catalogue ATC (étape 4) : les 3 kits de démonstration sont remplacés par les 7 packages
+// du catalogue client (PK-01 à PK-07, catalogue-atc.json). Ce sont des propositions à faire valider par le
+// client : sans composition définitive ni prix, donc composition vide et « Prix sur demande ».
 import type { PackagePreconfigure } from "@/lib/types/entities";
-import { produits } from "./produits";
+import { entreesCatalogueAtc, produits, slugifier } from "./produits";
 
-function prixPackage(composition: { produit_id: string; quantite: number }[]): number {
-  return composition.reduce((total, c) => {
-    const produit = produits.find((p) => p.id === c.produit_id);
-    return total + (produit?.prix_public ?? 0) * c.quantite;
-  }, 0);
+// null dès qu'un total « tout compris » serait faux : composition vide ou composant sans prix.
+function prixPackage(composition: { produit_id: string; quantite: number }[]): number | null {
+  if (composition.length === 0) return null;
+  let total = 0;
+  for (const c of composition) {
+    const prix = produits.find((p) => p.id === c.produit_id)?.prix_public ?? null;
+    if (prix === null) return null;
+    total += prix * c.quantite;
+  }
+  return total;
 }
 
-const compositionSecours = [
-  { produit_id: "prod-panneau-405w", quantite: 2 },
-  { produit_id: "prod-batterie-gel-200ah", quantite: 1 },
-  { produit_id: "prod-regulateur-mppt-60a", quantite: 1 },
-  { produit_id: "prod-kit-cables-mc4", quantite: 1 },
-];
-
-const compositionResidentiel = [
-  { produit_id: "prod-panneau-405w", quantite: 6 },
-  { produit_id: "prod-batterie-lithium-100ah", quantite: 2 },
-  { produit_id: "prod-onduleur-hybride-5kva", quantite: 1 },
-  { produit_id: "prod-structure-montage", quantite: 6 },
-  { produit_id: "prod-kit-cables-mc4", quantite: 1 },
-];
-
-const compositionCommercial = [
-  { produit_id: "prod-panneau-550w", quantite: 14 },
-  { produit_id: "prod-batterie-lithium-100ah", quantite: 4 },
-  { produit_id: "prod-onduleur-hybride-5kva", quantite: 2 },
-  { produit_id: "prod-structure-montage", quantite: 14 },
-  { produit_id: "prod-kit-mise-a-la-terre", quantite: 1 },
-];
-
-export const packagesPreconfigures: PackagePreconfigure[] = [
-  {
-    id: "package-secours-1kw",
-    slug: "kit-solaire-secours-1kw",
-    nom: "Kit solaire de secours 1 kW",
-    description:
-      "Une solution d'appoint pour maintenir l'essentiel (éclairage, routeur, réfrigérateur) actif pendant une coupure.",
-    produits: compositionSecours,
-    prix_total: prixPackage(compositionSecours),
-    image: "/images/energie-solaire/energie-14.webp",
-  },
-  {
-    id: "package-residentiel-3kw",
-    slug: "kit-solaire-residentiel-3kw",
-    nom: "Kit solaire résidentiel 3 kW",
-    description:
-      "Système complet pour une maison familiale : panneaux, batteries lithium et onduleur hybride avec basculement automatique.",
-    produits: compositionResidentiel,
-    prix_total: prixPackage(compositionResidentiel),
-    image: "/images/energie-solaire/energie-17.webp",
-  },
-  {
-    id: "package-commercial-7kw",
-    slug: "kit-solaire-commercial-7kw",
-    nom: "Kit solaire commercial 7 kW",
-    description:
-      "Dimensionné pour un commerce ou un petit bureau : forte capacité de production et de stockage, structure de montage incluse.",
-    produits: compositionCommercial,
-    prix_total: prixPackage(compositionCommercial),
-    image: "/images/energie-solaire/energie-16.webp",
-  },
-];
+export const packagesPreconfigures: PackagePreconfigure[] = entreesCatalogueAtc
+  .filter((e) => e.categorie === "packages-solaires")
+  .map((e) => {
+    const image = e.image ?? e.imageBanniere;
+    if (!image) throw new Error(`Catalogue ATC — ${e.ref} : package sans image.`);
+    if (e.prixDisponible) throw new Error(`Catalogue ATC — ${e.ref} : un package avec prix demande une composition.`);
+    return {
+      id: e.ref,
+      ref: e.ref,
+      slug: slugifier(e.nom),
+      nom: e.nom,
+      description: e.description,
+      caracteristiques: e.caracteristiques,
+      produits: [],
+      prix_total: null,
+      image,
+    };
+  });
 
 export function trouverPackageParSlug(slug: string): PackagePreconfigure | undefined {
   return packagesPreconfigures.find((p) => p.slug === slug);

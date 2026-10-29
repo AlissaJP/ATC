@@ -19,11 +19,13 @@ export function configurationEstValidable(composants: ComposantConfigurateur[]):
 }
 
 // Classification des sous-catégories solaires (Cahier 9) vers les catégories du configurateur.
+// Sous-catégories du catalogue client (intégration du catalogue ATC) ; « Stockage commercial et
+// industriel » reste hors configurateur (installations de 261 kWh et plus, sur devis dédié).
 const CATEGORIES_COMPOSANT: Record<string, ComposantConfigurateur["categorie_composant"]> = {
   "cat-panneaux": "panneau_solaire",
-  "cat-batteries": "batterie",
-  "cat-regulateurs": "regulateur",
-  "cat-accessoires-solaires": "accessoire",
+  "cat-batteries-lithium": "batterie",
+  "cat-onduleurs": "regulateur",
+  "cat-structures-accessoires": "accessoire",
 };
 
 export function categorieComposantDepuisCategorieProduit(

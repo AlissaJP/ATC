@@ -68,7 +68,8 @@ export function FormulaireProduit({
           description: produit.description,
           categorie_id: produit.categorie_id,
           marque_id: produit.marque_id,
-          prix_public: produit.prix_public,
+          // « Prix sur demande » (null) : champ vide à 0, l'admin doit saisir un prix pour enregistrer.
+          prix_public: produit.prix_public ?? 0,
           eligible_b2b: produit.eligible_b2b,
           eligible_package: produit.eligible_package,
           statut_publication: produit.statut_publication,

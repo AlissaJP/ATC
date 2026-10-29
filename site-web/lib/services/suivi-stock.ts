@@ -65,7 +65,7 @@ export function construireSuiviStock(produits: Produit[], stock: Stock[], catego
       nom: produit.nom,
       categorieId: produit.categorie_id,
       categorieNom,
-      quantite: s?.stock_actuel,
+      quantite: s?.stock_actuel ?? undefined, // null (stock non communiqué) → affiché « Non suivi »
       panier: panierDepuisNiveau(niveau),
     });
   }

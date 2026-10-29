@@ -13,6 +13,7 @@ import { useSavStore } from "@/lib/store/sav-store";
 import { produits } from "@/lib/mock-data/produits";
 import { utilisateurs as utilisateursSeed, profilsEntreprise as profilsEntrepriseSeed } from "@/lib/mock-data/utilisateurs";
 import { enAttenteDepuisPlusDe48h } from "@/lib/business-rules/delai-48h";
+import { formaterPrix } from "@/lib/services/prix";
 import type { Administrateur, Produit, Utilisateur } from "@/lib/types/entities";
 
 function initiales(nom: string): string {
@@ -150,7 +151,7 @@ export function AdminTopBar({ administrateur }: { administrateur: Administrateur
                     className="flex items-center justify-between px-3 py-2 text-sm hover:bg-fond"
                   >
                     <span className="truncate text-texte-principal">{p.nom}</span>
-                    <span className="shrink-0 text-texte-secondaire">${p.prix_public.toFixed(2)}</span>
+                    <span className="shrink-0 text-texte-secondaire">{formaterPrix(p.prix_public)}</span>
                   </Link>
                 ))}
               </div>

@@ -1,0 +1,651 @@
+{
+  "devise": "USD",
+  "produits": [
+    {
+      "ref": "ES-01",
+      "categorie": "energies-solaires",
+      "sousCategorie": "Panneaux solaires",
+      "nom": "Panneau solaire haute performance Trina Solar Vertex N 630 à 650 W",
+      "description": "Panneau commercial haute performance de catégorie A, monocristallin nouvelle génération, bifacial à double verre. Il capte aussi la lumière réfléchie par le sol et produit jusqu'à 20 % d'énergie en plus. Conçu pour résister au sel marin, au sable et aux climats chauds, il convient parfaitement aux toitures et aux champs solaires en Haïti.",
+      "caracteristiques": "Catégorie A, tension système max 1500 V DC, N-type i-TOPCon (TSM-NEG20C.20), 120 cellules, rendement jusqu'à 23 %, 2172 × 1303 × 33 mm, 34,9 kg, boîtier IP68, coefficient -0,29 %/°C, garantie de puissance 30 ans (87,4 % à 30 ans)",
+      "prixUSD": 151,
+      "prixDisponible": true,
+      "variantes": [
+        {
+          "id": "ES-01-630-w",
+          "attribut": "Puissance",
+          "valeur": "630 W",
+          "prixUSD": 151,
+          "stock": null
+        },
+        {
+          "id": "ES-01-645-w",
+          "attribut": "Puissance",
+          "valeur": "645 W",
+          "prixUSD": 157,
+          "stock": null
+        },
+        {
+          "id": "ES-01-650-w",
+          "attribut": "Puissance",
+          "valeur": "650 W",
+          "prixUSD": 160,
+          "stock": null
+        }
+      ],
+      "image": "/images/produits/ES-01.webp",
+      "imageBanniere": null
+    },
+    {
+      "ref": "ES-02",
+      "categorie": "energies-solaires",
+      "sousCategorie": "Onduleurs",
+      "nom": "Onduleur-chargeur SMA Sunny Island 6048-US, 6 000 W",
+      "description": "Onduleur-chargeur SMA de 6 000 W, la référence pour les systèmes autonomes ou de secours. Il pilote batteries, panneaux et groupe électrogène, et s'associe en parallèle pour monter en puissance. Garantie 10 ans.",
+      "caracteristiques": "6 000 W, batterie 48 V, sortie 110 V (fiche SMA : 120 V nominal, plage 105 à 132 V ; 120/240 V avec 2 unités), jusqu'à 69 kW en multicluster, compatible lithium avec BMS externe, rendement max 96 %, 63 kg, usage intérieur, garantie 10 ans",
+      "prixUSD": 2389,
+      "prixDisponible": true,
+      "variantes": [
+        {
+          "id": "ES-02-std",
+          "attribut": null,
+          "valeur": null,
+          "prixUSD": 2389,
+          "stock": null
+        }
+      ],
+      "image": null,
+      "imageBanniere": "/images/bannieres/ES-02.webp"
+    },
+    {
+      "ref": "ES-03",
+      "categorie": "energies-solaires",
+      "sousCategorie": "Onduleurs",
+      "nom": "Onduleur photovoltaïque SMA Sunny Boy",
+      "description": "Onduleur réseau fiable qui convertit la production des panneaux en courant utilisable, pour installations résidentielles et commerciales.",
+      "caracteristiques": "Aucune fiche fournie",
+      "prixUSD": null,
+      "prixDisponible": false,
+      "variantes": [],
+      "image": "/images/produits/ES-03.webp",
+      "imageBanniere": null
+    },
+    {
+      "ref": "ES-04",
+      "categorie": "energies-solaires",
+      "sousCategorie": "Onduleurs",
+      "nom": "Onduleurs hybrides Solis certifiés UL, 6 à 16 kW, 120/240 V",
+      "description": "Onduleurs hybrides Solis certifiés UL, en 120/240 V, pour batteries 48 V. Idéals pour la maison et le petit commerce : panneaux, batterie et réseau sont gérés dans un seul appareil. Quatre puissances pour s'adapter à chaque consommation.",
+      "caracteristiques": "Version UL, tension 120/240 V AC",
+      "prixUSD": 2150,
+      "prixDisponible": true,
+      "variantes": [
+        {
+          "id": "ES-04-6-kw",
+          "attribut": "Puissance",
+          "valeur": "6 kW",
+          "prixUSD": 2150,
+          "stock": null
+        },
+        {
+          "id": "ES-04-8-kw",
+          "attribut": "Puissance",
+          "valeur": "8 kW",
+          "prixUSD": 2300,
+          "stock": null
+        },
+        {
+          "id": "ES-04-12-kw",
+          "attribut": "Puissance",
+          "valeur": "12 kW",
+          "prixUSD": 3250,
+          "stock": null
+        },
+        {
+          "id": "ES-04-16-kw",
+          "attribut": "Puissance",
+          "valeur": "16 kW",
+          "prixUSD": 3500,
+          "stock": null
+        }
+      ],
+      "image": "/images/produits/ES-04.webp",
+      "imageBanniere": null
+    },
+    {
+      "ref": "ES-05",
+      "categorie": "energies-solaires",
+      "sousCategorie": "Onduleurs",
+      "nom": "Onduleur hybride Solis S6-EH3P30K-H-LV 30 kW triphasé",
+      "description": "Onduleur hybride triphasé pour batteries haute tension, pensé pour les entreprises. Il bascule en secours en moins de 10 ms et accepte jusqu'à 60 kW de panneaux.",
+      "caracteristiques": "30 kW, triphasé 220/230 V, PV jusqu'à 60 kW, 3 MPPT, batterie 150 à 800 V, charge/décharge 33 kW, basculement < 10 ms, surcharge 160 %, jusqu'à 10 en parallèle, IP66, écran 7 pouces, rendement 96,3 %, 73 kg",
+      "prixUSD": null,
+      "prixDisponible": false,
+      "variantes": [],
+      "image": "/images/produits/ES-05.webp",
+      "imageBanniere": null
+    },
+    {
+      "ref": "ES-06",
+      "categorie": "energies-solaires",
+      "sousCategorie": "Onduleurs",
+      "nom": "Onduleur hybride Solis 60 kW haute tension",
+      "description": "Solution hybride triphasée haute tension pour les bâtiments commerciaux et industriels à forte consommation.",
+      "caracteristiques": "Aucune fiche fournie",
+      "prixUSD": null,
+      "prixDisponible": false,
+      "variantes": [],
+      "image": null,
+      "imageBanniere": "/images/bannieres/ES-06.webp"
+    },
+    {
+      "ref": "ES-07",
+      "categorie": "energies-solaires",
+      "sousCategorie": "Onduleurs",
+      "nom": "Onduleurs hybrides Deye basse tension",
+      "description": "Onduleurs hybrides polyvalents pour batteries lithium 48 V, très répandus en résidentiel.",
+      "caracteristiques": "Aucune fiche fournie",
+      "prixUSD": null,
+      "prixDisponible": false,
+      "variantes": [],
+      "image": null,
+      "imageBanniere": "/images/bannieres/ES-07.webp"
+    },
+    {
+      "ref": "ES-08",
+      "categorie": "energies-solaires",
+      "sousCategorie": "Onduleurs",
+      "nom": "Onduleur hybride Deye haute tension",
+      "description": "Onduleur hybride pour batteries haute tension, adapté aux résidences et commerces qui veulent plus de puissance de stockage.",
+      "caracteristiques": "Aucune fiche fournie",
+      "prixUSD": null,
+      "prixDisponible": false,
+      "variantes": [],
+      "image": "/images/produits/ES-08.webp",
+      "imageBanniere": null
+    },
+    {
+      "ref": "ES-09",
+      "categorie": "energies-solaires",
+      "sousCategorie": "Onduleurs",
+      "nom": "Onduleur-chargeur Schneider XW Pro 6,8 kW",
+      "description": "Onduleur-chargeur robuste qui s'installe en parallèle pour bâtir de grosses installations, comme le système de secours de 40,8 kW réalisé par ATC.",
+      "caracteristiques": "6,8 kW (seule donnée fournie)",
+      "prixUSD": null,
+      "prixDisponible": false,
+      "variantes": [],
+      "image": null,
+      "imageBanniere": "/images/bannieres/ES-09.webp"
+    },
+    {
+      "ref": "ES-10",
+      "categorie": "energies-solaires",
+      "sousCategorie": "Onduleurs",
+      "nom": "Onduleur hybride commercial ATESS HPS50-US",
+      "description": "Onduleur hybride commercial avec banc de batteries haute tension, pour usines, hôtels et bâtiments professionnels.",
+      "caracteristiques": "Aucune fiche fournie",
+      "prixUSD": null,
+      "prixDisponible": false,
+      "variantes": [],
+      "image": null,
+      "imageBanniere": "/images/bannieres/ES-10.webp"
+    },
+    {
+      "ref": "ES-11",
+      "categorie": "energies-solaires",
+      "sousCategorie": "Batteries lithium",
+      "nom": "Batterie lithium verticale SMART+ 17 kWh",
+      "description": "Batterie tout-en-un sur roulettes, à cellules EVE de qualité, avec écran tactile pour suivre la charge en temps réel. Elle se déplace facilement, se branche sur la plupart des onduleurs hybrides et dure jusqu'à 8 000 cycles.",
+      "caracteristiques": "17 kWh, 51,2 V, cellules LFP (LiFePO4) EVE, 8 000 cycles, écran de contrôle intégré",
+      "prixUSD": 3900,
+      "prixDisponible": true,
+      "variantes": [
+        {
+          "id": "ES-11-std",
+          "attribut": null,
+          "valeur": null,
+          "prixUSD": 3900,
+          "stock": null
+        }
+      ],
+      "image": "/images/produits/ES-11.webp",
+      "imageBanniere": null
+    },
+    {
+      "ref": "ES-12",
+      "categorie": "energies-solaires",
+      "sousCategorie": "Batteries lithium",
+      "nom": "Batterie PYTES V16 16 kWh",
+      "description": "Batterie murale ou au sol très résistante, protégée contre l'eau, la poussière et la corrosion. Elle peut s'installer à l'extérieur et dure jusqu'à 8 000 cycles.",
+      "caracteristiques": "16 kWh, 51,2 V, 314 Ah, 8 000 cycles à 0,5 C, IP66, anticorrosion C4-M, certifications UL9540, UL9540A, UL1973",
+      "prixUSD": null,
+      "prixDisponible": false,
+      "variantes": [],
+      "image": "/images/produits/ES-12.webp",
+      "imageBanniere": null
+    },
+    {
+      "ref": "ES-13",
+      "categorie": "energies-solaires",
+      "sousCategorie": "Batteries lithium",
+      "nom": "Batterie PYTES rackable 5,12 kWh",
+      "description": "Batterie lithium compacte au format rack, à installer dans une armoire ou à empiler. On ajoute des modules au fil des besoins pour agrandir le stockage, et elle dure jusqu'à 8 000 cycles.",
+      "caracteristiques": "5,12 kWh, 51,2 V, cellules LiFePO4, 8 000 cycles (soit environ 100 Ah, déduit de 5,12 kWh à 51,2 V)",
+      "prixUSD": 1150,
+      "prixDisponible": true,
+      "variantes": [
+        {
+          "id": "ES-13-std",
+          "attribut": null,
+          "valeur": null,
+          "prixUSD": 1150,
+          "stock": null
+        }
+      ],
+      "image": "/images/produits/ES-13.webp",
+      "imageBanniere": null
+    },
+    {
+      "ref": "ES-14",
+      "categorie": "energies-solaires",
+      "sousCategorie": "Batteries lithium",
+      "nom": "Batterie Unity+ Energy Storage 16 / 17 kWh",
+      "description": "Batterie sur roulettes à cellules LiFePO4 de grade A, avec contrôle intelligent, prête à brancher. Deux capacités au choix selon la consommation.",
+      "caracteristiques": "LiFePO4 grade A, 51,2 V, 8 000 cycles ou plus, garantie 5 ans (indiquée sur le visuel)",
+      "prixUSD": 3100,
+      "prixDisponible": true,
+      "variantes": [
+        {
+          "id": "ES-14-16-kwh",
+          "attribut": "Capacité",
+          "valeur": "16 kWh",
+          "prixUSD": 3100,
+          "stock": null
+        },
+        {
+          "id": "ES-14-17-kwh",
+          "attribut": "Capacité",
+          "valeur": "17 kWh",
+          "prixUSD": 3300,
+          "stock": null
+        }
+      ],
+      "image": null,
+      "imageBanniere": "/images/bannieres/ES-14.webp"
+    },
+    {
+      "ref": "ES-15",
+      "categorie": "energies-solaires",
+      "sousCategorie": "Batteries lithium",
+      "nom": "Batterie WAVER Energy Storage Plug N Play 17 kWh",
+      "description": "Batterie lithium Premium sur roulettes, avec écran de supervision (tension, courant, charge). Elle s'installe à l'intérieur comme à l'extérieur, se branche sans armoire et dure jusqu'à 8 000 cycles.",
+      "caracteristiques": "17 kWh, 51,2 V, 320 Ah, 8 000 cycles, certification UL (Premium), usage intérieur et extérieur",
+      "prixUSD": 4100,
+      "prixDisponible": true,
+      "variantes": [
+        {
+          "id": "ES-15-std",
+          "attribut": null,
+          "valeur": null,
+          "prixUSD": 4100,
+          "stock": null
+        }
+      ],
+      "image": "/images/produits/ES-15.webp",
+      "imageBanniere": null
+    },
+    {
+      "ref": "ES-16",
+      "categorie": "energies-solaires",
+      "sousCategorie": "Batteries lithium",
+      "nom": "Batterie lithium rackable 48 V",
+      "description": "Module lithium empilable fourni avec ses câbles de communication, pour agrandir le stockage au fil des besoins.",
+      "caracteristiques": "48 V",
+      "prixUSD": null,
+      "prixDisponible": false,
+      "variantes": [],
+      "image": null,
+      "imageBanniere": "/images/bannieres/ES-16.webp"
+    },
+    {
+      "ref": "ES-17",
+      "categorie": "energies-solaires",
+      "sousCategorie": "Batteries lithium",
+      "nom": "Banque de batteries lithium modulaire",
+      "description": "Modules rackables empilés avec connexions de puissance et de communication, pour constituer un grand banc de stockage.",
+      "caracteristiques": "Aucune donnée",
+      "prixUSD": null,
+      "prixDisponible": false,
+      "variantes": [],
+      "image": "/images/produits/ES-17.webp",
+      "imageBanniere": null
+    },
+    {
+      "ref": "ES-18",
+      "categorie": "energies-solaires",
+      "sousCategorie": "Batteries lithium",
+      "nom": "Batteries lithium 25,6 V (noires et jaunes)",
+      "description": "Batteries 24 V empilables pour petites installations : maison, boutique, kiosque. Deux versions au choix, noire ou jaune.",
+      "caracteristiques": "25,6 V. Pile de 4 modules : 400 × 659 × 1040 mm. Capacités annoncées : 200, 230, 280, 314 Ah",
+      "prixUSD": 1450,
+      "prixDisponible": true,
+      "variantes": [
+        {
+          "id": "ES-18-noire",
+          "attribut": "Couleur",
+          "valeur": "Noire",
+          "prixUSD": 1450,
+          "stock": null
+        },
+        {
+          "id": "ES-18-jaune",
+          "attribut": "Couleur",
+          "valeur": "Jaune",
+          "prixUSD": 1600,
+          "stock": null
+        }
+      ],
+      "image": "/images/produits/ES-18.webp",
+      "imageBanniere": null
+    },
+    {
+      "ref": "ES-19",
+      "categorie": "energies-solaires",
+      "sousCategorie": "Stockage commercial et industriel",
+      "nom": "Système de stockage Solis EverCore 261 kWh ESS",
+      "description": "Armoire de stockage tout-en-un pour entreprises : batteries, conversion et sécurité réunies dans un seul équipement extérieur.",
+      "caracteristiques": "261 kWh",
+      "prixUSD": null,
+      "prixDisponible": false,
+      "variantes": [],
+      "image": null,
+      "imageBanniere": "/images/bannieres/ES-19.webp"
+    },
+    {
+      "ref": "ES-20",
+      "categorie": "energies-solaires",
+      "sousCategorie": "Stockage commercial et industriel",
+      "nom": "Systèmes de stockage conteneurisés DAA Solar",
+      "description": "Solutions industrielles de stockage intégrées en conteneurs, pour les sites à très forte consommation.",
+      "caracteristiques": "Aucune donnée",
+      "prixUSD": null,
+      "prixDisponible": false,
+      "variantes": [],
+      "image": null,
+      "imageBanniere": "/images/bannieres/ES-20.webp"
+    },
+    {
+      "ref": "ES-21",
+      "categorie": "energies-solaires",
+      "sousCategorie": "Structures et accessoires",
+      "nom": "Structure de montage en toiture",
+      "description": "Structure métallique qui fixe solidement les panneaux sur toit plat ou incliné.",
+      "caracteristiques": "Aucune donnée",
+      "prixUSD": null,
+      "prixDisponible": false,
+      "variantes": [],
+      "image": null,
+      "imageBanniere": "/images/bannieres/ES-21.webp"
+    },
+    {
+      "ref": "ES-22",
+      "categorie": "energies-solaires",
+      "sousCategorie": "Structures et accessoires",
+      "nom": "Structure au sol et abri solaire (carport)",
+      "description": "Structure porteuse qui sert aussi d'abri pour véhicules ou de champ solaire au sol.",
+      "caracteristiques": "Rendu 3D uniquement",
+      "prixUSD": null,
+      "prixDisponible": false,
+      "variantes": [],
+      "image": null,
+      "imageBanniere": "/images/bannieres/ES-22.webp"
+    },
+    {
+      "ref": "ES-23",
+      "categorie": "energies-solaires",
+      "sousCategorie": "Structures et accessoires",
+      "nom": "Barres de distribution DC (busbars + et -)",
+      "description": "Barres de cuivre pour raccorder proprement plusieurs batteries en parallèle.",
+      "caracteristiques": "Aucune donnée",
+      "prixUSD": null,
+      "prixDisponible": false,
+      "variantes": [],
+      "image": null,
+      "imageBanniere": "/images/bannieres/ES-23.webp"
+    },
+    {
+      "ref": "ES-24",
+      "categorie": "energies-solaires",
+      "sousCategorie": "Structures et accessoires",
+      "nom": "Accessoires d'installation (câbles, connecteurs, protections)",
+      "description": "Prévus dans le cahier des charges du site, mais absents des documents du client.",
+      "caracteristiques": "Aucune donnée",
+      "prixUSD": null,
+      "prixDisponible": false,
+      "variantes": [],
+      "image": null,
+      "imageBanniere": null
+    },
+    {
+      "ref": "CL-01",
+      "categorie": "climatisation",
+      "sousCategorie": "Climatiseurs résidentiels (split mural)",
+      "nom": "Climatiseurs split TGM",
+      "description": "Climatiseurs muraux disponibles en version Inverter, économe en énergie et idéale avec le solaire, ou en version conventionnelle, plus abordable.",
+      "caracteristiques": "9 000 à 60 000 BTU/h, Inverter ou conventionnel, 220 VAC, kit d'installation inclus (cartons)",
+      "prixUSD": null,
+      "prixDisponible": false,
+      "variantes": [],
+      "image": null,
+      "imageBanniere": "/images/bannieres/CL-01.webp"
+    },
+    {
+      "ref": "CL-02",
+      "categorie": "climatisation",
+      "sousCategorie": "Climatiseurs résidentiels (split mural)",
+      "nom": "Climatiseurs split Premium Inverter",
+      "description": "Gamme haut de gamme Inverter pour un confort silencieux et une faible consommation.",
+      "caracteristiques": "6 000 à 60 000 BTU/h, Inverter, 220 VAC",
+      "prixUSD": null,
+      "prixDisponible": false,
+      "variantes": [],
+      "image": "/images/produits/CL-02.webp",
+      "imageBanniere": null
+    },
+    {
+      "ref": "CL-03",
+      "categorie": "climatisation",
+      "sousCategorie": "Climatisation centrale et commerciale",
+      "nom": "Climatiseurs centraux 5 à 20 tonnes",
+      "description": "Unités centrales pour villas, bureaux et commerces, raccordées à un réseau de gaines.",
+      "caracteristiques": "5 ; 7,5 ; 10 ; 12,5 ; 15 ; 20 tonnes",
+      "prixUSD": null,
+      "prixDisponible": false,
+      "variantes": [],
+      "image": null,
+      "imageBanniere": "/images/bannieres/CL-03.webp"
+    },
+    {
+      "ref": "CL-04",
+      "categorie": "climatisation",
+      "sousCategorie": "Climatisation centrale et commerciale",
+      "nom": "Climatiseurs centraux industriels 40 à 60 tonnes et plus",
+      "description": "Solutions centralisées pour grands bâtiments commerciaux et industriels.",
+      "caracteristiques": "40 à 60 tonnes et plus",
+      "prixUSD": null,
+      "prixDisponible": false,
+      "variantes": [],
+      "image": null,
+      "imageBanniere": "/images/bannieres/CL-04.webp"
+    },
+    {
+      "ref": "CL-05",
+      "categorie": "climatisation",
+      "sousCategorie": "Climatisation centrale et commerciale",
+      "nom": "Systèmes VRF Mitsubishi Electric",
+      "description": "Unités extérieures modulaires qui climatisent plusieurs pièces ou étages avec un seul système, pièce par pièce.",
+      "caracteristiques": "Aucune donnée",
+      "prixUSD": null,
+      "prixDisponible": false,
+      "variantes": [],
+      "image": null,
+      "imageBanniere": "/images/bannieres/CL-05.webp"
+    },
+    {
+      "ref": "CL-06",
+      "categorie": "climatisation",
+      "sousCategorie": "Climatisation centrale et commerciale",
+      "nom": "Unités intérieures et centrales de traitement d'air",
+      "description": "Unités qui filtrent et distribuent l'air dans les systèmes centraux.",
+      "caracteristiques": "Aucune donnée",
+      "prixUSD": null,
+      "prixDisponible": false,
+      "variantes": [],
+      "image": "/images/produits/CL-06.webp",
+      "imageBanniere": null
+    },
+    {
+      "ref": "CL-07",
+      "categorie": "climatisation",
+      "sousCategorie": "Gaines et distribution d'air",
+      "nom": "Gaines de ventilation métalliques",
+      "description": "Fabrication et installation sur mesure de réseaux de distribution d'air.",
+      "caracteristiques": "Aucune donnée",
+      "prixUSD": null,
+      "prixDisponible": false,
+      "variantes": [],
+      "image": null,
+      "imageBanniere": "/images/bannieres/CL-07.webp"
+    },
+    {
+      "ref": "CL-08",
+      "categorie": "climatisation",
+      "sousCategorie": "Gaines et distribution d'air",
+      "nom": "Gaines isolées et unités AIRMAX",
+      "description": "Gaines à isolation thermique pour limiter les pertes de froid, avec unités AIRMAX.",
+      "caracteristiques": "Aucune donnée",
+      "prixUSD": null,
+      "prixDisponible": false,
+      "variantes": [],
+      "image": "/images/produits/CL-06.webp",
+      "imageBanniere": null
+    },
+    {
+      "ref": "CL-S",
+      "categorie": "climatisation",
+      "sousCategorie": "Service associé",
+      "nom": "Installation et entretien de climatiseurs",
+      "description": "Service professionnel résidentiel et commercial, à proposer en option sur chaque fiche climatiseur, comme l'assistance à l'installation prévue au cahier des charges.",
+      "caracteristiques": "Aucune donnée",
+      "prixUSD": null,
+      "prixDisponible": false,
+      "variantes": [],
+      "image": null,
+      "imageBanniere": "/images/bannieres/CL-S.webp"
+    },
+    {
+      "ref": "SE-01",
+      "categorie": "securite",
+      "sousCategorie": "Caméras",
+      "nom": "Caméra de surveillance solaire PTZ IP65",
+      "description": "Caméra extérieure autonome avec son propre panneau solaire : aucun câble électrique à tirer. Elle pivote pour couvrir toute la zone et résiste à la pluie, à la poussière et à la chaleur.",
+      "caracteristiques": "IP65, panneau solaire intégré, tête orientable (PTZ), 2 antennes",
+      "prixUSD": null,
+      "prixDisponible": false,
+      "variantes": [],
+      "image": "/images/produits/SE-01.webp",
+      "imageBanniere": null
+    },
+    {
+      "ref": "PK-01",
+      "categorie": "packages-solaires",
+      "sousCategorie": "Packages proposés (à valider par le client)",
+      "nom": "Kit résidentiel Solis + PYTES V16",
+      "description": "Kit clé en main pour la maison : un onduleur hybride Solis et une batterie PYTES V16 résistante à l'extérieur.",
+      "caracteristiques": "Onduleur Solis basse tension + 1 à 2 batteries PYTES · Cible : Particuliers, diaspora",
+      "prixUSD": null,
+      "prixDisponible": false,
+      "variantes": [],
+      "image": "/images/produits/PK-01.webp",
+      "imageBanniere": null
+    },
+    {
+      "ref": "PK-02",
+      "categorie": "packages-solaires",
+      "sousCategorie": "Packages proposés (à valider par le client)",
+      "nom": "Kit Deye + PYTES",
+      "description": "Système hybride pour l'autonomie énergétique d'une maison ou d'un petit commerce.",
+      "caracteristiques": "2 onduleurs Deye + 4 batteries PYTES (installation photographiée) · Cible : Particuliers, PME",
+      "prixUSD": null,
+      "prixDisponible": false,
+      "variantes": [],
+      "image": "/images/produits/PK-02.webp",
+      "imageBanniere": null
+    },
+    {
+      "ref": "PK-03",
+      "categorie": "packages-solaires",
+      "sousCategorie": "Packages proposés (à valider par le client)",
+      "nom": "Kit Deye + batteries lithium rackables",
+      "description": "Solution évolutive : on ajoute des modules de batterie au fil des besoins.",
+      "caracteristiques": "Onduleurs Deye + batteries rackables · Cible : Particuliers, PME",
+      "prixUSD": null,
+      "prixDisponible": false,
+      "variantes": [],
+      "image": null,
+      "imageBanniere": "/images/bannieres/ES-07.webp"
+    },
+    {
+      "ref": "PK-04",
+      "categorie": "packages-solaires",
+      "sousCategorie": "Packages proposés (à valider par le client)",
+      "nom": "Kit Schneider XW Pro + SMART+",
+      "description": "Installation multi-onduleurs robuste pour les gros consommateurs.",
+      "caracteristiques": "Plusieurs XW Pro 6,8 kW + busbars DC + batteries SMART+ · Cible : Entreprises",
+      "prixUSD": null,
+      "prixDisponible": false,
+      "variantes": [],
+      "image": null,
+      "imageBanniere": "/images/bannieres/PK-04.webp"
+    },
+    {
+      "ref": "PK-05",
+      "categorie": "packages-solaires",
+      "sousCategorie": "Packages proposés (à valider par le client)",
+      "nom": "Kit SMA Sunny Island + Sunny Boy",
+      "description": "Système autonome ou de secours de marque allemande, extensible jusqu'à 69 kW.",
+      "caracteristiques": "2 Sunny Island + 2 Sunny Boy + batteries (schéma de la fiche SMA et photo) · Cible : Particuliers aisés, entreprises",
+      "prixUSD": null,
+      "prixDisponible": false,
+      "variantes": [],
+      "image": null,
+      "imageBanniere": "/images/bannieres/ES-02.webp"
+    },
+    {
+      "ref": "PK-06",
+      "categorie": "packages-solaires",
+      "sousCategorie": "Packages proposés (à valider par le client)",
+      "nom": "Kit commercial ATESS HPS50 + stockage haute tension",
+      "description": "Système commercial complet de conversion et de stockage.",
+      "caracteristiques": "ATESS HPS50-US + banc de batteries haute tension · Cible : Entreprises, industrie",
+      "prixUSD": null,
+      "prixDisponible": false,
+      "variantes": [],
+      "image": null,
+      "imageBanniere": "/images/bannieres/PK-06.webp"
+    },
+    {
+      "ref": "PK-07",
+      "categorie": "packages-solaires",
+      "sousCategorie": "Packages proposés (à valider par le client)",
+      "nom": "Package Solaire + Climatisation",
+      "description": "Offre combinée mise en avant par le flyer du client : produire son énergie et alimenter sa climatisation.",
+      "caracteristiques": "Panneaux + onduleur hybride + Solis EverCore 261 kWh + climatiseurs Inverter (flyer) · Cible : Entreprises",
+      "prixUSD": null,
+      "prixDisponible": false,
+      "variantes": [],
+      "image": "/images/produits/PK-07.webp",
+      "imageBanniere": null
+    }
+  ]
+}

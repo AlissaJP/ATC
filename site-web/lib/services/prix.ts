@@ -3,7 +3,13 @@
 import { produits } from "@/lib/mock-data/produits";
 import { paliersParProduit } from "@/lib/mock-data/paliers-prix-b2b";
 import { trouverPalierApplicable } from "@/lib/business-rules/bareme-b2b";
-import { prixEffectif, resoudreProduitEtVariante } from "@/lib/services/variantes";
+import { resoudreProduitEtVariante } from "@/lib/services/variantes";
+
+// Libellé d'un prix au format du site ("$151.00", USD uniquement) ; null = prix non communiqué par le
+// client. Intégration du catalogue ATC.
+export function formaterPrix(prix: number | null): string {
+  return prix === null ? "Prix sur demande" : `$${prix.toFixed(2)}`;
+}
 
 export function resoudrePrixUnitaire(produitId: string, quantite: number, estB2BVerifie: boolean): number {
   const resolu = resoudreProduitEtVariante(produitId, produits);
@@ -12,12 +18,14 @@ export function resoudrePrixUnitaire(produitId: string, quantite: number, estB2B
 
   // Prix de variante fixe (point #29) — pas de barème B2B distinct par variante, pour rester simple
   // (le prix saisi par l'admin pour cette valeur s'applique tel quel, quel que soit le profil client).
-  if (variante) return prixEffectif(produit, variante);
+  if (variante) return variante.prix;
 
   if (estB2BVerifie) {
     const palier = trouverPalierApplicable(paliersParProduit(produitId), quantite);
     if (palier) return palier.prix_unitaire;
   }
 
-  return produit.prix_public;
+  // Garde : un produit sans prix n'entre jamais dans le panier (cart-store, quantiteAutorisee) — ce 0
+  // n'est ni affiché ni facturé.
+  return produit.prix_public ?? 0;
 }

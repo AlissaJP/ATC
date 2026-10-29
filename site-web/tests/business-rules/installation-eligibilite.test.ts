@@ -18,6 +18,7 @@ function produit(categorie_id: string): Produit {
     description: "",
     categorie_id,
     prix_public: 100,
+    prix_disponible: true,
     eligible_b2b: false,
     eligible_package: false,
     statut_publication: "publié",

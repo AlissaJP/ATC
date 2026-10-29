@@ -43,7 +43,7 @@ export default async function ProduitPage(props: PageProps<"/produit/[slug]">) {
       />
 
       <div className="grid gap-10 lg:grid-cols-2">
-        <GalerieImages images={produit.images} alt={produit.nom} />
+        <GalerieImages produit={produit} />
 
         <div>
           {marque && <p className="text-sm font-semibold text-primaire-clair">{marque.nom}</p>}
@@ -58,7 +58,8 @@ export default async function ProduitPage(props: PageProps<"/produit/[slug]">) {
               produit={produit}
               niveauStock={niveauStock}
               paliers={paliers}
-              stockActuel={stock?.stock_actuel ?? 0}
+              // Sans ligne de stock = rupture (0) ; stock_actuel null = non suivi (undefined).
+              stockActuel={stock ? (stock.stock_actuel ?? undefined) : 0}
               variantes={variantes}
             />
           </div>

@@ -5,11 +5,12 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { trouverStockParProduit } from "@/lib/mock-data/stock";
+import { quantiteDisponible } from "@/lib/mock-data/stock";
 import { produits } from "@/lib/mock-data/produits";
 import { resoudrePrixUnitaire } from "@/lib/services/prix";
 import { resoudreProduitEtVariante, stockEffectifVariante } from "@/lib/services/variantes";
 import { useSessionStore, estClientB2BVerifie } from "@/lib/store/session-store";
+import { VERSION_CATALOGUE, referenceProduitConnue } from "@/lib/store/migration-catalogue";
 
 export interface LignePanier {
   produit_id: string;
@@ -38,8 +39,11 @@ function quantiteAutorisee(produit_id: string, quantite: number): number {
     // undefined = stock non suivi pour cette variante (point #29) — aucun plafond réel à appliquer.
     return stockVariante === undefined ? Math.max(0, quantite) : Math.max(0, Math.min(quantite, stockVariante));
   }
-  const stockDisponible = trouverStockParProduit(produit_id)?.stock_actuel ?? 0;
-  return Math.max(0, Math.min(quantite, stockDisponible));
+  // Produit sans prix (« Prix sur demande ») : jamais dans le panier, quel que soit l'appelant.
+  if (!resolu?.produit.prix_disponible) return 0;
+  const stockDisponible = quantiteDisponible(produit_id);
+  // undefined = stock non suivi (stock_actuel null) — aucun plafond réel à appliquer.
+  return stockDisponible === undefined ? Math.max(0, quantite) : Math.max(0, Math.min(quantite, stockDisponible));
 }
 
 export const useCartStore = create<CartState>()(
@@ -88,6 +92,14 @@ export const useCartStore = create<CartState>()(
         }),
       vider: () => set({ lignes: [] }),
     }),
-    { name: "atc-panier" }
+    {
+      name: "atc-panier",
+      version: VERSION_CATALOGUE,
+      // Catalogue ATC : lignes de produits supprimés retirées du panier.
+      migrate: (persiste) => {
+        const { lignes = [] } = (persiste ?? {}) as Partial<Pick<CartState, "lignes">>;
+        return { lignes: lignes.filter((l) => referenceProduitConnue(l.produit_id)) } as CartState;
+      },
+    }
   )
 );

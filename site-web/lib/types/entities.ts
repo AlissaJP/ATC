@@ -58,18 +58,31 @@ export interface DocumentEntreprise {
 
 export type StatutPublicationProduit = "publié" | "brouillon";
 
+// Intégration du catalogue ATC (étape 3) — champs ajoutés pour le vrai catalogue client
+// (catalogue-data.json) : `ref`, `caracteristiques`, `prix_disponible`, `image_banniere`. La sous-catégorie
+// n'est pas un champ texte dupliqué : `categorie_id` pointe directement vers la sous-catégorie (Panneaux
+// solaires, Onduleurs...), elle-même rattachée à sa catégorie racine par `parent_id` (clé étrangère).
 export interface Produit {
   id: string;
+  ref?: string; // référence du catalogue client (ex. "ES-01") — absente pour un produit créé depuis l'admin
   slug: string;
   nom: string;
   description: string;
+  // Texte brut fourni par le client, éléments séparés par des virgules ; découpé à l'affichage seulement.
+  caracteristiques?: string;
   categorie_id: string;
   marque_id?: string;
-  prix_public: number; // USD — RG-03-001
+  // USD — RG-03-001. null = prix pas encore communiqué par le client (« Prix sur demande ») : jamais de
+  // valeur inventée. Pour un produit à variantes, prix le plus bas des variantes (« à partir de »).
+  prix_public: number | null;
+  // Toujours égal à `prix_public !== null` (maintenu par lib/mock-data/produits.ts) : false = ni panier ni
+  // barème B2B, bouton « Demander un prix » à la place.
+  prix_disponible: boolean;
   eligible_b2b: boolean; // RG-03-004
   eligible_package: boolean; // BF-03-004
   statut_publication: StatutPublicationProduit;
-  images: string[];
+  images: string[]; // photos carrées (1200×1200), affichées en `contain` sur fond blanc
+  image_banniere?: string; // photo large 2:1 — sert de vignette recadrée si `images` est vide
   accessoires_compatibles_ids?: string[]; // RG-03-003
   specifications?: Record<string, string>;
   // Raffinement Design (point #29 — remplace le mécanisme à SKU séparés du point #23) : options de
@@ -108,7 +121,9 @@ export interface Marque {
 
 export interface Stock {
   produit_id: string;
-  stock_actuel: number;
+  // null = quantité non communiquée par le client : stock non suivi (affiché « En stock », aucun plafond de
+  // quantité), même convention que VarianteProduit.stock non renseigné. Intégration du catalogue ATC.
+  stock_actuel: number | null;
   stock_reference: number; // défaut 100 — décision actée n°28 (RG-03-002)
 }
 
@@ -273,12 +288,16 @@ export interface ParametresGeneraux {
 
 export interface PackagePreconfigure {
   id: string;
+  ref?: string; // référence du catalogue client (ex. "PK-01") — absente pour un package créé depuis l'admin
   slug: string;
   nom: string;
   description: string;
+  caracteristiques?: string; // composition proposée en texte, tant que la composition réelle n'est pas validée
   produits: { produit_id: string; quantite: number }[];
-  prix_total: number;
-  image: string;
+  // USD. null = « Prix sur demande » : composition vide (package proposé, à valider par le client) ou
+  // composant sans prix — jamais de total partiel présenté comme « tout compris ».
+  prix_total: number | null;
+  image: string; // photo carrée (/images/produits/) ou bannière 2:1 (/images/bannieres/)
 }
 
 export type StatutAvis = "en_attente_moderation" | "publie" | "rejete"; // RG-12-002

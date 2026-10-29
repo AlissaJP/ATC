@@ -2,9 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import { Search } from "lucide-react";
+import { VisuelProduit } from "@/components/product/VisuelProduit";
 import { rechercherProduits } from "@/lib/services/recherche";
+import { formaterPrix } from "@/lib/services/prix";
 import type { Produit } from "@/lib/types/entities";
 import { useTranslation } from "@/lib/i18n/useTranslation";
 
@@ -92,13 +93,11 @@ export function SearchBar({
                   className="flex items-center gap-3 px-3 py-2 hover:bg-fond"
                 >
                   <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-md bg-fond">
-                    {produit.images[0] && (
-                      <Image src={produit.images[0]} alt="" fill className="object-cover" sizes="40px" />
-                    )}
+                    <VisuelProduit produit={produit} sizes="40px" />
                   </div>
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium text-texte-principal">{produit.nom}</p>
-                    <p className="text-xs text-texte-secondaire">${produit.prix_public.toFixed(2)}</p>
+                    <p className="text-xs text-texte-secondaire">{formaterPrix(produit.prix_public)}</p>
                   </div>
                 </a>
               </li>

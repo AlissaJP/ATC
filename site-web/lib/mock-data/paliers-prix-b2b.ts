@@ -13,9 +13,10 @@ function genererPaliers(produitId: string, prixPublic: number): PalierPrixB2B[] 
   ];
 }
 
-export const paliersPrixB2B: PalierPrixB2B[] = produits
-  .filter((p) => p.eligible_b2b)
-  .flatMap((p) => genererPaliers(p.id, p.prix_public));
+// Pas de barème sans prix public (« Prix sur demande ») : rien à décliner par palier.
+export const paliersPrixB2B: PalierPrixB2B[] = produits.flatMap((p) =>
+  p.eligible_b2b && p.prix_public !== null ? genererPaliers(p.id, p.prix_public) : []
+);
 
 export function paliersParProduit(produitId: string): PalierPrixB2B[] {
   return paliersPrixB2B.filter((p) => p.produit_id === produitId);

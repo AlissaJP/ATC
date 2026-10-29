@@ -6,10 +6,12 @@ import { ArrowRight } from "lucide-react";
 import { useTranslation } from "@/lib/i18n/useTranslation";
 import { produits } from "@/lib/mock-data/produits";
 import { stardom } from "@/lib/fonts/stardom";
+import { VisuelProduit } from "@/components/product/VisuelProduit";
 import type { Produit } from "@/lib/types/entities";
 
-const panneauVitrine = produits.find((p) => p.id === "prod-panneau-405w")!;
-const batterieVitrine = produits.find((p) => p.id === "prod-batterie-lithium-100ah")!;
+// Vitrine : deux vrais produits du catalogue ATC avec prix et photo produit (panneau Trina, batterie SMART+).
+const panneauVitrine = produits.find((p) => p.id === "ES-01")!;
+const batterieVitrine = produits.find((p) => p.id === "ES-11")!;
 
 // BF-01-009 — Bannière d'accueil (structure : Raffinement Design Section 1.1, validé sur le modèle fourni).
 // Deux colonnes asymétriques, photo bord perdu (sans cadre), cartes produit flottantes à profondeurs différentes.
@@ -92,17 +94,13 @@ function CarteProduitVitrine({
       }`}
     >
       <div className="relative aspect-square w-full bg-fond">
-        {produit.images[0] ? (
-          <Image src={produit.images[0]} alt="" fill className="object-cover" sizes="180px" />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center text-center text-[11px] text-texte-secondaire">
-            Image à venir
-          </div>
-        )}
+        <VisuelProduit produit={produit} sizes="180px" />
       </div>
       <div className="p-2.5">
         <p className="truncate font-titres text-xs font-semibold text-texte-principal">{produit.nom}</p>
-        <p className="text-xs text-texte-secondaire">${produit.prix_public.toFixed(0)}</p>
+        <p className="text-xs text-texte-secondaire">
+          {produit.prix_public === null ? "Prix sur demande" : `$${produit.prix_public.toFixed(0)}`}
+        </p>
       </div>
     </Link>
   );

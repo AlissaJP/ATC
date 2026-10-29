@@ -34,7 +34,8 @@ export function nomAffichageVariante(produit: Produit, variante: VarianteProduit
   return variante ? `${produit.nom} — ${variante.attribut} ${variante.valeur}` : produit.nom;
 }
 
-export function prixEffectif(produit: Produit, variante: VarianteProduit | undefined): number {
+// null = prix non communiqué par le client (produit sans variante, « Prix sur demande »).
+export function prixEffectif(produit: Produit, variante: VarianteProduit | undefined): number | null {
   return variante ? variante.prix : produit.prix_public;
 }
 
@@ -43,7 +44,7 @@ export function stockEffectifVariante(variante: VarianteProduit | undefined): nu
   return variante?.stock;
 }
 
-export function prixDepart(produit: Produit): number {
+export function prixDepart(produit: Produit): number | null {
   if (!produit.variantes || produit.variantes.length === 0) return produit.prix_public;
   return Math.min(...produit.variantes.map((v) => v.prix));
 }
