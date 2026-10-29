@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { Check, Minus, Package, Plus, ShoppingCart } from "lucide-react";
+import { Check, MessageCircle, Minus, Package, Plus, ShoppingCart } from "lucide-react";
 import type { NiveauAlerteStock, PalierPrixB2B, Produit, VarianteProduit } from "@/lib/types/entities";
 import { StockBadge } from "./StockBadge";
 import { BoutonFavori } from "./BoutonFavori";
@@ -14,6 +14,7 @@ import { trouverPalierApplicable } from "@/lib/business-rules/bareme-b2b";
 import { useGardeClient } from "@/lib/hooks/useGardeClient";
 import { construireIdLigne } from "@/lib/services/variantes";
 import { formaterPrix } from "@/lib/services/prix";
+import { lienWhatsApp } from "@/lib/constants/contact";
 import { Toast } from "@/components/ui/Toast";
 
 interface AchatProduitProps {
@@ -80,6 +81,12 @@ export function AchatProduit({ produit, niveauStock, paliers, stockActuel, varia
   const prixUnitaire = varianteActive ? varianteActive.prix : palierActif ? palierActif.prix_unitaire : produit.prix_public;
   // null = « Prix sur demande » : jamais ajoutable au panier.
   const prixTotal = prixUnitaire === null ? null : prixUnitaire * quantite;
+  // Intégration du catalogue ATC (étape 5) — sans prix, pas de stock ni de quantité à choisir : un seul
+  // bouton « Demander un prix » vers le support WhatsApp, message prérempli avec la référence et le nom.
+  const sansPrix = prixUnitaire === null;
+  const lienDemandePrix = lienWhatsApp(
+    `Bonjour ATC, je souhaite connaître le prix du produit ${produit.ref ? `${produit.ref} — ` : ""}${produit.nom}.`
+  );
 
   function ajusterQuantite(delta: number) {
     setQuantite((q) => Math.min(Math.max(1, q + delta), Math.max(1, quantiteMax)));
@@ -162,7 +169,7 @@ export function AchatProduit({ produit, niveauStock, paliers, stockActuel, varia
           {formaterPrix(prixUnitaire)}
           {estB2B && prixUnitaire !== null && <span className="ml-1 text-sm font-normal text-texte-secondaire">/ unité</span>}
         </p>
-        <StockBadge niveau={niveauStockActif} />
+        {!sansPrix && <StockBadge niveau={niveauStockActif} />}
         <BoutonFavori produitId={produit.id} className="ml-auto border border-bordure" />
       </div>
 
@@ -201,55 +208,69 @@ export function AchatProduit({ produit, niveauStock, paliers, stockActuel, varia
         </div>
       )}
 
-      <div className="flex items-center gap-4">
-        <div className="flex items-center rounded-lg border border-bordure">
-          <button
-            type="button"
-            aria-label="Diminuer la quantité"
-            className="flex h-11 w-11 items-center justify-center text-texte-principal disabled:opacity-40"
-            onClick={() => ajusterQuantite(-1)}
-            disabled={rupture || quantite <= 1}
-          >
-            <Minus size={16} />
-          </button>
-          <span className="w-10 text-center text-sm font-semibold text-texte-principal">{quantite}</span>
-          <button
-            type="button"
-            aria-label="Augmenter la quantité"
-            className="flex h-11 w-11 items-center justify-center text-texte-principal disabled:opacity-40"
-            onClick={() => ajusterQuantite(1)}
-            disabled={rupture || quantite >= quantiteMax}
-          >
-            <Plus size={16} />
-          </button>
+      {!sansPrix && (
+        <div className="flex items-center gap-4">
+          <div className="flex items-center rounded-lg border border-bordure">
+            <button
+              type="button"
+              aria-label="Diminuer la quantité"
+              className="flex h-11 w-11 items-center justify-center text-texte-principal disabled:opacity-40"
+              onClick={() => ajusterQuantite(-1)}
+              disabled={rupture || quantite <= 1}
+            >
+              <Minus size={16} />
+            </button>
+            <span className="w-10 text-center text-sm font-semibold text-texte-principal">{quantite}</span>
+            <button
+              type="button"
+              aria-label="Augmenter la quantité"
+              className="flex h-11 w-11 items-center justify-center text-texte-principal disabled:opacity-40"
+              onClick={() => ajusterQuantite(1)}
+              disabled={rupture || quantite >= quantiteMax}
+            >
+              <Plus size={16} />
+            </button>
+          </div>
+          {estB2B && prixTotal !== null && (
+            <p className="font-titres text-lg font-bold text-texte-principal">Total : ${prixTotal.toFixed(2)}</p>
+          )}
         </div>
-        {estB2B && prixTotal !== null && (
-          <p className="font-titres text-lg font-bold text-texte-principal">Total : ${prixTotal.toFixed(2)}</p>
-        )}
-      </div>
+      )}
 
       <div className="flex flex-col gap-3 sm:flex-row">
-        <motion.button
-          type="button"
-          onClick={gererAjoutPanier}
-          disabled={rupture || prixUnitaire === null}
-          whileTap={{ scale: 0.97 }}
-          className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-accent px-5 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
-        >
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.span
-              key={confirmationVisible ? "check" : "cart"}
-              initial={{ scale: 0.5, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.5, opacity: 0 }}
-              transition={{ duration: 0.15 }}
-              className="flex"
-            >
-              {confirmationVisible ? <Check size={18} /> : <ShoppingCart size={18} />}
-            </motion.span>
-          </AnimatePresence>
-          {confirmationVisible ? "Ajouté au panier" : rupture ? "Rupture de stock" : "Ajouter au panier"}
-        </motion.button>
+        {sansPrix ? (
+          <a
+            href={lienDemandePrix}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-accent px-5 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+          >
+            <MessageCircle size={18} />
+            Demander un prix
+          </a>
+        ) : (
+          <motion.button
+            type="button"
+            onClick={gererAjoutPanier}
+            disabled={rupture || prixUnitaire === null}
+            whileTap={{ scale: 0.97 }}
+            className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-accent px-5 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.span
+                key={confirmationVisible ? "check" : "cart"}
+                initial={{ scale: 0.5, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.5, opacity: 0 }}
+                transition={{ duration: 0.15 }}
+                className="flex"
+              >
+                {confirmationVisible ? <Check size={18} /> : <ShoppingCart size={18} />}
+              </motion.span>
+            </AnimatePresence>
+            {confirmationVisible ? "Ajouté au panier" : rupture ? "Rupture de stock" : "Ajouter au panier"}
+          </motion.button>
+        )}
 
         {/* « Prix sur demande » : non sélectionnable dans le configurateur (ConfigurateurPackage.tsx). */}
         {produit.eligible_package && produit.prix_disponible && (

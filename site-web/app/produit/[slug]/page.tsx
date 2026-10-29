@@ -9,6 +9,7 @@ import { obtenirProduitEnrichiParSlug, listerProduitsEnrichisParIds } from "@/li
 import { obtenirStock } from "@/lib/services/stock";
 import { listerCategories } from "@/lib/services/produits";
 import { trouverGarantieParCategorie } from "@/lib/mock-data/garanties";
+import { listerCaracteristiques } from "@/lib/services/caracteristiques";
 
 export default async function ProduitPage(props: PageProps<"/produit/[slug]">) {
   const { slug } = await props.params;
@@ -28,7 +29,10 @@ export default async function ProduitPage(props: PageProps<"/produit/[slug]">) {
 
   const categorie = categories.find((c) => c.id === produit.categorie_id);
   const categorieParente = categorie?.parent_id ? categories.find((c) => c.id === categorie.parent_id) : undefined;
-  const garantie = trouverGarantieParCategorie(produit.categorie_id);
+  // Catalogue ATC : aucune garantie générique par catégorie sur un produit du catalogue client (`ref`) —
+  // le client n'en a pas communiqué ; une garantie fabricant figure le cas échéant dans ses caractéristiques.
+  const garantie = produit.ref ? undefined : trouverGarantieParCategorie(produit.categorie_id);
+  const caracteristiques = listerCaracteristiques(produit.caracteristiques);
 
   return (
     <main className="mx-auto w-full max-w-7xl px-4 py-8 md:px-6">
@@ -48,10 +52,11 @@ export default async function ProduitPage(props: PageProps<"/produit/[slug]">) {
         <div>
           {marque && <p className="text-sm font-semibold text-primaire-clair">{marque.nom}</p>}
           <h1 className="mt-1 font-titres text-2xl font-bold text-texte-principal md:text-3xl">{produit.nom}</h1>
-          {/* Variante (#29) : la description « points forts » dédiée à la valeur choisie est affichée
-              dans AchatProduit, juste sous le sélecteur, et se met à jour dynamiquement — pas de
-              paragraphe statique redondant ici dans ce cas. */}
-          {!variantes && <p className="mt-3 text-texte-secondaire">{produit.description}</p>}
+          {produit.ref && <p className="mt-1 text-sm text-texte-secondaire">Réf. {produit.ref}</p>}
+          {/* Description générale toujours affichée (catalogue ATC : les variantes n'ont pas de description
+              propre) ; une description « points forts » de variante (#29), si elle existe, s'ajoute sous le
+              sélecteur dans AchatProduit. */}
+          <p className="mt-3 text-texte-secondaire">{produit.description}</p>
 
           <div className="mt-6">
             <AchatProduit
@@ -63,6 +68,19 @@ export default async function ProduitPage(props: PageProps<"/produit/[slug]">) {
               variantes={variantes}
             />
           </div>
+
+          {caracteristiques.length > 0 && (
+            <div className="mt-8">
+              <h2 className="mb-3 font-titres text-base font-semibold text-texte-principal">Caractéristiques</h2>
+              <ul className="divide-y divide-bordure rounded-lg border border-bordure text-sm text-texte-principal">
+                {caracteristiques.map((ligne, i) => (
+                  <li key={i} className="px-3 py-2">
+                    {ligne}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           {produit.specifications && Object.keys(produit.specifications).length > 0 && (
             <div className="mt-8">
