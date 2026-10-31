@@ -9,17 +9,20 @@ import type { ProduitEnrichi } from "@/lib/services/catalogue";
 
 // BF-01-008 — Mise en avant des catégories phares (structure : Raffinement Design Section 1.2, validé ;
 // approfondissement demandé — intro par catégorie + produits en extérieur + bouton "Voir tous").
-// Sous-catégories affichées en tags uniquement pour Énergie solaire, seule catégorie ayant une vraie
-// structure de sous-catégories dans lib/mock-data/categories.ts (Sécurité et Climatisation n'ont que 3
-// produits chacune, sans axe de regroupement propre et cohérent dans leurs specifications — un tag
-// décoratif sans filtre réel aurait été trompeur, cf. "si pertinent" dans la demande).
+// Sous-catégories affichées en tags (liens vers leur page) dès qu'une catégorie en compte au moins deux —
+// même règle que les onglets de la page catégorie (catalogue ATC : Énergie solaire et Climatisation ;
+// Sécurité n'a qu'une sous-catégorie, Caméras).
 const BLOCS = [
   { slug: "energie-solaire", cleTraduction: "nav.energieSolaire", cleIntro: "accueil.introEnergieSolaire" },
   { slug: "securite", cleTraduction: "nav.securite", cleIntro: "accueil.introSecurite" },
   { slug: "climatisation", cleTraduction: "nav.climatisation", cleIntro: "accueil.introClimatisation" },
 ] as const;
 
-const sousCategoriesEnergieSolaire = categories.filter((c) => c.parent_id === "cat-energie-solaire");
+function sousCategoriesAffichees(slugRacine: string) {
+  const racine = categories.find((c) => c.slug === slugRacine);
+  const sousCategories = racine ? categories.filter((c) => c.parent_id === racine.id) : [];
+  return sousCategories.length > 1 ? sousCategories : [];
+}
 
 export function CategoriesPhares({
   produitsParCategorie,
@@ -36,6 +39,7 @@ export function CategoriesPhares({
         const produits = produitsParCategorie[bloc.slug] ?? [];
         if (produits.length === 0) return null;
         const nomCategorie = t(bloc.cleTraduction);
+        const sousCategories = sousCategoriesAffichees(bloc.slug);
 
         return (
           <div key={bloc.slug}>
@@ -45,9 +49,9 @@ export function CategoriesPhares({
                   <h3 className="font-titres text-xl font-bold text-texte-principal sm:text-2xl">{nomCategorie}</h3>
                 </Link>
                 <p className="mt-1.5 max-w-2xl text-sm text-texte-secondaire">{t(bloc.cleIntro)}</p>
-                {bloc.slug === "energie-solaire" && sousCategoriesEnergieSolaire.length > 0 && (
+                {sousCategories.length > 0 && (
                   <div className="mt-3 flex flex-wrap gap-2">
-                    {sousCategoriesEnergieSolaire.map((sc) => (
+                    {sousCategories.map((sc) => (
                       <Link
                         key={sc.id}
                         href={`/categorie/${sc.slug}`}

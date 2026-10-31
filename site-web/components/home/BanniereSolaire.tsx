@@ -7,6 +7,7 @@ import { useTranslation } from "@/lib/i18n/useTranslation";
 import { produits } from "@/lib/mock-data/produits";
 import { stardom } from "@/lib/fonts/stardom";
 import { VisuelProduit } from "@/components/product/VisuelProduit";
+import { formaterPrix } from "@/lib/services/prix";
 import type { Produit } from "@/lib/types/entities";
 
 // Vitrine : deux vrais produits du catalogue ATC avec prix et photo produit (panneau Trina, batterie SMART+).
@@ -99,7 +100,8 @@ function CarteProduitVitrine({
       <div className="p-2.5">
         <p className="truncate font-titres text-xs font-semibold text-texte-principal">{produit.nom}</p>
         <p className="text-xs text-texte-secondaire">
-          {produit.prix_public === null ? "Prix sur demande" : `$${produit.prix_public.toFixed(0)}`}
+          {produit.prix_public !== null && produit.variantes && produit.variantes.length > 1 && "À partir de "}
+          {formaterPrix(produit.prix_public)}
         </p>
       </div>
     </Link>

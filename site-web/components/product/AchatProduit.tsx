@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { Check, MessageCircle, Minus, Package, Plus, ShoppingCart } from "lucide-react";
+import { Check, Minus, Package, Plus, ShoppingCart } from "lucide-react";
 import type { NiveauAlerteStock, PalierPrixB2B, Produit, VarianteProduit } from "@/lib/types/entities";
 import { StockBadge } from "./StockBadge";
 import { BoutonFavori } from "./BoutonFavori";
@@ -14,7 +14,7 @@ import { trouverPalierApplicable } from "@/lib/business-rules/bareme-b2b";
 import { useGardeClient } from "@/lib/hooks/useGardeClient";
 import { construireIdLigne } from "@/lib/services/variantes";
 import { formaterPrix } from "@/lib/services/prix";
-import { lienWhatsApp } from "@/lib/constants/contact";
+import { BoutonDemanderPrix } from "./BoutonDemanderPrix";
 import { Toast } from "@/components/ui/Toast";
 
 interface AchatProduitProps {
@@ -82,11 +82,8 @@ export function AchatProduit({ produit, niveauStock, paliers, stockActuel, varia
   // null = « Prix sur demande » : jamais ajoutable au panier.
   const prixTotal = prixUnitaire === null ? null : prixUnitaire * quantite;
   // Intégration du catalogue ATC (étape 5) — sans prix, pas de stock ni de quantité à choisir : un seul
-  // bouton « Demander un prix » vers le support WhatsApp, message prérempli avec la référence et le nom.
+  // bouton « Demander un prix » vers le support WhatsApp (BoutonDemanderPrix).
   const sansPrix = prixUnitaire === null;
-  const lienDemandePrix = lienWhatsApp(
-    `Bonjour ATC, je souhaite connaître le prix du produit ${produit.ref ? `${produit.ref} — ` : ""}${produit.nom}.`
-  );
 
   function ajusterQuantite(delta: number) {
     setQuantite((q) => Math.min(Math.max(1, q + delta), Math.max(1, quantiteMax)));
@@ -239,15 +236,7 @@ export function AchatProduit({ produit, niveauStock, paliers, stockActuel, varia
 
       <div className="flex flex-col gap-3 sm:flex-row">
         {sansPrix ? (
-          <a
-            href={lienDemandePrix}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-accent px-5 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
-          >
-            <MessageCircle size={18} />
-            Demander un prix
-          </a>
+          <BoutonDemanderPrix type="produit" reference={produit.ref} nom={produit.nom} />
         ) : (
           <motion.button
             type="button"

@@ -112,6 +112,9 @@ export interface Categorie {
   slug: string;
   nom: string;
   parent_id?: string;
+  // En-tête de la page catégorie (catalogue ATC, étape 6) — renseigné sur les racines, hérité par leurs
+  // sous-catégories. Bannière 2:1 (/images/bannieres/, `cover`) ou photo produit (/images/produits/, `contain`).
+  image_banniere?: string;
 }
 
 export interface Marque {

@@ -13,8 +13,8 @@ import type { ProduitEnrichi } from "@/lib/services/catalogue";
 // chargé côté serveur en un seul appel pour permettre le filtrage/tri déjà en place ci-dessous (entièrement
 // côté client, existant avant ce correctif) ; c'est donc le RENDU qui est paginé (une seule page de
 // résultats montée dans le DOM à la fois), pas la requête de données elle-même.
-// 6 plutôt que 12 : la plus grande catégorie de ce catalogue de démonstration (Énergies solaires) compte
-// 8 produits — un seuil de 12 ne déclencherait jamais la pagination avec un jeu de données aussi réduit.
+// 6 par page, valeur conservée à l'intégration du catalogue ATC (24 produits en Énergie solaire, soit
+// 4 pages ; les onglets de sous-catégorie de la page catégorie réduisent ensuite la liste).
 const PRODUITS_PAR_PAGE = 6;
 
 // ECR-01-002 / ECR-02-001 (template partagé, Raffinement Design) — Panneau de filtres (marque,
@@ -225,18 +225,22 @@ export function CatalogueBrowser({ produits }: { produits: ProduitEnrichi[] }) {
         );
       })}
 
-      <fieldset>
-        <legend className="mb-2 font-titres text-sm font-semibold text-texte-principal">Prix maximum</legend>
-        <input
-          type="range"
-          min={0}
-          max={prixPlafondCatalogue || 1}
-          value={prixMax ?? prixPlafondCatalogue}
-          onChange={(e) => setPrixMax(Number(e.target.value))}
-          className="w-full accent-primaire"
-        />
-        <p className="text-sm text-texte-secondaire">Jusqu&apos;à ${prixMax ?? prixPlafondCatalogue}</p>
-      </fieldset>
+      {/* Masqué quand aucun produit affiché n'a de prix (catalogue ATC : tout « Prix sur demande ») —
+          un curseur « Jusqu'à $0 » n'aurait aucun sens. */}
+      {prixPlafondCatalogue > 0 && (
+        <fieldset>
+          <legend className="mb-2 font-titres text-sm font-semibold text-texte-principal">Prix maximum</legend>
+          <input
+            type="range"
+            min={0}
+            max={prixPlafondCatalogue}
+            value={prixMax ?? prixPlafondCatalogue}
+            onChange={(e) => setPrixMax(Number(e.target.value))}
+            className="w-full accent-primaire"
+          />
+          <p className="text-sm text-texte-secondaire">Jusqu&apos;à ${prixMax ?? prixPlafondCatalogue}</p>
+        </fieldset>
+      )}
 
       <fieldset>
         <legend className="mb-2 font-titres text-sm font-semibold text-texte-principal">Disponibilité</legend>

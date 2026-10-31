@@ -12,15 +12,22 @@ import { RevealOnScroll } from "@/components/ui/RevealOnScroll";
 import { listerProduitsEnrichis } from "@/lib/services/catalogue";
 
 // Nombre "en extérieur" par bloc catégorie sur l'accueil (Raffinement Design, prompt d'approfondissement
-// des catégories) : jusqu'à 7 — Sécurité et Climatisation n'ont que 3 produits chacune dans ce catalogue
-// de démonstration, donc affichées en totalité plutôt que complétées par des produits hors-sujet.
+// des catégories) : jusqu'à 7 — une catégorie qui en compte moins (Sécurité : 1 produit) est affichée en
+// totalité plutôt que complétée par des produits hors-sujet.
 const NOMBRE_PRODUITS_PAR_BLOC = 7;
 
 export default async function AccueilPage() {
   const slugs = ["energie-solaire", "securite", "climatisation"];
   const listes = await Promise.all(slugs.map((slug) => listerProduitsEnrichis(slug)));
+  // Catalogue ATC (étape 6) : les produits avec prix d'abord ; tri stable, l'ordre du catalogue
+  // (par sous-catégorie) est conservé à l'intérieur de chaque groupe.
   const produitsParCategorie = Object.fromEntries(
-    slugs.map((slug, i) => [slug, listes[i].slice(0, NOMBRE_PRODUITS_PAR_BLOC)])
+    slugs.map((slug, i) => [
+      slug,
+      [...listes[i]]
+        .sort((a, b) => Number(b.produit.prix_disponible) - Number(a.produit.prix_disponible))
+        .slice(0, NOMBRE_PRODUITS_PAR_BLOC),
+    ])
   );
 
   return (

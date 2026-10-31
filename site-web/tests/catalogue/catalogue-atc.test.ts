@@ -7,7 +7,7 @@ import catalogueAtc from "@/lib/mock-data/catalogue-atc.json";
 import { produits } from "@/lib/mock-data/produits";
 import { packagesPreconfigures } from "@/lib/mock-data/packages-preconfigures";
 import { categories } from "@/lib/mock-data/categories";
-import { stock } from "@/lib/mock-data/stock";
+import { quantiteDisponible, stock } from "@/lib/mock-data/stock";
 import { paliersPrixB2B } from "@/lib/mock-data/paliers-prix-b2b";
 
 const entrees = catalogueAtc.produits;
@@ -58,6 +58,12 @@ describe("Catalogue ATC — conversion de catalogue-atc.json", () => {
     expect(stock.every((s) => s.stock_actuel === null && s.stock_reference === 100)).toBe(true);
     expect(produits.flatMap((p) => p.variantes ?? []).every((v) => v.stock === undefined)).toBe(true);
     expect(paliersPrixB2B).toHaveLength(0);
+  });
+
+  it("un produit à variantes au stock non suivi reste disponible (configurateur, packages)", () => {
+    expect(quantiteDisponible("ES-01")).toBeUndefined(); // variantes, stock non communiqué
+    expect(quantiteDisponible("ES-03")).toBeUndefined(); // sans variantes, stock non communiqué
+    expect(quantiteDisponible("inconnu")).toBe(0);
   });
 
   it("toutes les images référencées existent dans public/", () => {

@@ -57,9 +57,12 @@ export function ProductListItem({ produit, niveauStock, paliers }: ProductListIt
             <span className="text-xs text-texte-secondaire">({nombre})</span>
           </div>
         )}
-        <div className="mt-1">
-          <StockBadge niveau={niveauStock} />
-        </div>
+        {/* « Prix sur demande » : pas de badge de stock, comme sur la fiche produit. */}
+        {produit.prix_disponible && (
+          <div className="mt-1">
+            <StockBadge niveau={niveauStock} />
+          </div>
+        )}
       </div>
 
       <div className="flex shrink-0 items-center gap-2">

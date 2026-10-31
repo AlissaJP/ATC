@@ -17,10 +17,18 @@ export function trouverStockParProduit(produitId: string): Stock | undefined {
   return stock.find((s) => s.produit_id === produitId);
 }
 
-// Quantité vendable d'un produit sans variantes. undefined = stock non suivi (stock_actuel null : aucun
-// plafond, même convention que stockEffectifVariante) ; 0 si le produit n'a aucune ligne de stock
-// (comportement historique : rupture).
+// Quantité vendable d'un produit référencé sans variante choisie (configurateur, package, ligne simple).
+// undefined = stock non suivi (stock_actuel null : aucun plafond, même convention que
+// stockEffectifVariante) ; 0 si le produit n'a aucune ligne de stock (comportement historique : rupture).
+// Un produit à variantes n'a pas de ligne ici (point #29) : son stock est la somme de celui de ses
+// variantes, non suivi dès qu'une variante ne l'est pas — sinon il paraîtrait en rupture, ce qui rendait
+// par exemple le panneau ES-01, seul panneau du catalogue ATC, impossible à choisir dans le configurateur.
 export function quantiteDisponible(produitId: string): number | undefined {
+  const variantes = produits.find((p) => p.id === produitId)?.variantes;
+  if (variantes && variantes.length > 0) {
+    if (variantes.some((v) => v.stock === undefined)) return undefined;
+    return variantes.reduce((total, v) => total + Math.max(0, v.stock ?? 0), 0);
+  }
   const s = trouverStockParProduit(produitId);
   if (!s) return 0;
   return s.stock_actuel ?? undefined;

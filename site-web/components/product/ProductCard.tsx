@@ -77,7 +77,8 @@ export function ProductCard({ produit, niveauStock, paliers }: ProductCardProps)
               {prixAffiche !== null && (aDesVariantes || palierDepart) && "À partir de "}
               {formaterPrix(prixAffiche)}
             </p>
-            <StockBadge niveau={niveauStock} />
+            {/* « Prix sur demande » : pas de badge de stock, comme sur la fiche produit. */}
+            {produit.prix_disponible && <StockBadge niveau={niveauStock} />}
           </div>
           {/* Point #29 — un produit à variantes exige de choisir une valeur avant l'ajout : pas de bouton
               d'ajout rapide ici, la carte mène déjà à la fiche produit (sélecteur + description dédiée). */}
