@@ -5,10 +5,8 @@
 // validé) : chaque section principale déplie ses sous-éléments quand elle est active, avec bascule
 // manuelle (reclic sur la section active = replie/déplie directement, sans navigation) et un bouton global
 // de repli en rail d'icônes (même comportement que la référence Stripe fournie).
-// L'Agent SAV ne voit pas Catalogue / Paiements / Statistiques / Paramètres généraux / Comptes
-// administrateurs (gestion des prix + Paramètres généraux exclus par la règle ; Paiements et
-// Statistiques suivent la même logique — signalé, aucune section du Cahier ne le précise explicitement
-// pour ces deux derniers).
+// L'Agent SAV ne voit pas Catalogue / Paiements / Avis clients / Contenu / Statistiques / Paramètres
+// généraux / Comptes administrateurs (cahier 4 : Devis, Commandes, Clients et Assistance/SAV seulement).
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -76,7 +74,7 @@ const GROUPES: { titre: string; liens: LienAdmin[] }[] = [
         icone: Tags,
         rolesAutorises: ["general"],
         sousLiens: [
-          { href: "/admin/catalogue?categorie=energie-solaire", label: "Énergie solaire" },
+          { href: "/admin/catalogue?categorie=energie-solaire", label: "Énergies solaires" },
           { href: "/admin/catalogue?categorie=climatisation", label: "Climatisation" },
           { href: "/admin/catalogue?categorie=securite", label: "Sécurité" },
         ],
@@ -89,7 +87,7 @@ const GROUPES: { titre: string; liens: LienAdmin[] }[] = [
         icone: Warehouse,
         rolesAutorises: ["general"],
         sousLiens: [
-          { href: "/admin/stock?categorie=energie-solaire", label: "Énergie solaire" },
+          { href: "/admin/stock?categorie=energie-solaire", label: "Énergies solaires" },
           { href: "/admin/stock?categorie=climatisation", label: "Climatisation" },
           { href: "/admin/stock?categorie=securite", label: "Sécurité" },
         ],
@@ -153,7 +151,7 @@ const GROUPES: { titre: string; liens: LienAdmin[] }[] = [
         href: "/admin/avis?statut=en_attente_moderation",
         label: "Avis clients",
         icone: Star,
-        rolesAutorises: ["general", "agent_sav"],
+        rolesAutorises: ["general"],
         sousLiens: [
           { href: "/admin/avis?statut=en_attente_moderation", label: "En attente" },
           { href: "/admin/avis?statut=publie", label: "Publiés" },
@@ -192,7 +190,7 @@ const GROUPES: { titre: string; liens: LienAdmin[] }[] = [
         href: "/admin/contenu?onglet=faq",
         label: "Contenu",
         icone: FileQuestion,
-        rolesAutorises: ["general", "agent_sav"],
+        rolesAutorises: ["general"],
         // "Blog" (ECR-11-002) volontairement omis : la page n'existe pas (hors périmètre, cf. Axe 1
         // de l'audit qualité) — un sous-lien mènerait à une 404. Un sous-lien par onglet en page
         // (GestionContenu.tsx), même granularité que ses 4 pastilles.

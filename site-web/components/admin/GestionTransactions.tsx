@@ -2,8 +2,7 @@
 
 // BF-12-008 (Must have) — Suivi des transactions par méthode de paiement + factures pro forma
 // (back-office). Gap identifié lors de l'audit qualité : useFactureStore n'était consommé nulle part
-// côté admin. Accessible aux deux rôles (mêmes montants déjà visibles dans Devis/Commandes pour l'Agent
-// SAV — RG-12-001 ne restreint que la gestion des prix catalogue et les Paramètres généraux).
+// côté admin. Réservé à l'Administrateur Général (garde dans app/admin/transactions/page.tsx).
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { FileText } from "lucide-react";
@@ -11,7 +10,7 @@ import { useFactureStore } from "@/lib/store/facture-store";
 import { useDevisStore } from "@/lib/store/devis-store";
 import { useCommandeStore } from "@/lib/store/commande-store";
 import { useComptesStore } from "@/lib/store/comptes-store";
-import { utilisateurs as utilisateursSeed } from "@/lib/mock-data/utilisateurs";
+import { nomClient } from "@/lib/services/utilisateurs";
 import type { MethodePaiement, Paiement } from "@/lib/types/entities";
 
 const LIBELLES_METHODE: Record<MethodePaiement, string> = {
@@ -20,15 +19,6 @@ const LIBELLES_METHODE: Record<MethodePaiement, string> = {
   paypal: "PayPal",
   virement: "Virement bancaire",
 };
-
-function nomClient(utilisateurId: string | undefined, utilisateursDynamiques: typeof utilisateursSeed): string {
-  if (!utilisateurId) return "—";
-  return (
-    utilisateursSeed.find((u) => u.id === utilisateurId)?.nom ??
-    utilisateursDynamiques.find((u) => u.id === utilisateurId)?.nom ??
-    "Client"
-  );
-}
 
 // filtreInitial : reçu de la page (Server Component, lit searchParams) pour les raccourcis « Paiements »
 // de la navigation latérale (Section Administration, Raffinement Design — Tous/MonCash/Carte/PayPal).

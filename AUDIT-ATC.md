@@ -72,11 +72,11 @@ Le site est **complet, soigné et fidèle au catalogue du client** :
 | N° | Phase | Description | Preuve | Impact pour ATC | Correction proposée | Effort |
 |---|---|---|---|---|---|---|
 | A-01 ✅ **Corrigé** | 2 | Le panier annonce un montant hors taxe comme montant à payer (+10 % au paiement). *Corrigé le 1er nov. : le récapitulatif affiche « Sous-total / Taxe (10 %) / Total », et le bouton mobile affiche le total TTC, avec le même calcul (`calculerFacture`) que l'écran de paiement. Vérifié sur ordinateur et téléphone, en FR, EN et ES : panier $1437.70 = à régler $1437.70* | `PanierContenu.tsx:197`, `:215` ; panier $151.00 → paiement $166.10 | Mauvaise surprise au paiement, abandons | Afficher HT, taxe et TTC dans le panier | S |
-| A-02 | 2 | L'agent SAV ouvre `/admin/transactions` par son adresse | Page sans garde ; constaté dans le navigateur | Données financières visibles par le support | Garde de rôle « général » | S |
-| A-03 | 2 | L'agent SAV accède aux modules Avis et Contenu, dont les CGV (confirmé non autorisé, Q2-1) | `AdminSidebar.tsx:154-156`, `:193-195` ; cahier 4, l. 216 | Le support peut modifier des textes juridiques | Réserver ces modules à l'admin général | S |
+| A-02 ✅ **Corrigé** | 2 | L'agent SAV ouvre `/admin/transactions` par son adresse | Page sans garde ; constaté dans le navigateur | Données financières visibles par le support | Garde de rôle « général » | S |
+| A-03 ✅ **Corrigé** | 2 | L'agent SAV accède aux modules Avis et Contenu, dont les CGV (confirmé non autorisé, Q2-1) | `AdminSidebar.tsx:154-156`, `:193-195` ; cahier 4, l. 216 | Le support peut modifier des textes juridiques | Réserver ces modules à l'admin général | S |
 | A-04 | 2 | Les produits à variantes ignorent les paliers B2B (latent) | `AchatProduit.tsx:81-83`, `prix.ts:21-23` | 4 des 8 produits avec prix n'auront jamais de tarif pro | Paliers par variante | M |
 | A-05 | 2 | Un client B2B qui ajoute un produit en deux fois ne bénéficie pas du palier sur le total (latent, reproduit) | `AchatProduit.tsx:97`, `cart-store.ts:57-63` ; 5 + 5 unités → $920 facturés en trop | Client B2B surfacturé | Laisser le panier recalculer sur la quantité totale | S |
-| A-10 | 2 | Photo RE-01 portant « RADIO TELEVISION CARAÏBES » et photo du sèche-linge LG accessibles publiquement | `public/images/produits/RE-01.webp`, `HC-01.webp` : HTTP 200 | Nom d'un client publié sans accord | Retirer ces fichiers de `public/` | S |
+| A-10 ✅ **Corrigé** | 2 | Photo RE-01 portant « RADIO TELEVISION CARAÏBES » et photo du sèche-linge LG accessibles publiquement | `public/images/produits/RE-01.webp`, `HC-01.webp` : HTTP 200 | Nom d'un client publié sans accord | Retirer ces fichiers de `public/` | S |
 | A-11 ✅ **Corrigé** | 3 | Badge « En stock » affiché sans aucun stock connu (8 produits). *Corrigé le 1er nov. : nouveau niveau `non_suivi` (`stock-alerte.ts`, `entities.ts`). Côté visiteur : aucun badge. Côté admin : statut gris « Non suivi ». Les alertes 40 % / 15 % réapparaissent dès qu'un stock est saisi (vérifié : entrée de 30 → « Stock faible » dans l'admin et sur la fiche). 4 tests ajoutés ou mis à jour* | `stock-alerte.ts:14` ; badge vu sur les 8 fiches | Disponibilité promise sans confirmation | Pas de badge, ou « Disponibilité à confirmer » | S |
 | A-12 ✅ **Corrigé (masquage)** | 3 | Notes internes du fichier client visibles (ES-24, CL-S, ES-09, ES-13, ES-22, « Cible : » des PK). *Masquées le 1er nov. à l'affichage, en FR, EN et ES, par une liste explicite (`lib/mock-data/catalogue-masquages.ts`). Le fichier client n'est pas modifié. Test automatique sur les 41 fiches × 3 langues, et vérification dans le navigateur. Le client doit encore réécrire ces passages ; les masques seront alors retirés* | `catalogue-data.json` ; fiches dans le navigateur | Image peu professionnelle | Masquer maintenant (accord Q3-2), faire réécrire par le client | S |
 | A-14 | 3 | WhatsApp, adresse du magasin et coordonnées bancaires de démonstration ; aucun e-mail (🔴 à la mise en ligne) | `lib/constants/contact.ts`, `magasin.ts`, `banque.ts` | Demandes de prix et de support envoyées au mauvais numéro | Remplacer les 3 constantes par les vraies valeurs | S |
@@ -91,25 +91,25 @@ Le site est **complet, soigné et fidèle au catalogue du client** :
 | N° | Phase | Description | Preuve | Correction proposée | Effort |
 |---|---|---|---|---|---|
 | A-06 | 2 | Paliers B2B par défaut inventés (−8 % / −15 %) | `paliers-prix-b2b.ts:7-13` ; constaté dans l'admin | Barème vide à saisir par l'admin | S |
-| A-13 | 3 | Caractéristiques d'ES-18 coupées dans une liste de chiffres | `caracteristiques.ts:23-24` | Ne pas couper entre deux nombres | S |
-| A-15 | 3 | Données de démonstration incohérentes : Carrier, sonnettes, « panneau 405W », `j***@exemple.com`, encadré « Comptes de démonstration » | `temoignages.ts:39`, `faq.ts:53`, `sav-store.ts:67`, `comptes-store.ts:133` | Réaligner sur le vrai catalogue | S |
-| A-16 | 3 | CGV et FAQ : garantie « indiquée sur chaque fiche » (faux), « régulateurs » | `contenu-legal.ts:59`, `faq.ts:34` | Corriger le texte | S |
+| A-13 ✅ **Corrigé** | 3 | Caractéristiques d'ES-18 coupées dans une liste de chiffres | `caracteristiques.ts:23-24` | Ne pas couper entre deux nombres | S |
+| A-15 ✅ **Corrigé en partie** | 3 | Données de démonstration incohérentes : Carrier, sonnettes, « panneau 405W », `j***@exemple.com`, encadré « Comptes de démonstration » | `temoignages.ts:39`, `faq.ts:53`, `sav-store.ts:67`, `comptes-store.ts:133` | Réaligner sur le vrai catalogue | S |
+| A-16 ✅ **Corrigé** | 3 | CGV et FAQ : garantie « indiquée sur chaque fiche » (faux), « régulateurs » | `contenu-legal.ts:59`, `faq.ts:34` | Corriger le texte | S |
 | A-17 | 3 | Mentions légales incomplètes (éditeur, hébergeur) | `contenu-legal.ts:119`, `:129` | À compléter avec les données du client (Q3-1 : oui) | S |
-| A-18 | 3 | « Énergie solaire » / « Énergies solaires » | `categories.ts:14` contre `fr.json:3` | Un seul libellé | S |
-| A-19 | 3 | 80 images inutilisées (environ 7 Mo) restent publiques | `public/images/…` | Supprimer et archiver hors du site | S |
-| A-22 | 4 | Retirer le dernier article du panier ne permet pas d'annuler | `PanierContenu.tsx:96-106` contre `:219` | Afficher le message aussi panier vide | S |
+| A-18 ✅ **Corrigé** | 3 | « Énergie solaire » / « Énergies solaires » | `categories.ts:14` contre `fr.json:3` | Un seul libellé | S |
+| A-19 ✅ **Corrigé** | 3 | 80 images inutilisées (environ 7 Mo) restent publiques | `public/images/…` | Supprimer et archiver hors du site | S |
+| A-22 ✅ **Corrigé** | 4 | Retirer le dernier article du panier ne permet pas d'annuler | `PanierContenu.tsx:96-106` contre `:219` | Afficher le message aussi panier vide | S |
 | A-23 | 4 | Le chatbot répond hors sujet (« pompes à eau solaires ») | Constaté dans le navigateur | Seuil de correspondance plus strict | S |
 | A-24 | 4 | Marques fictives dans le formulaire produit de l'admin | `lib/mock-data/marques.ts` | Marques réelles | S |
 | A-25 | 4 | Tableau de bord de l'admin à 388 px sur un écran de 375 px | Mesure dans le navigateur | Corriger la mise en page | S |
 | A-28 | 5 | Curseur de prix sans libellé, étoiles sans rôle, erreurs non annoncées, niveau de titre sauté | `CatalogueBrowser.tsx:224`, `Etoiles.tsx:6` ; axe-core | `aria-label`, `role="img"`, `role="alert"` | S |
 | A-29 | 5 | Pas de lien d'évitement ; Échap sans effet sur le menu mobile et le chatbot | `Header.tsx`, `Chatbot.tsx` | Lien d'évitement, gestion d'Échap et du focus | S |
-| A-30 | 5 | 404 par défaut de Next.js en anglais ; « soft 404 » ; pas de page d'erreur propre au site | `app/not-found.tsx`, `error.tsx`, `loading.tsx` absents | Pages traduites, appel à `notFound()` | S |
+| A-30 ✅ **Corrigé en partie** | 5 | 404 par défaut de Next.js en anglais ; « soft 404 » ; pas de page d'erreur propre au site | `app/not-found.tsx`, `error.tsx`, `loading.tsx` absents | Pages traduites, appel à `notFound()` | S |
 | A-31 | 5 | Tablette : le bouton du chatbot masque un nom de produit ; vide dans la bannière d'accueil. *Constaté aussi après la correction d'A-20 : sur téléphone, le bouton du chatbot recouvre la fin de la barre « Procéder au paiement — $… » (la barre reste utilisable)* | `BanniereSolaire.tsx:52`, `:70` | Point de rupture `lg`, marge en bas | S |
 | A-34 | 6 | Ni `sitemap.xml` ni `robots.txt` ; pages privées indexables | Réponses 404, pas de balise `robots` | `app/sitemap.ts`, `app/robots.ts`, `noindex` | S |
 | A-35 | 6 | Trop de JavaScript : catalogue et 3 dictionnaires envoyés à chaque visiteur (mesure à refaire) | Lighthouse ; chunks `2ly6r07ub`, `2l6jp6tfod6zh` | Charger le seul dictionnaire utile, données côté serveur | M |
 | A-44 | 7 | Aucun en-tête HTTP de sécurité, `X-Powered-By` exposé | `curl -I` ; `next.config.ts` vide | `headers()` et `poweredByHeader: false` | S |
 | A-45 | 7 | 24 alertes de sécurité sur les outils de développement. *Après la correction d'A-42 : 23 alertes (0 critique, 5 élevées, 18 modérées). Une seule touche l'arbre de production : `source-map-js` (sous next → postcss), utilisé seulement pendant la compilation du CSS* | `npm audit` | `npm audit fix`, mise à jour d'eslint et vitest | S |
-| A-46 | 7 | Admin : commandes et devis d'un nouveau client affichés au nom de « Client » ; fonctions recopiées 8 fois | `GestionCommandes.tsx:12-14`, `TraitementDevis.tsx:12-14` | Une seule fonction partagée | S |
+| A-46 ✅ **Corrigé** | 7 | Admin : commandes et devis d'un nouveau client affichés au nom de « Client » ; fonctions recopiées 8 fois | `GestionCommandes.tsx:12-14`, `TraitementDevis.tsx:12-14` | Une seule fonction partagée | S |
 | A-47 | 7 | Journal des actions des agents SAV jamais alimenté | `app/admin/agents-sav/historique/page.tsx:2`, `:16` | Écrire une entrée à chaque action | M |
 
 ### ⚪ Suggestion
@@ -188,6 +188,22 @@ Le site est **complet, soigné et fidèle au catalogue du client** :
 > 1. **La démonstration se fera en local.** A-39 reste donc dans le lot 2 (avant la mise en ligne) : sans accès public au serveur, personne ne peut appeler ses actions.
 > 2. **Date de livraison des données du client : inconnue.** A-04, A-05, A-06, A-11 (stock), A-14 et A-17 restent en attente de ces données. Les corrections de mécanisme qui n'en dépendent pas (A-05, A-06, masquage du badge d'A-11) peuvent être faites sans attendre.
 > 3. **Traductions : considérées comme résolues.** Le changement de langue fonctionne : c'est vérifié dans le navigateur, avec 0 texte français restant sur 10 pages en anglais et 10 en espagnol (phase 3). Une relecture de la *formulation* par un locuteur natif reste recommandée avant la mise en ligne, surtout pour les 41 fiches du catalogue, traduites par l'assistant. Elle n'est **pas bloquante**.
+
+## 7. Suivi des corrections
+
+**Lot 1 : terminé** (16 points sur 16 traités). Vérifié dans le navigateur, 52 tests, TypeScript, ESLint et build OK.
+
+| N° | Ce qui a été fait |
+|---|---|
+| A-02, A-03 | `/admin/transactions`, `/admin/avis` et `/admin/contenu` réservés à l'admin général (garde de page et menu). Vérifié avec le compte agent SAV : pages bloquées ; Devis, Commandes, Clients et SAV toujours accessibles |
+| A-10, A-19 | 81 images inutilisées déplacées de `site-web/public/` vers `archives-images/`, hors du site. RE-01, HC-01, HC-02 et les anciennes photos renvoient 404. 49 pages contrôlées, aucune image visible cassée |
+| A-13 | Une liste de nombres seuls n'est plus découpée : ES-18 affiche « 200, 230, 280, 314 Ah » sur une ligne |
+| A-15 | Corrigé : avis Carrier, FAQ sonnettes (FR, EN, ES), ticket « panneau 405W ». **Conservé pour la démo :** l'encadré « Comptes de démonstration » et `j***@exemple.com`, à retirer avant la mise en ligne. Le ticket SAV de démo garde l'ancien texte dans un navigateur qui l'a déjà enregistré, jusqu'à ce que ses données soient effacées |
+| A-16 | CGV et FAQ (FR, EN, ES) : « indiqué sur chaque fiche » et « régulateurs » retirés |
+| A-18 | « Énergies solaires » partout pour la catégorie (fil d'Ariane, titre, menu admin), et casse alignée en EN et ES |
+| A-22 | Le bouton « Annuler » s'affiche aussi après le retrait du dernier article |
+| A-30 | Pages 404 et d'erreur traduites (`app/not-found.tsx`, `app/error.tsx`). **Reste à faire avec le backend :** les commandes et paiements inexistants répondent encore HTTP 200 avec « introuvable », car ces données vivent dans le navigateur et le serveur ne peut pas savoir qu'elles n'existent pas |
+| A-46 | Une seule fonction `nomClient` (`lib/services/utilisateurs.ts`) ; un client inscrit sur le site apparaît sous son nom dans Commandes et Devis |
 
 ---
 

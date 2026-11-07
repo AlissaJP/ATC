@@ -3,7 +3,8 @@
 // d'un espace — jamais dans un nombre décimal (« 34,9 kg » : pas d'espace après la virgule) ni entre
 // parenthèses (« (fiche SMA : 120 V nominal, plage 105 à 132 V…) »). Les packages séparent leurs éléments
 // par « · » et gardent la virgule pour une énumération (« Cible : Particuliers, diaspora ») : quand « · »
-// est présent, lui seul sépare.
+// est présent, lui seul sépare. Une virgule entre deux nombres seuls (« 200, 230, 280, 314 Ah ») ne sépare
+// pas : c'est une énumération de valeurs (mais « LiFePO4, 8 000 cycles » sépare bien).
 // « Aucune donnée » / « Aucune fiche fournie » : mentions du fichier client pour une information absente,
 // aucune ligne à afficher.
 const MENTIONS_ABSENCE = ["aucune donnée", "aucune fiche fournie"];
@@ -21,7 +22,10 @@ export function listerCaracteristiques(texte: string | undefined): string[] {
     else if (c === ")") profondeur = Math.max(0, profondeur - 1);
 
     const separateur =
-      profondeur === 0 && (separateurPoint ? c === "·" : c === "," && /\s/.test(texte[i + 1] ?? ""));
+      profondeur === 0 &&
+      (separateurPoint
+        ? c === "·"
+        : c === "," && /\s/.test(texte[i + 1] ?? "") && !(/(^|\s)\d+$/.test(courant) && /^\s\d/.test(texte.slice(i + 1))));
     if (separateur) {
       elements.push(courant);
       courant = "";

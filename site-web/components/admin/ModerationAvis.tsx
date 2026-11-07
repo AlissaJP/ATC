@@ -7,16 +7,9 @@ import { Check, Star, X } from "lucide-react";
 import { useAvisStore } from "@/lib/store/avis-store";
 import { useComptesStore } from "@/lib/store/comptes-store";
 import { utilisateurs as utilisateursSeed } from "@/lib/mock-data/utilisateurs";
+import { nomClient } from "@/lib/services/utilisateurs";
 import { produits } from "@/lib/mock-data/produits";
 import type { AvisClient, StatutAvis } from "@/lib/types/entities";
-
-function nomClient(utilisateurId: string, utilisateursDynamiques: typeof utilisateursSeed): string {
-  return (
-    utilisateursSeed.find((u) => u.id === utilisateurId)?.nom ??
-    utilisateursDynamiques.find((u) => u.id === utilisateurId)?.nom ??
-    "Client"
-  );
-}
 
 function nomProduit(produitId: string): string {
   return produits.find((p) => p.id === produitId)?.nom ?? "Produit";

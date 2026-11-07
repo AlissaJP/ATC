@@ -179,7 +179,7 @@
     "aucunTexte": "Pruebe con otro término o explore nuestras categorías desde el menú."
   },
   "categories": {
-    "cat-energie-solaire": "Energía solar",
+    "cat-energie-solaire": "Energía Solar",
     "cat-panneaux": "Paneles solares",
     "cat-onduleurs": "Inversores",
     "cat-batteries-lithium": "Baterías de litio",
@@ -311,7 +311,7 @@
       "localisation": "Miami, Estados Unidos"
     },
     "temoin-5": {
-      "commentaire": "La climatización Carrier funciona perfectamente, instalación limpia y rápida por parte del equipo técnico.",
+      "commentaire": "La climatización funciona perfectamente, instalación limpia y rápida por parte del equipo técnico.",
       "localisation": "Nueva York, Estados Unidos"
     },
     "temoin-6": {
@@ -575,7 +575,7 @@
     },
     "faq-garantie": {
       "question": "¿Cuál es la duración de la garantía de mis productos?",
-      "reponse": "Varía según la categoría: 24 meses para la energía solar, 12 meses para la seguridad y la climatización. El detalle se indica en cada ficha de producto."
+      "reponse": "Varía según la categoría: 24 meses para la energía solar, 12 meses para la seguridad y la climatización."
     },
     "faq-devis-validite": {
       "question": "¿Cuánto tiempo es válido un presupuesto?",
@@ -587,7 +587,7 @@
     },
     "faq-securite-install": {
       "question": "¿Son fáciles de instalar las cámaras de seguridad?",
-      "reponse": "Nuestras cámaras PTZ y timbres conectados están diseñados para una instalación sencilla. Se incluye una guía con cada producto."
+      "reponse": "Nuestras cámaras PTZ están diseñadas para una instalación sencilla. Se incluye una guía con cada producto."
     },
     "faq-clim-entretien": {
       "question": "¿Qué mantenimiento necesita un aire acondicionado de ATC?",
@@ -741,5 +741,14 @@
     "infoSecondaire": "Información adicional (opcional)",
     "enregistrer": "Guardar",
     "ajouterBouton": "Añadir"
+  },
+  "erreur": {
+    "introuvableTitre": "Página no encontrada",
+    "introuvableTexte": "Esta página no existe o se ha movido.",
+    "retourAccueil": "Volver al inicio",
+    "voirCatalogue": "Ver el catálogo",
+    "problemeTitre": "Se ha producido un error",
+    "problemeTexte": "Inténtelo de nuevo. Si el problema persiste, contacte con nuestro soporte.",
+    "reessayer": "Reintentar"
   }
 }

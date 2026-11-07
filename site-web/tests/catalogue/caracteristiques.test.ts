@@ -26,6 +26,13 @@ describe("listerCaracteristiques", () => {
     ]);
   });
 
+  it("une énumération de nombres seuls n'est pas découpée (audit A-13)", () => {
+    expect(listerCaracteristiques("25,6 V. Capacités annoncées : 200, 230, 280, 314 Ah")).toEqual([
+      "25,6 V. Capacités annoncées : 200, 230, 280, 314 Ah",
+    ]);
+    expect(listerCaracteristiques("cellules LiFePO4, 8 000 cycles")).toEqual(["Cellules LiFePO4", "8 000 cycles"]);
+  });
+
   it("« Aucune donnée », « Aucune fiche fournie » ou texte absent : aucune ligne", () => {
     expect(listerCaracteristiques("Aucune donnée")).toEqual([]);
     expect(listerCaracteristiques("Aucune fiche fournie")).toEqual([]);

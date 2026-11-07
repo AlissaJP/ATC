@@ -1,4 +1,5 @@
 import { GestionTransactions } from "@/components/admin/GestionTransactions";
+import { GardeRoleAdmin } from "@/components/admin/GardeRoleAdmin";
 import type { MethodePaiement } from "@/lib/types/entities";
 
 // BF-12-008 — Suivi des paiements par méthode + factures pro forma (back-office). Renommé
@@ -12,7 +13,9 @@ export default async function AdminTransactionsPage(props: PageProps<"/admin/tra
   return (
     <main className="mx-auto w-full max-w-4xl px-4 py-8 md:px-6">
       <h1 className="mb-6 font-titres text-2xl font-bold text-texte-principal">Paiements</h1>
-      <GestionTransactions filtreInitial={filtreInitial} />
+      <GardeRoleAdmin rolesAutorises={["general"]}>
+        <GestionTransactions filtreInitial={filtreInitial} />
+      </GardeRoleAdmin>
     </main>
   );
 }

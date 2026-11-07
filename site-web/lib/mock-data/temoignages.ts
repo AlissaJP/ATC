@@ -36,7 +36,7 @@ export const temoignages: TemoignageClient[] = [
     id: "temoin-5",
     nom: "Fritz A.",
     note: 5,
-    commentaire: "La climatisation Carrier fonctionne parfaitement, installation propre et rapide par l'équipe technique.",
+    commentaire: "La climatisation fonctionne parfaitement, installation propre et rapide par l'équipe technique.",
     localisation: "New York, États-Unis",
   },
   {

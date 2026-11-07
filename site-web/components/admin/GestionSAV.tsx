@@ -7,17 +7,10 @@ import { useMemo, useState } from "react";
 import { ArrowRightCircle, CheckCircle2, XCircle } from "lucide-react";
 import { useSavStore } from "@/lib/store/sav-store";
 import { utilisateurs as utilisateursSeed } from "@/lib/mock-data/utilisateurs";
+import { nomClient } from "@/lib/services/utilisateurs";
 import { useComptesStore } from "@/lib/store/comptes-store";
 import { StatutTicketBadge } from "@/components/sav/StatutTicketBadge";
 import type { StatutTicketSAV, TicketSAV } from "@/lib/types/entities";
-
-function nomClient(utilisateurId: string, utilisateursDynamiques: typeof utilisateursSeed): string {
-  return (
-    utilisateursSeed.find((u) => u.id === utilisateurId)?.nom ??
-    utilisateursDynamiques.find((u) => u.id === utilisateurId)?.nom ??
-    "Client"
-  );
-}
 
 function LigneTicket({ ticket, utilisateursDynamiques }: { ticket: TicketSAV; utilisateursDynamiques: typeof utilisateursSeed }) {
   const changerStatutTicket = useSavStore((s) => s.changerStatutTicket);

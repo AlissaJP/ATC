@@ -11,7 +11,7 @@ export const categories: Categorie[] = [
   {
     id: "cat-energie-solaire",
     slug: "energie-solaire",
-    nom: "Énergie solaire",
+    nom: "Énergies solaires",
     image_banniere: "/images/bannieres/RE-05.webp",
   },
   { id: "cat-panneaux", slug: "panneaux-solaires", nom: "Panneaux solaires", parent_id: "cat-energie-solaire" },

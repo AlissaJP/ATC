@@ -11,19 +11,10 @@ import Link from "next/link";
 import { CheckCircle2, Save, XCircle } from "lucide-react";
 import { useInstallationStore } from "@/lib/store/installation-store";
 import { useCommandeStore } from "@/lib/store/commande-store";
-import { utilisateurs as utilisateursSeed } from "@/lib/mock-data/utilisateurs";
+import { nomClient } from "@/lib/services/utilisateurs";
 import { useComptesStore } from "@/lib/store/comptes-store";
 import { StatutInstallationBadge } from "@/components/commande/StatutInstallationBadge";
 import type { InstallationRdv } from "@/lib/types/entities";
-
-function nomClient(utilisateurId: string | undefined, utilisateursDynamiques: typeof utilisateursSeed): string {
-  if (!utilisateurId) return "Client";
-  return (
-    utilisateursSeed.find((u) => u.id === utilisateurId)?.nom ??
-    utilisateursDynamiques.find((u) => u.id === utilisateurId)?.nom ??
-    "Client"
-  );
-}
 
 function dateInputValue(iso: string): string {
   // <input type="datetime-local"> attend "YYYY-MM-DDTHH:mm" en heure locale, sans le "Z" final.

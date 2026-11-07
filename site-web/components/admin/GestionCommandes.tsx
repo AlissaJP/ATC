@@ -6,12 +6,9 @@ import { ArrowRightCircle, Landmark, PackageCheck } from "lucide-react";
 import { StatutCommandeBadge } from "@/components/commande/StatutCommandeBadge";
 import { useCommandeStore } from "@/lib/store/commande-store";
 import { useSessionStore } from "@/lib/store/session-store";
-import { utilisateurs } from "@/lib/mock-data/utilisateurs";
+import { useComptesStore } from "@/lib/store/comptes-store";
+import { nomClient } from "@/lib/services/utilisateurs";
 import type { Commande, StatutCommande } from "@/lib/types/entities";
-
-function nomClient(utilisateurId: string): string {
-  return utilisateurs.find((u) => u.id === utilisateurId)?.nom ?? "Client";
-}
 
 const FILTRES: { valeur: StatutCommande | "tous"; label: string }[] = [
   { valeur: "en_preparation", label: "En préparation" },
@@ -28,13 +25,14 @@ function LigneCommande({ commande }: { commande: Commande }) {
   const marquerPreteRetrait = useCommandeStore((s) => s.marquerPreteRetrait);
   const marquerRetiree = useCommandeStore((s) => s.marquerRetiree);
   const session = useSessionStore((s) => s.session);
+  const utilisateursDynamiques = useComptesStore((s) => s.utilisateurs);
   const estGeneral = session?.type === "admin" && session.administrateur.role === "general";
 
   return (
     <div className="flex items-center justify-between rounded-xl border border-bordure bg-background p-4">
       <div>
         <p className="text-sm font-medium text-texte-principal">
-          #{commande.id.slice(-8).toUpperCase()} — {nomClient(commande.utilisateur_id)}
+          #{commande.id.slice(-8).toUpperCase()} — {nomClient(commande.utilisateur_id, utilisateursDynamiques)}
         </p>
         <p className="text-xs text-texte-secondaire">
           {new Date(commande.date_creation).toLocaleDateString("fr-FR")} — ${commande.montant_total.toFixed(2)}

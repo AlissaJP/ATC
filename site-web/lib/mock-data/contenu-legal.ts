@@ -56,7 +56,7 @@ export const pagesLegales: PageLegale[] = [
         id: "cgv-6",
         titre: "6. Garanties",
         corps:
-          "Les durées de garantie constructeur varient par catégorie de produit : 24 mois pour l'énergie solaire (panneaux, batteries, régulateurs, accessoires), 12 mois pour la sécurité et la climatisation. Le détail est indiqué sur chaque fiche produit.",
+          "Les durées de garantie constructeur varient par catégorie de produit : 24 mois pour l'énergie solaire (panneaux, batteries, accessoires), 12 mois pour la sécurité et la climatisation.",
       },
       {
         id: "cgv-7",

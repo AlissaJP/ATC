@@ -179,7 +179,7 @@
     "aucunTexte": "Essayez un autre terme ou parcourez nos catégories depuis le menu."
   },
   "categories": {
-    "cat-energie-solaire": "Énergie solaire",
+    "cat-energie-solaire": "Énergies solaires",
     "cat-panneaux": "Panneaux solaires",
     "cat-onduleurs": "Onduleurs",
     "cat-batteries-lithium": "Batteries lithium",
@@ -311,7 +311,7 @@
       "localisation": "Miami, États-Unis"
     },
     "temoin-5": {
-      "commentaire": "La climatisation Carrier fonctionne parfaitement, installation propre et rapide par l'équipe technique.",
+      "commentaire": "La climatisation fonctionne parfaitement, installation propre et rapide par l'équipe technique.",
       "localisation": "New York, États-Unis"
     },
     "temoin-6": {
@@ -575,7 +575,7 @@
     },
     "faq-garantie": {
       "question": "Quelle est la durée de garantie de mes produits ?",
-      "reponse": "Elle varie par catégorie : 24 mois pour l'énergie solaire, 12 mois pour la sécurité et la climatisation. Le détail est indiqué sur chaque fiche produit."
+      "reponse": "Elle varie par catégorie : 24 mois pour l'énergie solaire, 12 mois pour la sécurité et la climatisation."
     },
     "faq-devis-validite": {
       "question": "Combien de temps un devis reste-t-il valable ?",
@@ -587,7 +587,7 @@
     },
     "faq-securite-install": {
       "question": "Les caméras de sécurité sont-elles faciles à installer ?",
-      "reponse": "Nos caméras PTZ et sonnettes connectées sont conçues pour une installation simple. Un guide est fourni avec chaque produit."
+      "reponse": "Nos caméras PTZ sont conçues pour une installation simple. Un guide est fourni avec chaque produit."
     },
     "faq-clim-entretien": {
       "question": "Quel entretien pour un climatiseur ATC ?",
@@ -741,5 +741,14 @@
     "infoSecondaire": "Information secondaire (facultatif)",
     "enregistrer": "Enregistrer",
     "ajouterBouton": "Ajouter"
+  },
+  "erreur": {
+    "introuvableTitre": "Page introuvable",
+    "introuvableTexte": "Cette page n'existe pas ou a été déplacée.",
+    "retourAccueil": "Retour à l'accueil",
+    "voirCatalogue": "Voir le catalogue",
+    "problemeTitre": "Une erreur est survenue",
+    "problemeTexte": "Veuillez réessayer. Si le problème persiste, contactez notre support.",
+    "reessayer": "Réessayer"
   }
 }

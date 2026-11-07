@@ -14,7 +14,7 @@ import { useCommandeStore } from "@/lib/store/commande-store";
 import { useComptesStore } from "@/lib/store/comptes-store";
 import { useSessionStore } from "@/lib/store/session-store";
 import { BANQUE_VIREMENT } from "@/lib/constants/banque";
-import { utilisateurs as utilisateursSeed } from "@/lib/mock-data/utilisateurs";
+import { nomClient } from "@/lib/services/utilisateurs";
 import type { Paiement } from "@/lib/types/entities";
 
 type Filtre = "en cours" | "réussie" | "échouée";
@@ -26,15 +26,6 @@ const FILTRES: { valeur: Filtre; label: string }[] = [
 ];
 
 const LIBELLES_COMPTE = { htg: "Compte en gourdes (HTG)", usd: "Compte en dollars (USD)" };
-
-function nomClient(utilisateurId: string | undefined, utilisateursDynamiques: typeof utilisateursSeed): string {
-  if (!utilisateurId) return "—";
-  return (
-    utilisateursSeed.find((u) => u.id === utilisateurId)?.nom ??
-    utilisateursDynamiques.find((u) => u.id === utilisateurId)?.nom ??
-    "Client"
-  );
-}
 
 function CarteVirement({
   paiement,

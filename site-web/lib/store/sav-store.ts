@@ -64,7 +64,7 @@ function seedTickets(): TicketSAV[] {
       utilisateur_id: "user-particulier-1",
       sujet: "Panneau solaire ne charge plus",
       description:
-        "Depuis hier soir, le panneau 405W ne semble plus alimenter le régulateur. Le voyant reste éteint.",
+        "Depuis hier soir, le panneau solaire ne semble plus alimenter l'onduleur. Le voyant reste éteint.",
       statut: "ouvert" as StatutTicketSAV,
       date_creation: jours(0.5),
     },

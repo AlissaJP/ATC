@@ -179,7 +179,7 @@
     "aucunTexte": "Try another term or browse our categories from the menu."
   },
   "categories": {
-    "cat-energie-solaire": "Solar energy",
+    "cat-energie-solaire": "Solar Energy",
     "cat-panneaux": "Solar panels",
     "cat-onduleurs": "Inverters",
     "cat-batteries-lithium": "Lithium batteries",
@@ -311,7 +311,7 @@
       "localisation": "Miami, United States"
     },
     "temoin-5": {
-      "commentaire": "The Carrier air conditioning works perfectly, clean and quick installation by the technical team.",
+      "commentaire": "The air conditioning works perfectly, clean and quick installation by the technical team.",
       "localisation": "New York, United States"
     },
     "temoin-6": {
@@ -575,7 +575,7 @@
     },
     "faq-garantie": {
       "question": "How long is my products' warranty?",
-      "reponse": "It varies by category: 24 months for solar energy, 12 months for security and air conditioning. Details are shown on each product page."
+      "reponse": "It varies by category: 24 months for solar energy, 12 months for security and air conditioning."
     },
     "faq-devis-validite": {
       "question": "How long is a quote valid?",
@@ -587,7 +587,7 @@
     },
     "faq-securite-install": {
       "question": "Are the security cameras easy to install?",
-      "reponse": "Our PTZ cameras and smart doorbells are designed for easy installation. A guide is provided with each product."
+      "reponse": "Our PTZ cameras are designed for easy installation. A guide is provided with each product."
     },
     "faq-clim-entretien": {
       "question": "What maintenance does an ATC air conditioner need?",
@@ -741,5 +741,14 @@
     "infoSecondaire": "Additional information (optional)",
     "enregistrer": "Save",
     "ajouterBouton": "Add"
+  },
+  "erreur": {
+    "introuvableTitre": "Page not found",
+    "introuvableTexte": "This page does not exist or has been moved.",
+    "retourAccueil": "Back to home",
+    "voirCatalogue": "View the catalogue",
+    "problemeTitre": "Something went wrong",
+    "problemeTexte": "Please try again. If the problem persists, contact our support team.",
+    "reessayer": "Try again"
   }
 }

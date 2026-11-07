@@ -31,7 +31,7 @@ export const questionsFAQ: QuestionFAQ[] = [
     id: "faq-garantie",
     question: "Quelle est la durée de garantie de mes produits ?",
     reponse:
-      "Elle varie par catégorie : 24 mois pour l'énergie solaire, 12 mois pour la sécurité et la climatisation. Le détail est indiqué sur chaque fiche produit.",
+      "Elle varie par catégorie : 24 mois pour l'énergie solaire, 12 mois pour la sécurité et la climatisation.",
   },
   {
     id: "faq-devis-validite",
@@ -50,7 +50,7 @@ export const questionsFAQ: QuestionFAQ[] = [
     id: "faq-securite-install",
     question: "Les caméras de sécurité sont-elles faciles à installer ?",
     reponse:
-      "Nos caméras PTZ et sonnettes connectées sont conçues pour une installation simple. Un guide est fourni avec chaque produit.",
+      "Nos caméras PTZ sont conçues pour une installation simple. Un guide est fourni avec chaque produit.",
     categorie_id: "cat-securite",
   },
   {

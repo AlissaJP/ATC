@@ -6,12 +6,9 @@ import { StatutDevisBadge } from "@/components/devis/StatutDevisBadge";
 import { useDevisStore, prixApplicablePourUtilisateur } from "@/lib/store/devis-store";
 import { useSessionStore } from "@/lib/store/session-store";
 import { produits } from "@/lib/mock-data/produits";
-import { utilisateurs } from "@/lib/mock-data/utilisateurs";
+import { useComptesStore } from "@/lib/store/comptes-store";
+import { nomClient } from "@/lib/services/utilisateurs";
 import type { Devis } from "@/lib/types/entities";
-
-function nomClient(utilisateurId: string): string {
-  return utilisateurs.find((u) => u.id === utilisateurId)?.nom ?? "Client";
-}
 
 // ECR-04-004 — Traitement des devis (back-office). RG-04-002, RG-04-003, RG-04-005, RG-09-002.
 function LigneReponseDevis({ devis }: { devis: Devis }) {
@@ -21,6 +18,7 @@ function LigneReponseDevis({ devis }: { devis: Devis }) {
   const repondreDevis = useDevisStore((s) => s.repondreDevis);
   const convertirEnCommande = useDevisStore((s) => s.convertirEnCommande);
   const session = useSessionStore((s) => s.session);
+  const utilisateursDynamiques = useComptesStore((s) => s.utilisateurs);
   const [ouvert, setOuvert] = useState(false);
   const [coutInstallation, setCoutInstallation] = useState(0);
   const [messageConversion, setMessageConversion] = useState<string | null>(null);
@@ -51,7 +49,7 @@ function LigneReponseDevis({ devis }: { devis: Devis }) {
         onClick={() => setOuvert((v) => !v)}
       >
         <div>
-          <p className="font-medium text-texte-principal">{nomClient(devis.utilisateur_id)}</p>
+          <p className="font-medium text-texte-principal">{nomClient(devis.utilisateur_id, utilisateursDynamiques)}</p>
           <p className="text-xs text-texte-secondaire">
             {new Date(devis.date_creation).toLocaleString("fr-FR")} — {lignes.length} composant(s)
           </p>

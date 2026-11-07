@@ -3,12 +3,13 @@ import { pagesLegales } from "@/lib/mock-data/contenu-legal";
 import type { SlugPageLegale } from "@/lib/mock-data/contenu-legal";
 import { categories } from "@/lib/mock-data/categories";
 import { GestionContenu } from "@/components/admin/GestionContenu";
+import { GardeRoleAdmin } from "@/components/admin/GardeRoleAdmin";
 
 const ONGLETS_VALIDES: SlugPageLegale[] = ["cgv", "confidentialite", "mentions-legales"];
 
 // ECR-12-004 (BF-12-011, Must have — décision actée n°9) — Gestion du contenu (FAQ, textes légaux)
-// depuis le back-office. Accessible aux deux rôles admin (ni gestion des prix ni Paramètres généraux —
-// RG-12-001 ne le restreint pas). Server Component : lit les tableaux mock-data côté serveur à chaque
+// depuis le back-office. Administrateur Général uniquement : ces textes (CGV, pages légales) ont une portée
+// juridique (cahier 4, audit A-03). Server Component : lit les tableaux mock-data côté serveur à chaque
 // requête, pour que les mutations admin (lib/actions/contenu-admin.ts) restent visibles sans redémarrage.
 export default async function AdminContenuPage(props: PageProps<"/admin/contenu">) {
   const { onglet } = await props.searchParams;
@@ -18,12 +19,14 @@ export default async function AdminContenuPage(props: PageProps<"/admin/contenu"
   return (
     <main className="mx-auto w-full max-w-4xl px-4 py-8 md:px-6">
       <h1 className="mb-6 font-titres text-2xl font-bold text-texte-principal">Contenu</h1>
-      <GestionContenu
-        questionsFAQ={questionsFAQ}
-        pagesLegales={pagesLegales}
-        categories={categories}
-        ongletInitial={ongletInitial}
-      />
+      <GardeRoleAdmin rolesAutorises={["general"]}>
+        <GestionContenu
+          questionsFAQ={questionsFAQ}
+          pagesLegales={pagesLegales}
+          categories={categories}
+          ongletInitial={ongletInitial}
+        />
+      </GardeRoleAdmin>
     </main>
   );
 }

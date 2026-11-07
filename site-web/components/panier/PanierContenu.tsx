@@ -97,6 +97,15 @@ export function PanierContenu() {
     router.push(`/paiement/commande/${commande.id}`);
   }
 
+  const toastSuppression = ligneSupprimee && (
+    <Toast
+      message={t("panier.produitRetire")}
+      actionLabel={t("commun.annuler")}
+      onAction={annulerSuppression}
+      onFermer={() => setLigneSupprimee(null)}
+    />
+  );
+
   if (lignes.length === 0) {
     return (
       <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-bordure py-20 text-center">
@@ -105,6 +114,7 @@ export function PanierContenu() {
         <Link href="/" className="text-sm font-medium text-primaire hover:underline">
           {t("panier.retourCatalogue")}
         </Link>
+        {toastSuppression}
       </div>
     );
   }
@@ -235,14 +245,7 @@ export function PanierContenu() {
         </button>
       </div>
 
-      {ligneSupprimee && (
-        <Toast
-          message={t("panier.produitRetire")}
-          actionLabel={t("commun.annuler")}
-          onAction={annulerSuppression}
-          onFermer={() => setLigneSupprimee(null)}
-        />
-      )}
+      {toastSuppression}
     </div>
   );
 }
