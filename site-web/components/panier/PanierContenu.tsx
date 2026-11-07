@@ -12,9 +12,12 @@ import { useFactureStore } from "@/lib/store/facture-store";
 import { produits } from "@/lib/mock-data/produits";
 import { categories } from "@/lib/mock-data/categories";
 import { quantiteDisponible } from "@/lib/mock-data/stock";
-import { nomAffichageVariante, resoudreProduitEtVariante } from "@/lib/services/variantes";
+import { resoudreProduitEtVariante } from "@/lib/services/variantes";
+import { calculerFacture } from "@/lib/business-rules/taxe";
 import { Toast } from "@/components/ui/Toast";
 import type { Categorie } from "@/lib/types/entities";
+import { useTranslation } from "@/lib/i18n/useTranslation";
+import { nomCategorie, nomLigneLocalise } from "@/lib/i18n/catalogue";
 
 // ECR-05-001 — Panier. RG-03-002 (quantité bornée au stock), RG-03-004/UC-05-001-E1 (recalcul du
 // palier B2B applicable géré par cart-store), BF-05-002 (sous-totaux par catégorie).
@@ -31,6 +34,7 @@ function categorieRacine(produitId: string): Categorie | undefined {
 
 export function PanierContenu() {
   const router = useRouter();
+  const { t, langue } = useTranslation();
   const lignes = useCartStore((s) => s.lignes);
   const retirerLigne = useCartStore((s) => s.retirerLigne);
   const modifierQuantite = useCartStore((s) => s.modifierQuantite);
@@ -55,6 +59,9 @@ export function PanierContenu() {
   }, [lignes]);
 
   const total = lignes.reduce((s, l) => s + l.prix_unitaire_applique * l.quantite, 0);
+  // Taxe de 10 % (décision actée n°18) — même calcul que l'écran de paiement (EcranPaiement), pour que le
+  // montant annoncé ici soit exactement celui réglé ensuite (audit A-01).
+  const detailTaxe = calculerFacture(total);
   const nombreArticles = lignes.reduce((s, l) => s + l.quantite, 0);
 
   function basculerCategorie(id: string) {
@@ -94,16 +101,18 @@ export function PanierContenu() {
     return (
       <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-bordure py-20 text-center">
         <ShoppingCart size={28} className="text-texte-secondaire" />
-        <p className="font-titres text-sm font-semibold text-texte-principal">Votre panier est vide</p>
+        <p className="font-titres text-sm font-semibold text-texte-principal">{t("panier.vide")}</p>
         <Link href="/" className="text-sm font-medium text-primaire hover:underline">
-          Retour au catalogue
+          {t("panier.retourCatalogue")}
         </Link>
       </div>
     );
   }
 
   return (
-    <div className="grid gap-8 pb-24 lg:grid-cols-[1fr_320px] lg:pb-0">
+    // minmax(0,1fr) : sans cette borne, la colonne s'élargit à la longueur du nom de produit (texte sur une
+    // ligne) et la page déborde sur téléphone, repoussant la barre de paiement hors de l'écran (audit A-20).
+    <div className="grid grid-cols-[minmax(0,1fr)] gap-8 pb-24 lg:grid-cols-[minmax(0,1fr)_320px] lg:pb-0">
       <div className="flex flex-col gap-6">
         {groupes.map(({ categorie, lignes: lignesCategorie }) => {
           const replie = categoriesRepliees.has(categorie.id);
@@ -115,7 +124,7 @@ export function PanierContenu() {
                 onClick={() => basculerCategorie(categorie.id)}
                 className="flex w-full items-center justify-between px-4 py-3"
               >
-                <span className="font-titres text-sm font-semibold text-texte-principal">{categorie.nom}</span>
+                <span className="font-titres text-sm font-semibold text-texte-principal">{categorie.id === "autre" ? t("commun.autres") : nomCategorie(categorie, langue)}</span>
                 <span className="flex items-center gap-2 text-sm text-texte-secondaire">
                   ${sousTotal.toFixed(2)}
                   <ChevronDown size={16} className={`transition-transform ${replie ? "-rotate-90" : ""}`} />
@@ -137,14 +146,14 @@ export function PanierContenu() {
                           <VisuelProduit produit={produit} sizes="64px" />
                         </div>
                         <div className="min-w-0 flex-1">
-                          <Link href={`/produit/${produit.slug}`} className="truncate text-sm font-medium text-texte-principal hover:underline">
-                            {nomAffichageVariante(produit, variante)}
+                          <Link href={`/produit/${produit.slug}`} className="block truncate text-sm font-medium text-texte-principal hover:underline">
+                            {nomLigneLocalise(produit, variante, langue)}
                           </Link>
-                          <p className="text-xs text-texte-secondaire">${ligne.prix_unitaire_applique.toFixed(2)} / unité</p>
+                          <p className="text-xs text-texte-secondaire">{t("commun.parUnite", { prix: `$${ligne.prix_unitaire_applique.toFixed(2)}` })}</p>
                           <div className="mt-2 flex items-center gap-2">
                             <button
                               type="button"
-                              aria-label="Diminuer la quantité"
+                              aria-label={t("produit.diminuer")}
                               onClick={() => modifierQuantite(ligne.produit_id, ligne.quantite - 1)}
                               className="flex h-7 w-7 items-center justify-center rounded-md border border-bordure text-texte-principal"
                             >
@@ -155,7 +164,7 @@ export function PanierContenu() {
                             </span>
                             <button
                               type="button"
-                              aria-label="Augmenter la quantité"
+                              aria-label={t("produit.augmenter")}
                               disabled={ligne.quantite >= stockDisponible}
                               onClick={() => modifierQuantite(ligne.produit_id, ligne.quantite + 1)}
                               className="flex h-7 w-7 items-center justify-center rounded-md border border-bordure text-texte-principal disabled:opacity-30"
@@ -170,7 +179,7 @@ export function PanierContenu() {
                           </p>
                           <button
                             type="button"
-                            aria-label={`Retirer ${produit.nom}`}
+                            aria-label={t("panier.retirer", { produit: nomLigneLocalise(produit, variante, langue) })}
                             onClick={() => supprimerAvecAnnulation(ligne)}
                             className="text-texte-secondaire hover:text-danger"
                           >
@@ -189,15 +198,28 @@ export function PanierContenu() {
 
       <aside className="h-fit lg:sticky lg:top-20">
         <div className="rounded-xl border border-bordure bg-background p-5">
-          <p className="font-titres text-sm font-semibold text-texte-principal">Récapitulatif</p>
-          <p className="mt-1 text-sm text-texte-secondaire">{nombreArticles} article(s)</p>
-          <p className="mt-3 font-titres text-2xl font-bold text-primaire">${total.toFixed(2)}</p>
+          <p className="font-titres text-sm font-semibold text-texte-principal">{t("panier.recapitulatif")}</p>
+          <p className="mt-1 text-sm text-texte-secondaire">{t("panier.articles", { nombre: nombreArticles })}</p>
+          <div className="mt-3 flex flex-col gap-1 text-sm">
+            <div className="flex justify-between">
+              <span className="text-texte-secondaire">{t("commun.sousTotal")}</span>
+              <span className="text-texte-principal">${detailTaxe.montant_ht.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-texte-secondaire">{t("commun.taxe", { taux: (detailTaxe.taux_taxe * 100).toFixed(0) })}</span>
+              <span className="text-texte-principal">${detailTaxe.montant_taxe.toFixed(2)}</span>
+            </div>
+          </div>
+          <div className="mt-2 flex items-baseline justify-between border-t border-bordure pt-2">
+            <span className="font-titres text-sm font-semibold text-texte-principal">{t("commun.total")}</span>
+            <span className="font-titres text-2xl font-bold text-primaire">${detailTaxe.montant_ttc.toFixed(2)}</span>
+          </div>
           <button
             type="button"
             onClick={procederAuPaiement}
             className="mt-4 hidden w-full items-center justify-center rounded-lg bg-accent px-4 py-3 text-sm font-semibold text-white hover:opacity-90 lg:flex"
           >
-            Procéder au paiement
+            {t("panier.payer")}
           </button>
         </div>
       </aside>
@@ -209,14 +231,14 @@ export function PanierContenu() {
           onClick={procederAuPaiement}
           className="flex w-full items-center justify-center gap-2 rounded-lg bg-accent px-4 py-3 text-sm font-semibold text-white hover:opacity-90"
         >
-          Procéder au paiement — ${total.toFixed(2)}
+          {t("panier.payerMontant", { montant: `$${detailTaxe.montant_ttc.toFixed(2)}` })}
         </button>
       </div>
 
       {ligneSupprimee && (
         <Toast
-          message="Produit retiré du panier"
-          actionLabel="Annuler"
+          message={t("panier.produitRetire")}
+          actionLabel={t("commun.annuler")}
           onAction={annulerSuppression}
           onFermer={() => setLigneSupprimee(null)}
         />

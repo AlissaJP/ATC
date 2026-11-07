@@ -6,11 +6,7 @@ import Link from "next/link";
 import { useTranslation } from "@/lib/i18n/useTranslation";
 import { useSessionStore, estClientB2BVerifie } from "@/lib/store/session-store";
 
-const AVANTAGES = [
-  "Barème de prix par palier de quantité",
-  "Facturation pro forma automatique",
-  "Devis pour packages solaires sur-mesure",
-];
+const AVANTAGES = ["accueil.proAvantage1", "accueil.proAvantage2", "accueil.proAvantage3"];
 
 // BF-01-010 — Section « Devenir client professionnel » incitant à l'inscription B2B (RG-08-001).
 // Raffinement Design : masquée (pas seulement désactivée) pour un compte Entreprise déjà validé — n'a
@@ -36,7 +32,7 @@ export function BlocDevenirPro() {
     return (
       <section className="flex items-center gap-3 rounded-2xl border border-bordure bg-fond p-6">
         <Clock size={22} className="shrink-0 text-primaire-clair" />
-        <p className="text-sm font-medium text-texte-principal">Votre compte professionnel est en cours de validation.</p>
+        <p className="text-sm font-medium text-texte-principal">{t("accueil.proEnValidation")}</p>
       </section>
     );
   }
@@ -46,7 +42,7 @@ export function BlocDevenirPro() {
       <div className="relative order-2 hidden min-h-[280px] md:order-1 md:block">
         <Image
           src="/images/entreprise/devenir-client-professionnel.webp"
-          alt="Équipe professionnelle analysant ses données de vente et d'achat en réunion"
+          alt={t("accueil.proAlt")}
           fill
           className="object-cover"
           sizes="50vw"
@@ -61,7 +57,7 @@ export function BlocDevenirPro() {
           {AVANTAGES.map((avantage) => (
             <li key={avantage} className="flex items-start gap-2 text-sm text-texte-principal">
               <Check size={18} className="mt-0.5 shrink-0 text-succes" />
-              {avantage}
+              {t(avantage)}
             </li>
           ))}
         </ul>

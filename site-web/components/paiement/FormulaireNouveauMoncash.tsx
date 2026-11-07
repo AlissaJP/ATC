@@ -5,6 +5,7 @@
 // numéro MonCash déjà enregistré. Sandbox de démonstration (décision actée n°41) : aucune requête MonCash réelle,
 // seul le numéro saisi est utilisé pour l'affichage/l'enregistrement optionnel.
 import { useId } from "react";
+import { useTranslation } from "@/lib/i18n/useTranslation";
 
 export interface DonneesMoncash {
   numero: string;
@@ -27,14 +28,15 @@ export function FormulaireNouveauMoncash({
   donnees: DonneesMoncash;
   onChange: (donnees: DonneesMoncash) => void;
 }) {
+  const { t } = useTranslation();
   const idNumero = useId();
 
   return (
     <div className="mt-4 flex flex-col gap-3 rounded-lg border border-bordure p-4">
-      <p className="text-sm font-semibold text-texte-principal">Numéro MonCash</p>
+      <p className="text-sm font-semibold text-texte-principal">{t("paiement.moncash.titre")}</p>
 
       <label htmlFor={idNumero} className="flex flex-col gap-1">
-        <span className="text-xs font-medium text-texte-secondaire">Numéro à débiter pour cette commande</span>
+        <span className="text-xs font-medium text-texte-secondaire">{t("paiement.moncash.numero")}</span>
         <div className="flex items-center gap-2">
           <span className="text-sm text-texte-secondaire">+509</span>
           <input
@@ -56,7 +58,7 @@ export function FormulaireNouveauMoncash({
           onChange={(e) => onChange({ ...donnees, enregistrer: e.target.checked })}
           className="h-4 w-4 rounded border-bordure accent-primaire"
         />
-        Enregistrer ce numéro pour mes prochaines commandes
+        {t("paiement.moncash.enregistrer")}
       </label>
     </div>
   );

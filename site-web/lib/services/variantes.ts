@@ -51,9 +51,11 @@ export function prixDepart(produit: Produit): number | null {
 
 // Niveau agrégé pour l'affichage catalogue (carte produit) d'un produit à variantes : il n'y a pas de
 // stock unique à ce niveau (chaque variante porte le sien). "rupture" seulement si TOUTES les variantes
-// sont explicitement à 0 ; sinon "en_stock" (au moins une valeur reste disponible, ou son stock n'est
-// pas suivi). La fiche produit affiche ensuite le niveau exact de la variante sélectionnée.
+// sont explicitement à 0 ; "en_stock" si au moins une variante a un stock positif connu ; sinon
+// "non_suivi" (aucune quantité communiquée — audit A-11). La fiche produit affiche ensuite le niveau exact
+// de la variante sélectionnée.
 export function niveauAgregeVariantes(variantes: VarianteProduit[]): NiveauAlerteStock {
   const toutesEpuisees = variantes.every((v) => v.stock !== undefined && v.stock <= 0);
-  return toutesEpuisees ? "rupture" : "en_stock";
+  if (toutesEpuisees) return "rupture";
+  return variantes.some((v) => v.stock !== undefined && v.stock > 0) ? "en_stock" : "non_suivi";
 }

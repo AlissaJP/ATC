@@ -10,9 +10,12 @@ import { CatalogueBrowser } from "@/components/product/CatalogueBrowser";
 import { BanniereEnTete } from "@/components/ui/BanniereEnTete";
 import { listerCategories, listerProduitsParCategorieSlug } from "@/lib/services/produits";
 import { listerProduitsEnrichis } from "@/lib/services/catalogue";
+import { obtenirTraduction } from "@/lib/i18n/serveur";
+import { nomCategorie } from "@/lib/i18n/catalogue";
 
 export default async function CategoriePage(props: PageProps<"/categorie/[slug]">) {
   const { slug } = await props.params;
+  const { t, langue } = await obtenirTraduction();
   const categories = await listerCategories();
   const categorie = categories.find((c) => c.slug === slug);
 
@@ -31,7 +34,7 @@ export default async function CategoriePage(props: PageProps<"/categorie/[slug]"
   const onglets =
     sousCategories.length > 1
       ? await Promise.all(
-          [{ slug: racine.slug, nom: "Tous" }, ...sousCategories].map(async (o) => ({
+          [{ slug: racine.slug, nom: t("categorie.tous") }, ...sousCategories.map((c) => ({ slug: c.slug, nom: nomCategorie(c, langue) }))].map(async (o) => ({
             ...o,
             nombre: (await listerProduitsParCategorieSlug(o.slug)).length,
           }))
@@ -43,9 +46,9 @@ export default async function CategoriePage(props: PageProps<"/categorie/[slug]"
       <Breadcrumb
         items={[
           ...(categorieParente
-            ? [{ label: categorieParente.nom, href: `/categorie/${categorieParente.slug}` }]
+            ? [{ label: nomCategorie(categorieParente, langue), href: `/categorie/${categorieParente.slug}` }]
             : []),
-          { label: categorie.nom },
+          { label: nomCategorie(categorie, langue) },
         ]}
       />
 
@@ -53,18 +56,21 @@ export default async function CategoriePage(props: PageProps<"/categorie/[slug]"
         <div>
           {categorieParente && (
             <p className="font-titres text-sm font-semibold uppercase tracking-wide text-accent">
-              {categorieParente.nom}
+              {nomCategorie(categorieParente, langue)}
             </p>
           )}
           <h1 className="font-titres text-2xl font-bold text-texte-principal md:text-3xl">
-            {produits.length} produit{produits.length !== 1 ? "s" : ""} dans {categorie.nom}
+            {t(produits.length === 1 ? "categorie.titreUn" : "categorie.titrePlusieurs", {
+              nombre: produits.length,
+              categorie: nomCategorie(categorie, langue),
+            })}
           </h1>
         </div>
-        {racine.image_banniere && <BanniereEnTete src={racine.image_banniere} alt={racine.nom} />}
+        {racine.image_banniere && <BanniereEnTete src={racine.image_banniere} alt={nomCategorie(racine, langue)} />}
       </div>
 
       {onglets.length > 0 && (
-        <nav aria-label={`Sous-catégories : ${racine.nom}`} className="-mx-4 mb-6 overflow-x-auto px-4 md:mx-0 md:px-0">
+        <nav aria-label={t("categorie.sousCategories", { categorie: nomCategorie(racine, langue) })} className="-mx-4 mb-6 overflow-x-auto px-4 md:mx-0 md:px-0">
           <ul className="flex w-max gap-2">
             {onglets.map((o) => {
               const actif = o.slug === categorie.slug;

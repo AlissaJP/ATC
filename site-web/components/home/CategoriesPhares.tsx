@@ -6,6 +6,7 @@ import { useTranslation } from "@/lib/i18n/useTranslation";
 import { ProductCard } from "@/components/product/ProductCard";
 import { categories } from "@/lib/mock-data/categories";
 import type { ProduitEnrichi } from "@/lib/services/catalogue";
+import { nomCategorie as nomSousCategorie } from "@/lib/i18n/catalogue";
 
 // BF-01-008 — Mise en avant des catégories phares (structure : Raffinement Design Section 1.2, validé ;
 // approfondissement demandé — intro par catégorie + produits en extérieur + bouton "Voir tous").
@@ -29,7 +30,7 @@ export function CategoriesPhares({
 }: {
   produitsParCategorie: Record<string, ProduitEnrichi[]>;
 }) {
-  const { t } = useTranslation();
+  const { t, langue } = useTranslation();
 
   return (
     <section className="flex flex-col gap-12">
@@ -57,7 +58,7 @@ export function CategoriesPhares({
                         href={`/categorie/${sc.slug}`}
                         className="rounded-full border border-bordure px-3 py-1 text-xs font-medium text-texte-principal transition-colors hover:border-primaire hover:text-primaire"
                       >
-                        {sc.nom}
+                        {nomSousCategorie(sc, langue)}
                       </Link>
                     ))}
                   </div>

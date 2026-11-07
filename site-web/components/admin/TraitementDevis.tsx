@@ -27,7 +27,9 @@ function LigneReponseDevis({ devis }: { devis: Devis }) {
 
   function gererConversion() {
     const succes = convertirEnCommande(devis.id);
-    setMessageConversion(succes ? null : "Ce devis n'a pas encore été réglé par le client.");
+    setMessageConversion(
+      succes ? null : "Ce devis n'a pas encore été réglé par le client (ou son virement n'a pas encore été validé)."
+    );
   }
 
   const prixComposants = lignes.reduce(

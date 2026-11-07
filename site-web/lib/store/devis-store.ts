@@ -11,7 +11,7 @@ import { paliersParProduit } from "@/lib/mock-data/paliers-prix-b2b";
 import { utilisateurs, trouverProfilEntrepriseParUtilisateur } from "@/lib/mock-data/utilisateurs";
 import { trouverPalierApplicable } from "@/lib/business-rules/bareme-b2b";
 import { calculerDateExpiration, devisEstEncoreValide } from "@/lib/business-rules/devis-expiration";
-import { useFactureStore } from "@/lib/store/facture-store";
+import { dernierPaiement, useFactureStore } from "@/lib/store/facture-store";
 import { useCommandeStore } from "@/lib/store/commande-store";
 import { VERSION_CATALOGUE, referenceProduitConnue } from "@/lib/store/migration-catalogue";
 
@@ -154,8 +154,9 @@ export const useDevisStore = create<DevisState>()(
         const devis = get().devis.find((d) => d.id === devisId);
         if (!devis || devis.statut !== "accepte" || devis.prix_total === undefined) return false;
 
-        const paiement = useFactureStore.getState().paiements.find((p) => p.devis_id === devisId);
-        if (!paiement) return false;
+        // Un virement en cours de vérification (ou refusé) ne suffit pas : paiement confirmé uniquement.
+        const paiement = dernierPaiement(useFactureStore.getState().paiements, { devisId });
+        if (paiement?.statut_transaction !== "réussie") return false;
 
         const lignes = get().lignesDevis.filter((l) => l.devis_id === devisId);
         useCommandeStore

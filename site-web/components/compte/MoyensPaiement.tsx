@@ -4,6 +4,7 @@ import { useState } from "react";
 import { CreditCard, Pencil, Plus, Smartphone, Wallet } from "lucide-react";
 import { useComptesStore } from "@/lib/store/comptes-store";
 import type { TypeMoyenPaiementEnregistre } from "@/lib/types/entities";
+import { useTranslation } from "@/lib/i18n/useTranslation";
 
 const ICONES: Record<TypeMoyenPaiementEnregistre, typeof CreditCard> = {
   carte: CreditCard,
@@ -12,13 +13,13 @@ const ICONES: Record<TypeMoyenPaiementEnregistre, typeof CreditCard> = {
 };
 
 const TYPES_DISPONIBLES: { id: TypeMoyenPaiementEnregistre; label: string }[] = [
-  { id: "carte", label: "Carte Visa/Mastercard" },
-  { id: "moncash", label: "MonCash" },
-  { id: "paypal", label: "PayPal" },
+  { id: "carte", label: "paiement.methode.carte" },
+  { id: "moncash", label: "paiement.methode.moncash" },
+  { id: "paypal", label: "paiement.methode.paypal" },
 ];
 
-// RAFF-MOYENS-PAIEMENT — liste des moyens de paiement enregistrés (RG-06-001 : MonCash, carte, PayPal
-// uniquement, jamais de virement). Composant double usage :
+// RAFF-MOYENS-PAIEMENT — liste des moyens de paiement enregistrés (MonCash, carte, PayPal ; le virement
+// bancaire se règle à chaque fois avec une preuve et ne s'enregistre pas). Composant double usage :
 // - mode "gestion" (Espace Client) : définir par défaut / modifier / ajouter un moyen.
 // - mode "selection" (écran de paiement, ECR-06-001) : chaque ligne devient un raccourci cliquable qui
 //   sélectionne directement la méthode correspondante, avant la saisie manuelle classique.
@@ -38,6 +39,7 @@ export function MoyensPaiement({
   moyenSelectionneId?: string | null;
   onSelectionner?: (type: TypeMoyenPaiementEnregistre, moyenId: string) => void;
 }) {
+  const { t } = useTranslation();
   const tousLesMoyens = useComptesStore((s) => s.moyensPaiement);
   const ajouterMoyenPaiement = useComptesStore((s) => s.ajouterMoyenPaiement);
   const modifierMoyenPaiement = useComptesStore((s) => s.modifierMoyenPaiement);
@@ -55,7 +57,7 @@ export function MoyensPaiement({
     return (
       <div className="mb-4 flex flex-col gap-2">
         <p className="text-xs font-semibold uppercase tracking-wide text-texte-secondaire">
-          Vos moyens enregistrés
+          {t("moyens.enregistres")}
         </p>
         {moyens.map((moyen) => {
           const Icone = ICONES[moyen.type];
@@ -76,13 +78,13 @@ export function MoyensPaiement({
               </div>
               {moyen.par_defaut && (
                 <span className="shrink-0 rounded-full bg-primaire/10 px-2 py-0.5 text-[11px] font-semibold text-primaire">
-                  Par défaut
+                  {t("moyens.parDefaut")}
                 </span>
               )}
             </button>
           );
         })}
-        <p className="mt-1 text-center text-xs text-texte-secondaire">— OU choisissez un autre moyen ci-dessous —</p>
+        <p className="mt-1 text-center text-xs text-texte-secondaire">{t("moyens.ouAutre")}</p>
       </div>
     );
   }
@@ -90,7 +92,7 @@ export function MoyensPaiement({
   return (
     <div className="flex flex-col gap-3">
       {moyens.length === 0 && (
-        <p className="text-sm text-texte-secondaire">Aucun moyen de paiement enregistré pour le moment.</p>
+        <p className="text-sm text-texte-secondaire">{t("moyens.aucun")}</p>
       )}
       {moyens.map((moyen) => {
         const Icone = ICONES[moyen.type];
@@ -109,7 +111,7 @@ export function MoyensPaiement({
               </div>
               {moyen.par_defaut && (
                 <span className="shrink-0 rounded-full bg-primaire/10 px-2 py-0.5 text-[11px] font-semibold text-primaire">
-                  Par défaut
+                  {t("moyens.parDefaut")}
                 </span>
               )}
               <div className="flex shrink-0 items-center gap-3 text-sm font-medium">
@@ -119,7 +121,7 @@ export function MoyensPaiement({
                     onClick={() => definirMoyenPaiementParDefaut(utilisateurId, moyen.id)}
                     className="text-primaire hover:underline"
                   >
-                    Définir par défaut
+                    {t("moyens.definirDefaut")}
                   </button>
                 )}
                 <button
@@ -127,7 +129,7 @@ export function MoyensPaiement({
                   onClick={() => setEnEdition(enEdition === moyen.id ? null : moyen.id)}
                   className="inline-flex items-center gap-1 text-texte-secondaire hover:text-primaire"
                 >
-                  <Pencil size={14} /> Modifier
+                  <Pencil size={14} /> {t("moyens.modifier")}
                 </button>
               </div>
             </div>
@@ -161,7 +163,7 @@ export function MoyensPaiement({
           onClick={() => setAjoutOuvert(true)}
           className="inline-flex w-fit items-center gap-1.5 text-sm font-semibold text-primaire hover:underline"
         >
-          <Plus size={16} /> Ajouter un moyen de paiement
+          <Plus size={16} /> {t("moyens.ajouter")}
         </button>
       )}
     </div>
@@ -179,6 +181,7 @@ function FormulaireEdition({
   onEnregistrer: (libelle: string, info: string) => void;
   onAnnuler: () => void;
 }) {
+  const { t } = useTranslation();
   const [libelle, setLibelle] = useState(libelleInitial);
   const [info, setInfo] = useState(infoInitiale);
 
@@ -188,14 +191,14 @@ function FormulaireEdition({
         type="text"
         value={libelle}
         onChange={(e) => setLibelle(e.target.value)}
-        placeholder="Libellé"
+        placeholder={t("moyens.libelle")}
         className="rounded-lg border border-bordure px-3 py-2 text-sm text-texte-principal focus:outline-none focus:ring-2 focus:ring-primaire-clair"
       />
       <input
         type="text"
         value={info}
         onChange={(e) => setInfo(e.target.value)}
-        placeholder="Information secondaire (facultatif)"
+        placeholder={t("moyens.infoSecondaire")}
         className="rounded-lg border border-bordure px-3 py-2 text-sm text-texte-principal focus:outline-none focus:ring-2 focus:ring-primaire-clair"
       />
       <div className="flex gap-3">
@@ -205,10 +208,10 @@ function FormulaireEdition({
           onClick={() => onEnregistrer(libelle.trim(), info.trim())}
           className="rounded-lg bg-primaire px-4 py-2 text-sm font-semibold text-white hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          Enregistrer
+          {t("moyens.enregistrer")}
         </button>
         <button type="button" onClick={onAnnuler} className="text-sm font-medium text-texte-secondaire hover:text-primaire">
-          Annuler
+          {t("commun.annuler")}
         </button>
       </div>
     </div>
@@ -222,25 +225,26 @@ function FormulaireAjout({
   onAjouter: (type: TypeMoyenPaiementEnregistre, libelle: string, info: string) => void;
   onAnnuler: () => void;
 }) {
+  const { t } = useTranslation();
   const [type, setType] = useState<TypeMoyenPaiementEnregistre>("carte");
   const [libelle, setLibelle] = useState("");
   const [info, setInfo] = useState("");
 
   return (
     <div className="rounded-xl border border-dashed border-bordure p-4">
-      <p className="mb-3 font-titres text-sm font-semibold text-texte-principal">Ajouter un moyen de paiement</p>
+      <p className="mb-3 font-titres text-sm font-semibold text-texte-principal">{t("moyens.ajouter")}</p>
       <div className="flex flex-col gap-2">
         <div className="flex gap-2">
-          {TYPES_DISPONIBLES.map((t) => (
+          {TYPES_DISPONIBLES.map((typeDispo) => (
             <button
-              key={t.id}
+              key={typeDispo.id}
               type="button"
-              onClick={() => setType(t.id)}
+              onClick={() => setType(typeDispo.id)}
               className={`rounded-lg border px-3 py-2 text-sm font-medium ${
-                type === t.id ? "border-primaire bg-primaire/5 text-primaire" : "border-bordure text-texte-secondaire"
+                type === typeDispo.id ? "border-primaire bg-primaire/5 text-primaire" : "border-bordure text-texte-secondaire"
               }`}
             >
-              {t.label}
+              {t(typeDispo.label)}
             </button>
           ))}
         </div>
@@ -248,14 +252,14 @@ function FormulaireAjout({
           type="text"
           value={libelle}
           onChange={(e) => setLibelle(e.target.value)}
-          placeholder="Libellé (ex. Carte •••• 1234)"
+          placeholder={t("moyens.libelleExemple")}
           className="rounded-lg border border-bordure px-3 py-2 text-sm text-texte-principal focus:outline-none focus:ring-2 focus:ring-primaire-clair"
         />
         <input
           type="text"
           value={info}
           onChange={(e) => setInfo(e.target.value)}
-          placeholder="Information secondaire (facultatif)"
+          placeholder={t("moyens.infoSecondaire")}
           className="rounded-lg border border-bordure px-3 py-2 text-sm text-texte-principal focus:outline-none focus:ring-2 focus:ring-primaire-clair"
         />
         <div className="flex gap-3">
@@ -265,10 +269,10 @@ function FormulaireAjout({
             onClick={() => onAjouter(type, libelle.trim(), info.trim())}
             className="rounded-lg bg-primaire px-4 py-2 text-sm font-semibold text-white hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Ajouter
+            {t("moyens.ajouterBouton")}
           </button>
           <button type="button" onClick={onAnnuler} className="text-sm font-medium text-texte-secondaire hover:text-primaire">
-            Annuler
+            {t("commun.annuler")}
           </button>
         </div>
       </div>

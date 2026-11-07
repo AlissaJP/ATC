@@ -6,6 +6,7 @@
 // (categorie "packages-solaires") sont convertis dans packages-preconfigures.ts. BF-03-001 à BF-03-007.
 import type { Produit, StatutPublicationProduit, VarianteProduit } from "@/lib/types/entities";
 import catalogueAtc from "./catalogue-atc.json";
+import { masquerNotesInternes } from "./catalogue-masquages";
 
 export interface VarianteCatalogueAtc {
   id: string;
@@ -89,8 +90,9 @@ function versProduit(e: EntreeCatalogueAtc): Produit {
     ref: e.ref,
     slug: slugifier(e.nom),
     nom: e.nom,
-    description: e.description,
-    caracteristiques: e.caracteristiques,
+    // Notes internes du fichier client masquées à l'affichage (audit A-12, lib/mock-data/catalogue-masquages.ts).
+    description: masquerNotesInternes(e.ref, "fr", "description", e.description) ?? "",
+    caracteristiques: masquerNotesInternes(e.ref, "fr", "caracteristiques", e.caracteristiques),
     categorie_id: categorieId,
     prix_public: e.prixUSD,
     prix_disponible: e.prixDisponible,

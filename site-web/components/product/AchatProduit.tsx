@@ -15,6 +15,7 @@ import { useGardeClient } from "@/lib/hooks/useGardeClient";
 import { construireIdLigne } from "@/lib/services/variantes";
 import { formaterPrix } from "@/lib/services/prix";
 import { BoutonDemanderPrix } from "./BoutonDemanderPrix";
+import { useTranslation } from "@/lib/i18n/useTranslation";
 import { Toast } from "@/components/ui/Toast";
 
 interface AchatProduitProps {
@@ -31,6 +32,7 @@ interface AchatProduitProps {
 // boutons « Ajouter au panier » / « Ajouter au package personnalisé » visuellement distincts (Cahier 7 §3).
 export function AchatProduit({ produit, niveauStock, paliers, stockActuel, variantes }: AchatProduitProps) {
   const router = useRouter();
+  const { t, langue } = useTranslation();
   const session = useSessionStore((s) => s.session);
   const estB2B = estClientB2BVerifie(session);
   const ajouterLigne = useCartStore((s) => s.ajouterLigne);
@@ -65,9 +67,11 @@ export function AchatProduit({ produit, niveauStock, paliers, stockActuel, varia
   }, [variantes]);
 
   const niveauStockActif: NiveauAlerteStock = varianteActive
-    ? varianteActive.stock !== undefined && varianteActive.stock <= 0
-      ? "rupture"
-      : "en_stock"
+    ? varianteActive.stock === undefined
+      ? "non_suivi"
+      : varianteActive.stock <= 0
+        ? "rupture"
+        : "en_stock"
     : niveauStock;
   // undefined = stock non suivi (variante, point #29, ou produit sans quantité communiquée) — pas de
   // plafond réel, valeur haute uniquement pour borner le sélecteur de quantité de l'interface.
@@ -95,7 +99,7 @@ export function AchatProduit({ produit, niveauStock, paliers, stockActuel, varia
       ajouterLigne(construireIdLigne(produit.id, varianteActive?.id), quantite, prixUnitaire);
       setConfirmationVisible(true);
       setTimeout(() => setConfirmationVisible(false), 1500);
-    }, "Connectez-vous pour ajouter ce produit à votre panier.");
+    }, t("produit.connexionPanier"));
   }
 
   function gererAjoutPackage() {
@@ -138,7 +142,7 @@ export function AchatProduit({ produit, niveauStock, paliers, stockActuel, varia
                   }`}
                 >
                   {v.valeur}
-                  {varianteRupture && !actif && " — rupture"}
+                  {varianteRupture && !actif && ` — ${t("produit.varianteRupture")}`}
                 </button>
               );
             })}
@@ -163,8 +167,8 @@ export function AchatProduit({ produit, niveauStock, paliers, stockActuel, varia
 
       <div className="flex items-center gap-3">
         <p className="font-titres text-2xl font-bold text-primaire md:text-3xl">
-          {formaterPrix(prixUnitaire)}
-          {estB2B && prixUnitaire !== null && <span className="ml-1 text-sm font-normal text-texte-secondaire">/ unité</span>}
+          {formaterPrix(prixUnitaire, langue)}
+          {estB2B && prixUnitaire !== null && <span className="ml-1 text-sm font-normal text-texte-secondaire">{t("produit.parUnite")}</span>}
         </p>
         {!sansPrix && <StockBadge niveau={niveauStockActif} />}
         <BoutonFavori produitId={produit.id} className="ml-auto border border-bordure" />
@@ -173,14 +177,14 @@ export function AchatProduit({ produit, niveauStock, paliers, stockActuel, varia
       {estB2B && !varianteActive && lignesBareme.length > 0 && (
         <div className="overflow-x-auto rounded-lg border border-bordure">
           <table className="w-full min-w-[320px] text-sm">
-            <caption className="sr-only">Barème de prix professionnel par palier de quantité</caption>
+            <caption className="sr-only">{t("produit.baremeLegende")}</caption>
             <thead>
               <tr className="bg-fond text-left text-texte-secondaire">
                 <th scope="col" className="px-3 py-2 font-medium">
-                  Plage de quantité
+                  {t("produit.plageQuantite")}
                 </th>
                 <th scope="col" className="px-3 py-2 font-medium">
-                  Prix unitaire
+                  {t("produit.prixUnitaire")}
                 </th>
               </tr>
             </thead>
@@ -210,7 +214,7 @@ export function AchatProduit({ produit, niveauStock, paliers, stockActuel, varia
           <div className="flex items-center rounded-lg border border-bordure">
             <button
               type="button"
-              aria-label="Diminuer la quantité"
+              aria-label={t("produit.diminuer")}
               className="flex h-11 w-11 items-center justify-center text-texte-principal disabled:opacity-40"
               onClick={() => ajusterQuantite(-1)}
               disabled={rupture || quantite <= 1}
@@ -220,7 +224,7 @@ export function AchatProduit({ produit, niveauStock, paliers, stockActuel, varia
             <span className="w-10 text-center text-sm font-semibold text-texte-principal">{quantite}</span>
             <button
               type="button"
-              aria-label="Augmenter la quantité"
+              aria-label={t("produit.augmenter")}
               className="flex h-11 w-11 items-center justify-center text-texte-principal disabled:opacity-40"
               onClick={() => ajusterQuantite(1)}
               disabled={rupture || quantite >= quantiteMax}
@@ -229,7 +233,7 @@ export function AchatProduit({ produit, niveauStock, paliers, stockActuel, varia
             </button>
           </div>
           {estB2B && prixTotal !== null && (
-            <p className="font-titres text-lg font-bold text-texte-principal">Total : ${prixTotal.toFixed(2)}</p>
+            <p className="font-titres text-lg font-bold text-texte-principal">{t("produit.total", { montant: formaterPrix(prixTotal) })}</p>
           )}
         </div>
       )}
@@ -257,7 +261,7 @@ export function AchatProduit({ produit, niveauStock, paliers, stockActuel, varia
                 {confirmationVisible ? <Check size={18} /> : <ShoppingCart size={18} />}
               </motion.span>
             </AnimatePresence>
-            {confirmationVisible ? "Ajouté au panier" : rupture ? "Rupture de stock" : "Ajouter au panier"}
+            {confirmationVisible ? t("produit.ajoute") : rupture ? t("produit.rupture") : t("produit.ajouterPanier")}
           </motion.button>
         )}
 
@@ -269,13 +273,13 @@ export function AchatProduit({ produit, niveauStock, paliers, stockActuel, varia
             className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg border-2 border-primaire px-5 py-3 text-sm font-semibold text-primaire transition-colors hover:bg-primaire/5"
           >
             <Package size={18} />
-            Ajouter au package personnalisé
+            {t("produit.ajouterPackage")}
           </button>
         )}
       </div>
 
       {messageToast && (
-        <Toast message={messageToast} actionLabel="Se connecter" onAction={allerALaConnexion} onFermer={fermerToast} />
+        <Toast message={messageToast} actionLabel={t("commun.seConnecter")} onAction={allerALaConnexion} onFermer={fermerToast} />
       )}
     </div>
   );

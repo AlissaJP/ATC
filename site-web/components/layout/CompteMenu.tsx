@@ -36,6 +36,7 @@ export function CompteMenu() {
         type="button"
         className="inline-flex h-11 items-center gap-1.5 rounded-lg px-2 text-texte-principal hover:bg-fond"
         aria-haspopup="menu"
+        aria-label={t("compte.menu")}
         aria-expanded={ouvert}
         onClick={() => setOuvert((v) => !v)}
       >
@@ -113,7 +114,7 @@ export function CompteMenu() {
                   className="flex items-center gap-2 px-4 py-2.5 text-sm text-texte-principal hover:bg-fond"
                   onClick={() => setOuvert(false)}
                 >
-                  <LifeBuoy size={16} /> SAV &amp; Assistance
+                  <LifeBuoy size={16} /> {t("compte.savAssistance")}
                 </Link>
                 <button
                   type="button"
@@ -130,7 +131,7 @@ export function CompteMenu() {
                 <div className="border-b border-bordure px-4 py-3">
                   <p className="text-sm font-semibold text-texte-principal">{session.administrateur.nom}</p>
                   <p className="text-xs text-texte-secondaire">
-                    {session.administrateur.role === "general" ? "Administrateur Général" : "Agent SAV"}
+                    {session.administrateur.role === "general" ? t("compte.adminGeneral") : t("compte.agentSav")}
                   </p>
                 </div>
                 <Link

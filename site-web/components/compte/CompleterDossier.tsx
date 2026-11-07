@@ -4,12 +4,14 @@ import { useRef, useState } from "react";
 import { FileUp, Send, Trash2 } from "lucide-react";
 import { useComptesStore, type DocumentTeleverse } from "@/lib/store/comptes-store";
 import type { TypeDocumentEntreprise } from "@/lib/types/entities";
+import { useTranslation } from "@/lib/i18n/useTranslation";
 
 const FORMATS_ACCEPTES = [".pdf", ".jpg", ".jpeg", ".png"];
 const TAILLE_MAX_OCTETS = 5 * 1024 * 1024;
 
 // UC-08-002, scénario A1 — un dossier « Complément demandé » retourne à l'étape 2 côté client.
 export function CompleterDossier({ profilId, motif }: { profilId: string; motif?: string }) {
+  const { t } = useTranslation();
   const televerserDocumentsComplement = useComptesStore((s) => s.televerserDocumentsComplement);
   const [fichiers, setFichiers] = useState<File[]>([]);
   const [erreur, setErreur] = useState<string | null>(null);
@@ -22,11 +24,11 @@ export function CompleterDossier({ profilId, motif }: { profilId: string; motif?
     if (!fichier) return;
     const extension = "." + fichier.name.split(".").pop()?.toLowerCase();
     if (!FORMATS_ACCEPTES.includes(extension)) {
-      setErreur("Format non supporté — PDF, JPG ou PNG uniquement.");
+      setErreur(t("dossier.formatNonSupporte"));
       return;
     }
     if (fichier.size > TAILLE_MAX_OCTETS) {
-      setErreur("Ce fichier dépasse 5 Mo.");
+      setErreur(t("dossier.tropLourd"));
       return;
     }
     setErreur(null);
@@ -47,21 +49,21 @@ export function CompleterDossier({ profilId, motif }: { profilId: string; motif?
   if (envoye) {
     return (
       <p className="mt-3 text-sm font-medium text-succes">
-        Documents complémentaires envoyés — votre dossier repasse en attente de vérification.
+        {t("dossier.envoye")}
       </p>
     );
   }
 
   return (
     <div className="mt-3 rounded-lg border border-dashed border-bordure p-4">
-      {motif && <p className="mb-3 text-sm text-texte-secondaire">Motif : {motif}</p>}
+      {motif && <p className="mb-3 text-sm text-texte-secondaire">{t("dossier.motif", { motif })}</p>}
       <input ref={inputRef} type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden" onChange={gererFichier} />
       <button
         type="button"
         onClick={() => inputRef.current?.click()}
         className="flex w-full items-center justify-center gap-2 rounded-lg border border-bordure py-2.5 text-sm font-medium text-primaire hover:bg-primaire/5"
       >
-        <FileUp size={16} /> Ajouter un document (PDF, JPG, PNG — 5 Mo max)
+        <FileUp size={16} /> {t("dossier.ajouter")}
       </button>
       {erreur && <p className="mt-2 text-xs font-medium text-danger">{erreur}</p>}
 
@@ -72,7 +74,7 @@ export function CompleterDossier({ profilId, motif }: { profilId: string; motif?
               <span className="truncate text-texte-principal">{f.name}</span>
               <button
                 type="button"
-                aria-label={`Retirer ${f.name}`}
+                aria-label={t("entreprise.retirer", { fichier: f.name })}
                 onClick={() => setFichiers((prev) => prev.filter((_, idx) => idx !== i))}
                 className="shrink-0 text-texte-secondaire hover:text-danger"
               >
@@ -89,7 +91,7 @@ export function CompleterDossier({ profilId, motif }: { profilId: string; motif?
         onClick={soumettre}
         className="mt-3 inline-flex items-center gap-2 rounded-lg bg-primaire px-4 py-2 text-sm font-semibold text-white hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
       >
-        <Send size={14} /> Envoyer le complément
+        <Send size={14} /> {t("dossier.envoyer")}
       </button>
     </div>
   );

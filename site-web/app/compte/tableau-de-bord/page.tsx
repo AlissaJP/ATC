@@ -9,15 +9,17 @@ import { useComptesStore } from "@/lib/store/comptes-store";
 import { CarnetAdresses } from "@/components/compte/CarnetAdresses";
 import { CompleterDossier } from "@/components/compte/CompleterDossier";
 import { MoyensPaiement } from "@/components/compte/MoyensPaiement";
+import { useTranslation } from "@/lib/i18n/useTranslation";
 
 const LIBELLES_STATUT: Record<string, { label: string; classe: string }> = {
-  valide: { label: "Entreprise — B2B vérifié", classe: "bg-succes/10 text-succes" },
-  en_attente: { label: "Entreprise — en attente de vérification", classe: "bg-avertissement/10 text-avertissement" },
-  rejete: { label: "Entreprise — dossier rejeté", classe: "bg-danger/10 text-danger" },
-  complement_demande: { label: "Entreprise — complément requis", classe: "bg-primaire-clair/10 text-primaire-clair" },
+  valide: { label: "tableau.statut.valide", classe: "bg-succes/10 text-succes" },
+  en_attente: { label: "tableau.statut.en_attente", classe: "bg-avertissement/10 text-avertissement" },
+  rejete: { label: "tableau.statut.rejete", classe: "bg-danger/10 text-danger" },
+  complement_demande: { label: "tableau.statut.complement_demande", classe: "bg-primaire-clair/10 text-primaire-clair" },
 };
 
 export default function TableauDeBordPage() {
+  const { t } = useTranslation();
   const profilsDynamiques = useComptesStore((s) => s.profilsEntreprise);
 
   return (
@@ -28,7 +30,7 @@ export default function TableauDeBordPage() {
 
         return (
           <main className="mx-auto w-full max-w-3xl px-4 py-8 md:px-6">
-            <h1 className="mb-2 font-titres text-2xl font-bold text-texte-principal md:text-3xl">Mon compte</h1>
+            <h1 className="mb-2 font-titres text-2xl font-bold text-texte-principal md:text-3xl">{t("compte.monCompte")}</h1>
             <div className="mb-8 flex items-center gap-3">
               {session.type_compte === "entreprise" ? (
                 <Building2 size={20} className="text-primaire-clair" />
@@ -38,14 +40,14 @@ export default function TableauDeBordPage() {
               <p className="text-texte-secondaire">{session.nom}</p>
               {statutAffiche && (
                 <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${LIBELLES_STATUT[statutAffiche]?.classe}`}>
-                  {LIBELLES_STATUT[statutAffiche]?.label}
+                  {t(LIBELLES_STATUT[statutAffiche]?.label ?? "")}
                 </span>
               )}
             </div>
 
             {statutAffiche === "complement_demande" && profil && (
               <div className="mb-8 rounded-xl border border-primaire-clair/30 bg-primaire-clair/5 p-5">
-                <p className="font-titres text-sm font-semibold text-texte-principal">Complément de dossier requis</p>
+                <p className="font-titres text-sm font-semibold text-texte-principal">{t("tableau.complementTitre")}</p>
                 <CompleterDossier profilId={profil.id} motif={profil.commentaire_admin} />
               </div>
             )}
@@ -54,37 +56,37 @@ export default function TableauDeBordPage() {
               <Link href="/devis" className="flex items-center gap-3 rounded-xl border border-bordure bg-background p-5 transition-colors hover:border-primaire">
                 <FileText size={22} className="shrink-0 text-primaire-clair" />
                 <div>
-                  <p className="font-titres text-sm font-semibold text-texte-principal">Mes devis</p>
-                  <p className="text-sm text-texte-secondaire">Suivre mes demandes de package</p>
+                  <p className="font-titres text-sm font-semibold text-texte-principal">{t("compte.mesDevis")}</p>
+                  <p className="text-sm text-texte-secondaire">{t("tableau.devisTexte")}</p>
                 </div>
               </Link>
               <Link href="/commandes" className="flex items-center gap-3 rounded-xl border border-bordure bg-background p-5 transition-colors hover:border-primaire">
                 <Package size={22} className="shrink-0 text-primaire-clair" />
                 <div>
-                  <p className="font-titres text-sm font-semibold text-texte-principal">Mes commandes</p>
-                  <p className="text-sm text-texte-secondaire">Suivre le statut de retrait</p>
+                  <p className="font-titres text-sm font-semibold text-texte-principal">{t("compte.mesCommandes")}</p>
+                  <p className="text-sm text-texte-secondaire">{t("tableau.commandesTexte")}</p>
                 </div>
               </Link>
               <Link href="/compte/favoris" className="flex items-center gap-3 rounded-xl border border-bordure bg-background p-5 transition-colors hover:border-primaire">
                 <Heart size={22} className="shrink-0 text-primaire-clair" />
                 <div>
-                  <p className="font-titres text-sm font-semibold text-texte-principal">Mes favoris</p>
-                  <p className="text-sm text-texte-secondaire">Produits enregistrés</p>
+                  <p className="font-titres text-sm font-semibold text-texte-principal">{t("compte.mesFavoris")}</p>
+                  <p className="text-sm text-texte-secondaire">{t("tableau.favorisTexte")}</p>
                 </div>
               </Link>
               <Link href="/sav" className="flex items-center gap-3 rounded-xl border border-bordure bg-background p-5 transition-colors hover:border-primaire">
                 <LifeBuoy size={22} className="shrink-0 text-primaire-clair" />
                 <div>
-                  <p className="font-titres text-sm font-semibold text-texte-principal">SAV &amp; Assistance</p>
-                  <p className="text-sm text-texte-secondaire">Ouvrir ou suivre un ticket</p>
+                  <p className="font-titres text-sm font-semibold text-texte-principal">{t("sav.titre")}</p>
+                  <p className="text-sm text-texte-secondaire">{t("tableau.savTexte")}</p>
                 </div>
               </Link>
               {session.type_compte === "particulier" && (
                 <Link href="/compte/inscription-entreprise" className="flex items-center gap-3 rounded-xl border border-bordure bg-background p-5 transition-colors hover:border-primaire">
                   <Building2 size={22} className="shrink-0 text-primaire-clair" />
                   <div>
-                    <p className="font-titres text-sm font-semibold text-texte-principal">Devenir client professionnel</p>
-                    <p className="text-sm text-texte-secondaire">Accéder au barème B2B</p>
+                    <p className="font-titres text-sm font-semibold text-texte-principal">{t("entreprise.titre")}</p>
+                    <p className="text-sm text-texte-secondaire">{t("tableau.proTexte")}</p>
                   </div>
                 </Link>
               )}
@@ -96,7 +98,7 @@ export default function TableauDeBordPage() {
 
             <div className="mt-8">
               <h2 className="mb-3 font-titres text-lg font-semibold text-texte-principal">
-                Moyens de paiement enregistrés
+                {t("tableau.moyensPaiement")}
               </h2>
               <MoyensPaiement utilisateurId={session.utilisateur_id} />
             </div>

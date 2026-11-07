@@ -1,15 +1,17 @@
 import Link from "next/link";
 import { Building2, User } from "lucide-react";
+import { obtenirTraduction } from "@/lib/i18n/serveur";
 
 // BF-08-001 — Création de compte avec distinction Entreprise/Particulier dès l'inscription.
-export default function InscriptionPage() {
+export default async function InscriptionPage() {
+  const { t } = await obtenirTraduction();
   return (
     <main className="mx-auto w-full max-w-lg px-4 py-12 md:px-6">
-      <h1 className="font-titres text-2xl font-bold text-texte-principal">Créer un compte</h1>
+      <h1 className="font-titres text-2xl font-bold text-texte-principal">{t("inscription.titre")}</h1>
       <p className="mt-2 text-sm text-texte-secondaire">
-        Déjà inscrit ?{" "}
+        {t("inscription.dejaInscrit")}{" "}
         <Link href="/compte/connexion" className="font-medium text-primaire hover:underline">
-          Se connecter
+          {t("commun.seConnecter")}
         </Link>
       </p>
 
@@ -20,8 +22,8 @@ export default function InscriptionPage() {
         >
           <User size={28} className="shrink-0 text-primaire-clair" />
           <div>
-            <p className="font-titres text-base font-semibold text-texte-principal">Compte Particulier</p>
-            <p className="text-sm text-texte-secondaire">Achats au détail, devis et suivi de commandes.</p>
+            <p className="font-titres text-base font-semibold text-texte-principal">{t("compte.compteParticulier")}</p>
+            <p className="text-sm text-texte-secondaire">{t("inscription.particulierTexte")}</p>
           </div>
         </Link>
         <Link
@@ -30,9 +32,9 @@ export default function InscriptionPage() {
         >
           <Building2 size={28} className="shrink-0 text-primaire-clair" />
           <div>
-            <p className="font-titres text-base font-semibold text-texte-principal">Compte Entreprise</p>
+            <p className="font-titres text-base font-semibold text-texte-principal">{t("compte.compteEntreprise")}</p>
             <p className="text-sm text-texte-secondaire">
-              Barème de prix par palier, facturation pro forma — sous réserve de validation.
+              {t("inscription.entrepriseTexte")}
             </p>
           </div>
         </Link>

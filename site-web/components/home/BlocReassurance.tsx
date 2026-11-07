@@ -35,7 +35,7 @@ export function BlocReassurance() {
           return (
             <a
               key={cleTitre}
-              href={lienWhatsApp("Bonjour, j'ai une question.")}
+              href={lienWhatsApp(t("accueil.whatsappQuestion"))}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-start gap-3 rounded-lg transition-colors hover:text-primaire focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primaire-clair"

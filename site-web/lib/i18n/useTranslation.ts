@@ -1,31 +1,13 @@
 "use client";
 
-import { useLocaleStore } from "@/lib/store/locale-store";
-import fr from "./dictionnaires/fr.json";
-import en from "./dictionnaires/en.json";
-import es from "./dictionnaires/es.json";
+import { useLangue } from "@/components/i18n/FournisseurLangue";
+import { traduire, type ValeursTraduction } from "./traduire";
 
-const dictionnaires = { fr, en, es } as const;
-
-type Dictionnaire = typeof fr;
-
-function obtenirValeur(dictionnaire: Dictionnaire, cle: string): string {
-  const segments = cle.split(".");
-  let valeur: unknown = dictionnaire;
-  for (const segment of segments) {
-    if (typeof valeur !== "object" || valeur === null) return cle;
-    valeur = (valeur as Record<string, unknown>)[segment];
-  }
-  return typeof valeur === "string" ? valeur : cle;
-}
-
-/** Hook de traduction — clé pointée, ex. t("nav.securite"). RG-14-001. */
+/** Hook de traduction — clé pointée, ex. t("nav.securite"), variables : t("cle", { nombre: 3 }). RG-14-001.
+ *  Langue fournie par FournisseurLangue (cookie lu par le layout serveur) ; côté serveur, utiliser
+ *  obtenirTraduction() de lib/i18n/serveur.ts. */
 export function useTranslation() {
-  const langue = useLocaleStore((s) => s.langue);
-  const definirLangue = useLocaleStore((s) => s.definirLangue);
-  const dictionnaire = dictionnaires[langue];
-
-  const t = (cle: string) => obtenirValeur(dictionnaire, cle);
-
+  const { langue, definirLangue } = useLangue();
+  const t = (cle: string, valeurs?: ValeursTraduction) => traduire(langue, cle, valeurs);
   return { t, langue, definirLangue };
 }

@@ -16,16 +16,18 @@ import { useCommandeStore } from "@/lib/store/commande-store";
 import { utilisateurs as utilisateursSeed } from "@/lib/mock-data/utilisateurs";
 import { useComptesStore } from "@/lib/store/comptes-store";
 import { Etoiles } from "./Etoiles";
+import { useTranslation } from "@/lib/i18n/useTranslation";
+import { LOCALE_INTL } from "@/lib/i18n/langues";
 
-function nomAuteur(utilisateurId: string, utilisateursDynamiques: typeof utilisateursSeed): string {
+function nomAuteur(utilisateurId: string, utilisateursDynamiques: typeof utilisateursSeed): string | undefined {
   return (
     utilisateursSeed.find((u) => u.id === utilisateurId)?.nom ??
-    utilisateursDynamiques.find((u) => u.id === utilisateurId)?.nom ??
-    "Client ATC"
+    utilisateursDynamiques.find((u) => u.id === utilisateurId)?.nom
   );
 }
 
 export function AvisProduit({ produitId }: { produitId: string }) {
+  const { t, langue } = useTranslation();
   const session = useSessionStore((s) => s.session);
   const tousLesAvis = useAvisStore((s) => s.avis);
   const soumettreAvis = useAvisStore((s) => s.soumettreAvis);
@@ -79,13 +81,13 @@ export function AvisProduit({ produitId }: { produitId: string }) {
 
   return (
     <section className="mt-12 border-t border-bordure pt-8">
-      <h2 className="mb-6 font-titres text-xl font-bold text-texte-principal">Avis clients</h2>
+      <h2 className="mb-6 font-titres text-xl font-bold text-texte-principal">{t("avis.titre")}</h2>
 
       {avisPublies.length === 0 ? (
         <div className="flex items-center gap-2 rounded-xl border border-dashed border-bordure px-4 py-8 text-center">
           <div className="mx-auto flex flex-col items-center gap-2 text-texte-secondaire">
             <Star size={20} />
-            <p className="text-sm">Aucun avis pour le moment — soyez le premier à donner votre avis.</p>
+            <p className="text-sm">{t("avis.aucun")}</p>
           </div>
         </div>
       ) : (
@@ -98,15 +100,17 @@ export function AvisProduit({ produitId }: { produitId: string }) {
               <div className="flex items-center gap-2">
                 <Etoiles note={Math.round(moyenne ?? 0)} taille={22} />
                 <span className="font-titres text-2xl font-bold text-texte-principal">
-                  {moyenne?.toFixed(1)} sur 5
+                  {t("avis.surCinq", { note: moyenne?.toFixed(1) ?? "" })}
                 </span>
               </div>
-              <p className="mt-2 text-sm text-texte-secondaire">Basé sur {avisPublies.length} avis</p>
+              <p className="mt-2 text-sm text-texte-secondaire">
+                {t(avisPublies.length === 1 ? "avis.basesUn" : "avis.basesPlusieurs", { nombre: avisPublies.length })}
+              </p>
             </div>
             <div className="flex flex-col gap-3">
               {repartition.map(({ note: n, nombre }) => (
                 <div key={n} className="flex items-center gap-3 text-sm">
-                  <span className="w-16 shrink-0 whitespace-nowrap text-texte-secondaire">{n} étoile{n > 1 ? "s" : ""}</span>
+                  <span className="w-16 shrink-0 whitespace-nowrap text-texte-secondaire">{t(n > 1 ? "avis.etoilePlusieurs" : "avis.etoileUn", { nombre: n })}</span>
                   <div className="h-2 flex-1 overflow-hidden rounded-full bg-fond">
                     <div
                       className="h-full rounded-full bg-accent"
@@ -125,11 +129,11 @@ export function AvisProduit({ produitId }: { produitId: string }) {
                 <div className="flex flex-col gap-2.5">
                   <Etoiles note={a.note} taille={14} />
                   <p className="text-sm font-semibold text-texte-principal">
-                    {nomAuteur(a.utilisateur_id, utilisateursDynamiques)}
+                    {nomAuteur(a.utilisateur_id, utilisateursDynamiques) ?? t("avis.auteurDefaut")}
                   </p>
-                  <p className="text-xs text-texte-secondaire">{new Date(a.date_creation).toLocaleDateString("fr-FR")}</p>
+                  <p className="text-xs text-texte-secondaire">{new Date(a.date_creation).toLocaleDateString(LOCALE_INTL[langue])}</p>
                   <div className="flex items-center gap-1 text-xs font-medium text-succes">
-                    <BadgeCheck size={14} /> Achat vérifié
+                    <BadgeCheck size={14} /> {t("avis.achatVerifie")}
                   </div>
                 </div>
                 <div className="flex flex-col gap-2">
@@ -144,15 +148,15 @@ export function AvisProduit({ produitId }: { produitId: string }) {
 
       {aAchete && !avisExistant && !envoye && (
         <div className="mt-6 rounded-xl border border-bordure bg-fond p-5">
-          <p className="mb-3 font-titres text-sm font-semibold text-texte-principal">Laisser un avis</p>
-          <div className="flex items-center gap-1" role="radiogroup" aria-label="Note sur 5 étoiles">
+          <p className="mb-3 font-titres text-sm font-semibold text-texte-principal">{t("avis.laisser")}</p>
+          <div className="flex items-center gap-1" role="radiogroup" aria-label={t("avis.noteSurCinq")}>
             {[1, 2, 3, 4, 5].map((n) => (
               <button
                 key={n}
                 type="button"
                 role="radio"
                 aria-checked={n === note}
-                aria-label={`${n} étoile${n > 1 ? "s" : ""}`}
+                aria-label={t(n > 1 ? "avis.etoilePlusieurs" : "avis.etoileUn", { nombre: n })}
                 onClick={() => setNote(n)}
               >
                 <Star
@@ -168,13 +172,13 @@ export function AvisProduit({ produitId }: { produitId: string }) {
             type="text"
             value={titre}
             onChange={(e) => setTitre(e.target.value)}
-            placeholder="Titre de votre avis"
+            placeholder={t("avis.placeholderTitre")}
             className="mt-3 w-full rounded-lg border border-bordure px-3 py-2 text-sm text-texte-principal focus:outline-none focus:ring-2 focus:ring-primaire-clair"
           />
           <textarea
             value={commentaire}
             onChange={(e) => setCommentaire(e.target.value)}
-            placeholder="Votre commentaire (facultatif)"
+            placeholder={t("avis.placeholderCommentaire")}
             rows={3}
             className="mt-3 w-full rounded-lg border border-bordure px-3 py-2 text-sm text-texte-principal focus:outline-none focus:ring-2 focus:ring-primaire-clair"
           />
@@ -184,7 +188,7 @@ export function AvisProduit({ produitId }: { produitId: string }) {
             onClick={soumettre}
             className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-primaire px-4 py-2 text-sm font-semibold text-white hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Envoyer mon avis
+            {t("avis.envoyer")}
           </button>
         </div>
       )}
@@ -192,8 +196,8 @@ export function AvisProduit({ produitId }: { produitId: string }) {
       {(avisExistant || envoye) && (
         <p className="mt-6 text-sm text-texte-secondaire">
           {avisExistant?.statut === "publie"
-            ? "Votre avis a été publié."
-            : "Votre avis a bien été envoyé et est en attente de modération."}
+            ? t("avis.publie")
+            : t("avis.enAttente")}
         </p>
       )}
     </section>

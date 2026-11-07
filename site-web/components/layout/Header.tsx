@@ -53,14 +53,14 @@ export function Header() {
           <button
             type="button"
             className="inline-flex h-11 w-11 items-center justify-center rounded-lg text-texte-principal md:hidden"
-            aria-label={menuOuvert ? "Fermer le menu" : "Ouvrir le menu"}
+            aria-label={menuOuvert ? t("nav.fermerMenu") : t("nav.ouvrirMenu")}
             aria-expanded={menuOuvert}
             onClick={() => setMenuOuvert((v) => !v)}
           >
             {menuOuvert ? <X size={24} /> : <Menu size={24} />}
           </button>
 
-          <Link href="/" className="shrink-0" aria-label="Accueil ATC">
+          <Link href="/" className="shrink-0" aria-label={t("nav.accueilAtc")}>
             <LogoMark />
           </Link>
 
@@ -81,7 +81,7 @@ export function Header() {
               <Link
                 href="/compte/favoris"
                 className="relative inline-flex h-11 w-11 items-center justify-center rounded-lg text-texte-principal hover:bg-fond"
-                aria-label={`Favoris (${nombreFavoris})`}
+                aria-label={t("nav.favoris", { nombre: nombreFavoris })}
               >
                 <Heart size={22} />
                 {nombreFavoris > 0 && (
@@ -149,7 +149,7 @@ export function Header() {
       </header>
 
       {/* Niveau 2 — navigation par catégories, sur le fond de la page (non fixée), pas sur le blanc de l'en-tête */}
-      <nav className="hidden bg-fond py-2.5 md:block print:hidden" aria-label="Catégories">
+      <nav className="hidden bg-fond py-2.5 md:block print:hidden" aria-label={t("nav.categories")}>
         <div className="mx-auto flex max-w-7xl items-center gap-6 px-4 md:px-6">
           {slugEnergieSolaire && (
             <Link
@@ -192,7 +192,7 @@ export function Header() {
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
             className="overflow-hidden border-t border-bordure bg-background md:hidden print:hidden"
-            aria-label="Catégories (mobile)"
+            aria-label={t("nav.categoriesMobile")}
           >
           <div className="px-4 py-4">
           <SearchBar className="mb-3 w-full" onNavigate={() => setMenuOuvert(false)} />

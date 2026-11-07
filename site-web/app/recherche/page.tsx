@@ -6,11 +6,13 @@ import { rechercherProduits } from "@/lib/services/recherche";
 import { obtenirNiveauAlerteStock } from "@/lib/services/stock";
 import { obtenirPaliersProduit } from "@/lib/services/bareme";
 import { trouverMarqueParId } from "@/lib/mock-data/marques";
+import { obtenirTraduction } from "@/lib/i18n/serveur";
 
 export default async function RecherchePage(props: PageProps<"/recherche">) {
   const { q } = await props.searchParams;
   const requete = typeof q === "string" ? q : "";
-  const produits = await rechercherProduits(requete);
+  const { t, langue } = await obtenirTraduction();
+  const produits = await rechercherProduits(requete, undefined, langue);
 
   const resultats = await Promise.all(
     produits.map(async (produit) => ({
@@ -24,14 +26,14 @@ export default async function RecherchePage(props: PageProps<"/recherche">) {
   return (
     <main className="mx-auto w-full max-w-7xl px-4 py-8 md:px-6">
       <h1 className="mb-6 font-titres text-2xl font-bold text-texte-principal md:text-3xl">
-        {resultats.length} résultat{resultats.length !== 1 ? "s" : ""} pour « {requete} »
+        {t(resultats.length === 1 ? "recherche.titreUn" : "recherche.titrePlusieurs", { nombre: resultats.length, requete })}
       </h1>
 
       {resultats.length === 0 ? (
         <div className="rounded-xl border border-dashed border-bordure py-16 text-center">
-          <p className="font-titres text-sm font-semibold text-texte-principal">Aucun résultat</p>
+          <p className="font-titres text-sm font-semibold text-texte-principal">{t("recherche.aucun")}</p>
           <p className="mt-1 text-sm text-texte-secondaire">
-            Essayez un autre terme ou parcourez nos catégories depuis le menu.
+            {t("recherche.aucunTexte")}
           </p>
         </div>
       ) : (

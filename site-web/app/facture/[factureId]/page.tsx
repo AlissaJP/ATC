@@ -15,9 +15,11 @@ import { useFactureStore } from "@/lib/store/facture-store";
 import { useDevisStore } from "@/lib/store/devis-store";
 import { useCommandeStore } from "@/lib/store/commande-store";
 import { FactureProFormaDocument } from "@/components/facture/FactureProFormaDocument";
+import { useTranslation } from "@/lib/i18n/useTranslation";
 
 export default function FacturePage(props: PageProps<"/facture/[factureId]">) {
   const { factureId } = use(props.params);
+  const { t } = useTranslation();
   const session = useSessionStore((s) => s.session);
   const factures = useFactureStore((s) => s.facturesProForma);
   const facture = factures.find((f) => f.id === factureId);
@@ -35,12 +37,12 @@ export default function FacturePage(props: PageProps<"/facture/[factureId]">) {
   if (!autorise) {
     return (
       <main className="mx-auto flex w-full max-w-md flex-1 flex-col items-center justify-center px-4 py-24 text-center">
-        <p className="font-titres text-lg font-semibold text-texte-principal">Connexion requise</p>
+        <p className="font-titres text-lg font-semibold text-texte-principal">{t("garde.connexionRequise")}</p>
         <Link
           href="/compte/connexion"
           className="mt-5 inline-flex items-center gap-2 rounded-lg bg-primaire px-5 py-2.5 text-sm font-semibold text-white hover:opacity-90"
         >
-          Se connecter
+          {t("commun.seConnecter")}
         </Link>
       </main>
     );

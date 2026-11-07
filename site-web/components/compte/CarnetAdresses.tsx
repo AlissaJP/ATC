@@ -3,9 +3,11 @@
 import { useMemo, useState } from "react";
 import { MapPin, Plus, Trash2 } from "lucide-react";
 import { useComptesStore } from "@/lib/store/comptes-store";
+import { useTranslation } from "@/lib/i18n/useTranslation";
 
 // BF-08-002 — Carnet d'adresses (facturation), Haïti et international.
 export function CarnetAdresses({ utilisateurId }: { utilisateurId: string }) {
+  const { t } = useTranslation();
   const toutesLesAdresses = useComptesStore((s) => s.adresses);
   const adresses = useMemo(() => toutesLesAdresses.filter((a) => a.utilisateur_id === utilisateurId), [toutesLesAdresses, utilisateurId]);
   const ajouterAdresse = useComptesStore((s) => s.ajouterAdresse);
@@ -27,38 +29,38 @@ export function CarnetAdresses({ utilisateurId }: { utilisateurId: string }) {
   return (
     <div className="rounded-xl border border-bordure bg-background p-5">
       <div className="flex items-center justify-between">
-        <p className="font-titres text-sm font-semibold text-texte-principal">Carnet d&apos;adresses</p>
+        <p className="font-titres text-sm font-semibold text-texte-principal">{t("adresses.titre")}</p>
         <button
           type="button"
           onClick={() => setFormulaireOuvert((v) => !v)}
           className="inline-flex items-center gap-1 text-sm font-medium text-primaire hover:underline"
         >
-          <Plus size={14} /> Ajouter
+          <Plus size={14} /> {t("adresses.ajouter")}
         </button>
       </div>
 
       {formulaireOuvert && (
         <form onSubmit={soumettre} className="mt-3 flex flex-col gap-2 rounded-lg bg-fond p-3">
           <input
-            placeholder="Libellé (ex. Domicile, Bureau)"
+            placeholder={t("adresses.libelle")}
             value={libelle}
             onChange={(e) => setLibelle(e.target.value)}
             className="rounded-lg border border-bordure px-3 py-2 text-sm text-texte-principal focus:outline-none focus:ring-2 focus:ring-primaire-clair"
           />
           <input
-            placeholder="Adresse complète"
+            placeholder={t("adresses.complete")}
             value={adresse}
             onChange={(e) => setAdresse(e.target.value)}
             className="rounded-lg border border-bordure px-3 py-2 text-sm text-texte-principal focus:outline-none focus:ring-2 focus:ring-primaire-clair"
           />
           <button type="submit" className="self-end rounded-lg bg-primaire px-4 py-1.5 text-xs font-semibold text-white hover:opacity-90">
-            Enregistrer
+            {t("adresses.enregistrer")}
           </button>
         </form>
       )}
 
       {adresses.length === 0 ? (
-        <p className="mt-3 text-sm text-texte-secondaire">Aucune adresse enregistrée.</p>
+        <p className="mt-3 text-sm text-texte-secondaire">{t("adresses.aucune")}</p>
       ) : (
         <ul className="mt-3 flex flex-col gap-2">
           {adresses.map((a) => (
@@ -70,7 +72,7 @@ export function CarnetAdresses({ utilisateurId }: { utilisateurId: string }) {
                   <p className="text-texte-secondaire">{a.adresse}</p>
                 </div>
               </div>
-              <button type="button" aria-label="Supprimer" onClick={() => retirerAdresse(a.id)} className="shrink-0 text-texte-secondaire hover:text-danger">
+              <button type="button" aria-label={t("adresses.supprimer")} onClick={() => retirerAdresse(a.id)} className="shrink-0 text-texte-secondaire hover:text-danger">
                 <Trash2 size={16} />
               </button>
             </li>

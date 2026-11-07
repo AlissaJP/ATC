@@ -17,6 +17,7 @@ import { trouverAdministrateurConnexion, trouverProfilEntrepriseCombine, trouver
 import { utilisateurs as utilisateursSeed } from "@/lib/mock-data/utilisateurs";
 import { administrateurs } from "@/lib/mock-data/administrateurs";
 import { ConnexionSociale } from "@/components/compte/ConnexionSociale";
+import { useTranslation } from "@/lib/i18n/useTranslation";
 
 type Mode = "connexion" | "inscription";
 
@@ -30,6 +31,7 @@ export default function ConnexionPage() {
 
 function ConnexionContenu() {
   const router = useRouter();
+  const { t } = useTranslation();
   const searchParams = useSearchParams();
   const modeInitial: Mode = searchParams.get("mode") === "inscription" ? "inscription" : "connexion";
 
@@ -72,7 +74,7 @@ function ConnexionContenu() {
     const administrateur = trouverAdministrateurConnexion(email);
     if (administrateur) {
       if (!motDePasse) {
-        setErreur("Veuillez saisir votre mot de passe.");
+        setErreur(t("connexion.erreurMotDePasse"));
         return;
       }
       connecterAdmin({ type: "admin", administrateur });
@@ -82,11 +84,11 @@ function ConnexionContenu() {
 
     const utilisateur = trouverUtilisateurConnexion(email);
     if (!utilisateur) {
-      setErreur("Aucun compte ne correspond à cet email.");
+      setErreur(t("connexion.erreurCompte"));
       return;
     }
     if (!motDePasse) {
-      setErreur("Veuillez saisir votre mot de passe.");
+      setErreur(t("connexion.erreurMotDePasse"));
       return;
     }
     const profil = trouverProfilEntrepriseCombine(utilisateur.id);
@@ -103,7 +105,7 @@ function ConnexionContenu() {
   function soumettreInscription(e: React.FormEvent) {
     e.preventDefault();
     if (!motDePasse) {
-      setErreur("Veuillez saisir un mot de passe.");
+      setErreur(t("connexion.erreurNouveauMotDePasse"));
       return;
     }
     const utilisateur = inscrireParticulier(nom, email);
@@ -126,7 +128,7 @@ function ConnexionContenu() {
             mode === "connexion" ? "bg-primaire text-white" : "text-texte-secondaire hover:text-texte-principal"
           }`}
         >
-          Se connecter
+          {t("commun.seConnecter")}
         </button>
         <button
           type="button"
@@ -135,16 +137,16 @@ function ConnexionContenu() {
             mode === "inscription" ? "bg-primaire text-white" : "text-texte-secondaire hover:text-texte-principal"
           }`}
         >
-          Créer un compte
+          {t("connexion.creerCompte")}
         </button>
       </div>
 
       {mode === "connexion" ? (
         <>
-          <h1 className="mt-8 font-titres text-2xl font-bold text-texte-principal">Connexion</h1>
+          <h1 className="mt-8 font-titres text-2xl font-bold text-texte-principal">{t("connexion.titre")}</h1>
           <form onSubmit={soumettreConnexion} className="mt-6 flex flex-col gap-4">
             <label className="block text-sm">
-              <span className="text-texte-secondaire">Email</span>
+              <span className="text-texte-secondaire">{t("connexion.email")}</span>
               <input
                 type="email"
                 required
@@ -154,7 +156,7 @@ function ConnexionContenu() {
               />
             </label>
             <label className="block text-sm">
-              <span className="text-texte-secondaire">Mot de passe</span>
+              <span className="text-texte-secondaire">{t("connexion.motDePasse")}</span>
               <input
                 type="password"
                 required
@@ -168,10 +170,10 @@ function ConnexionContenu() {
               type="submit"
               className="mt-1 rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-white hover:opacity-90"
             >
-              Se connecter
+              {t("commun.seConnecter")}
             </button>
             <Link href="/compte/mot-de-passe-oublie" className="text-center text-sm font-medium text-primaire hover:underline">
-              Mot de passe oublié ?
+              {t("connexion.oublie")}
             </Link>
           </form>
 
@@ -180,24 +182,24 @@ function ConnexionContenu() {
           </div>
 
           <p className="mt-6 text-center text-sm text-texte-secondaire">
-            Pas encore de compte ?{" "}
+            {t("connexion.pasDeCompte")}{" "}
             <button type="button" onClick={() => setMode("inscription")} className="font-medium text-primaire hover:underline">
-              Créer un compte
+              {t("connexion.creerCompte")}
             </button>
           </p>
         </>
       ) : (
         <>
-          <h1 className="mt-8 font-titres text-2xl font-bold text-texte-principal">Créer un compte</h1>
+          <h1 className="mt-8 font-titres text-2xl font-bold text-texte-principal">{t("connexion.creerCompte")}</h1>
           <p className="mt-2 text-sm text-texte-secondaire">
-            Compte professionnel ?{" "}
+            {t("connexion.comptePro")}{" "}
             <Link href="/compte/inscription-entreprise" className="font-medium text-primaire hover:underline">
-              Inscription Entreprise
+              {t("connexion.inscriptionEntreprise")}
             </Link>
           </p>
           <form onSubmit={soumettreInscription} className="mt-6 flex flex-col gap-4">
             <label className="block text-sm">
-              <span className="text-texte-secondaire">Nom complet</span>
+              <span className="text-texte-secondaire">{t("connexion.nomComplet")}</span>
               <input
                 required
                 value={nom}
@@ -206,7 +208,7 @@ function ConnexionContenu() {
               />
             </label>
             <label className="block text-sm">
-              <span className="text-texte-secondaire">Email</span>
+              <span className="text-texte-secondaire">{t("connexion.email")}</span>
               <input
                 type="email"
                 required
@@ -216,7 +218,7 @@ function ConnexionContenu() {
               />
             </label>
             <label className="block text-sm">
-              <span className="text-texte-secondaire">Mot de passe</span>
+              <span className="text-texte-secondaire">{t("connexion.motDePasse")}</span>
               <input
                 type="password"
                 required
@@ -230,7 +232,7 @@ function ConnexionContenu() {
               type="submit"
               className="mt-1 rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-white hover:opacity-90"
             >
-              Créer mon compte
+              {t("connexion.creerMonCompte")}
             </button>
           </form>
 
@@ -239,9 +241,9 @@ function ConnexionContenu() {
           </div>
 
           <p className="mt-6 text-center text-sm text-texte-secondaire">
-            Déjà un compte ?{" "}
+            {t("connexion.dejaCompte")}{" "}
             <button type="button" onClick={() => setMode("connexion")} className="font-medium text-primaire hover:underline">
-              Se connecter
+              {t("commun.seConnecter")}
             </button>
           </p>
         </>
@@ -253,7 +255,7 @@ function ConnexionContenu() {
           onClick={() => setComptesDemoOuverts((v) => !v)}
           className="flex w-full items-center justify-between text-sm font-medium text-texte-secondaire"
         >
-          Comptes de démonstration
+          {t("connexion.comptesDemo")}
           <ChevronDown size={16} className={`transition-transform ${comptesDemoOuverts ? "rotate-180" : ""}`} />
         </button>
 
@@ -261,7 +263,7 @@ function ConnexionContenu() {
           <div className="mt-4 flex flex-col gap-6">
             <section>
               <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-texte-secondaire">
-                Comptes clients
+                {t("connexion.comptesClients")}
               </h2>
               <div className="flex flex-col gap-2">
                 {utilisateursSeed.map((u) => {
@@ -282,14 +284,16 @@ function ConnexionContenu() {
                         <p className="font-medium text-texte-principal">{u.nom}</p>
                         <p className="text-xs text-texte-secondaire">
                           {u.type_compte === "particulier"
-                            ? "Particulier"
-                            : `Entreprise — ${
-                                profil?.statut_validation === "valide"
-                                  ? "B2B vérifié"
-                                  : profil?.statut_validation === "en_attente"
-                                    ? "en attente"
-                                    : "complément demandé"
-                              }`}
+                            ? t("connexion.particulier")
+                            : t("connexion.entrepriseStatut", {
+                                statut: t(
+                                  profil?.statut_validation === "valide"
+                                    ? "connexion.statutVerifie"
+                                    : profil?.statut_validation === "en_attente"
+                                      ? "connexion.statutAttente"
+                                      : "connexion.statutComplement"
+                                ),
+                              })}
                         </p>
                       </div>
                     </button>
@@ -300,7 +304,7 @@ function ConnexionContenu() {
 
             <section>
               <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-texte-secondaire">
-                Comptes administrateurs
+                {t("connexion.comptesAdmins")}
               </h2>
               <div className="flex flex-col gap-2">
                 {administrateurs.map((a) => (
@@ -314,7 +318,7 @@ function ConnexionContenu() {
                     <div>
                       <p className="font-medium text-texte-principal">{a.nom}</p>
                       <p className="text-xs text-texte-secondaire">
-                        {a.role === "general" ? "Administrateur Général" : "Agent SAV / Support"}
+                        {a.role === "general" ? t("compte.adminGeneral") : t("connexion.agentSavSupport")}
                       </p>
                     </div>
                   </button>

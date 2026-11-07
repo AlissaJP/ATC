@@ -10,6 +10,7 @@ import { useDevisStore } from "@/lib/store/devis-store";
 import { useCommandeStore } from "@/lib/store/commande-store";
 import { useComptesStore } from "@/lib/store/comptes-store";
 import { useSavStore } from "@/lib/store/sav-store";
+import { useFactureStore } from "@/lib/store/facture-store";
 import { produits } from "@/lib/mock-data/produits";
 import { utilisateurs as utilisateursSeed, profilsEntreprise as profilsEntrepriseSeed } from "@/lib/mock-data/utilisateurs";
 import { enAttenteDepuisPlusDe48h } from "@/lib/business-rules/delai-48h";
@@ -33,6 +34,7 @@ export function AdminTopBar({ administrateur }: { administrateur: Administrateur
   const utilisateursDynamiques = useComptesStore((s) => s.utilisateurs);
   const profilsDynamiques = useComptesStore((s) => s.profilsEntreprise);
   const tickets = useSavStore((s) => s.tickets);
+  const paiements = useFactureStore((s) => s.paiements);
 
   const utilisateursTous: Utilisateur[] = useMemo(
     () => [...utilisateursSeed, ...utilisateursDynamiques],
@@ -86,6 +88,10 @@ export function AdminTopBar({ administrateur }: { administrateur: Administrateur
     [devis]
   );
   const ticketsOuverts = useMemo(() => tickets.filter((t) => t.statut === "ouvert").length, [tickets]);
+  const virementsAVerifier = useMemo(
+    () => paiements.filter((p) => p.methode === "virement" && p.statut_transaction === "en cours").length,
+    [paiements]
+  );
   const dossiersEntreprisePlus48h = useMemo(() => {
     const idsDynamiques = new Set(profilsDynamiques.map((p) => p.id));
     const seedsNonAdoptes = profilsEntrepriseSeed.filter((p) => !idsDynamiques.has(p.id));
@@ -103,6 +109,11 @@ export function AdminTopBar({ administrateur }: { administrateur: Administrateur
       dossiersEntreprisePlus48h > 0 && {
         texte: `${dossiersEntreprisePlus48h} dossier(s) Entreprise en attente depuis plus de 48h`,
         lien: "/admin/clients?type=entreprise",
+      },
+    administrateur.role === "general" &&
+      virementsAVerifier > 0 && {
+        texte: `${virementsAVerifier} virement(s) à vérifier`,
+        lien: "/admin/virements",
       },
     ticketsOuverts > 0 && { texte: `${ticketsOuverts} ticket(s) SAV ouvert(s)`, lien: "/admin/sav" },
   ].filter(Boolean) as { texte: string; lien: string }[];

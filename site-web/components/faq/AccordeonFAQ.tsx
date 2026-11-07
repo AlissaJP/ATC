@@ -5,8 +5,12 @@
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import type { QuestionFAQ } from "@/lib/mock-data/faq";
+import { useTranslation } from "@/lib/i18n/useTranslation";
+import { localiserFAQ } from "@/lib/i18n/contenu";
 
-export function AccordeonFAQ({ questions }: { questions: QuestionFAQ[] }) {
+export function AccordeonFAQ({ questions: questionsSource }: { questions: QuestionFAQ[] }) {
+  const { langue } = useTranslation();
+  const questions = questionsSource.map((q) => localiserFAQ(q, langue));
   const [ouvertId, setOuvertId] = useState<string | null>(questions[0]?.id ?? null);
 
   return (

@@ -60,7 +60,7 @@ export function genererRapportMensuel(
   const paiementsDuMois = paiements.filter(
     (p) => p.commande_id && idsCommandesDuMois.has(p.commande_id) && p.statut_transaction === "réussie"
   );
-  const repartitionParMoyenPaiement: RepartitionMoyenPaiement[] = (["moncash", "carte", "paypal"] as MethodePaiement[]).map(
+  const repartitionParMoyenPaiement: RepartitionMoyenPaiement[] = (["moncash", "carte", "paypal", "virement"] as MethodePaiement[]).map(
     (methode) => {
       const correspondants = paiementsDuMois.filter((p) => p.methode === methode);
       return {

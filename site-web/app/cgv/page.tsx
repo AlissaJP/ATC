@@ -4,18 +4,27 @@
 // lib/actions/contenu-admin.ts) — plus de JSX statique, voir git history de ce fichier (Phase 7) pour
 // l'ancienne version si besoin de référence.
 import { trouverPageLegale } from "@/lib/mock-data/contenu-legal";
+import { obtenirTraduction } from "@/lib/i18n/serveur";
+import { LOCALE_INTL } from "@/lib/i18n/langues";
 
-export default function CGVPage() {
+export default async function CGVPage() {
+  const { t, langue } = await obtenirTraduction();
   const page = trouverPageLegale("cgv");
 
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-12 md:px-6">
       <h1 className="mb-2 font-titres text-3xl font-bold text-texte-principal">{page?.titre}</h1>
       <p className="mb-8 text-xs text-texte-secondaire">
-        Dernière mise à jour : {new Date().toLocaleDateString("fr-FR", { year: "numeric", month: "long" })}
+        {t("legal.miseAJour", { date: new Date().toLocaleDateString(LOCALE_INTL[langue], { year: "numeric", month: "long" }) })}
       </p>
 
-      <div className="flex flex-col gap-6 text-sm leading-relaxed text-texte-secondaire">
+      {langue !== "fr" && (
+        <p className="mb-6 rounded-lg border border-avertissement/30 bg-avertissement/10 px-4 py-3 text-sm text-texte-principal">
+          {t("legal.versionFrancaise")}
+        </p>
+      )}
+      {/* RG-14-001 — document juridique : seule la version française fait foi (non traduit). */}
+      <div lang="fr" className="flex flex-col gap-6 text-sm leading-relaxed text-texte-secondaire">
         {page?.sections.map((s) => (
           <section key={s.id}>
             <h2 className="mb-2 font-titres text-lg font-semibold text-texte-principal">{s.titre}</h2>

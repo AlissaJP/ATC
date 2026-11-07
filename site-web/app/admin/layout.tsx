@@ -7,8 +7,18 @@ import Link from "next/link";
 import { useSessionStore } from "@/lib/store/session-store";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { AdminTopBar } from "@/components/admin/AdminTopBar";
+import { LangueFrancaiseFigee } from "@/components/i18n/FournisseurLangue";
 
+// RG-14-001 — l'espace administrateur reste en français quelle que soit la langue du site public.
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <LangueFrancaiseFigee>
+      <ContenuAdmin>{children}</ContenuAdmin>
+    </LangueFrancaiseFigee>
+  );
+}
+
+function ContenuAdmin({ children }: { children: React.ReactNode }) {
   const session = useSessionStore((s) => s.session);
 
   if (!session || session.type !== "admin") {

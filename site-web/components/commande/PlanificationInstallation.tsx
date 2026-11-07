@@ -12,9 +12,12 @@ import { produits } from "@/lib/mock-data/produits";
 import { categories } from "@/lib/mock-data/categories";
 import { resoudreProduitEtVariante } from "@/lib/services/variantes";
 import { StatutInstallationBadge } from "./StatutInstallationBadge";
+import { useTranslation } from "@/lib/i18n/useTranslation";
+import { LOCALE_INTL } from "@/lib/i18n/langues";
 import type { LigneCommande } from "@/lib/types/entities";
 
 export function PlanificationInstallation({ commandeId, lignes }: { commandeId: string; lignes: LigneCommande[] }) {
+  const { t, langue } = useTranslation();
   const toutesLesInstallations = useInstallationStore((s) => s.installations);
   const planifierInstallation = useInstallationStore((s) => s.planifierInstallation);
   const [dateProposee, setDateProposee] = useState("");
@@ -41,12 +44,12 @@ export function PlanificationInstallation({ commandeId, lignes }: { commandeId: 
           <div className="flex items-start gap-3">
             <Wrench size={20} className="mt-0.5 shrink-0 text-primaire-clair" />
             <div>
-              <p className="font-titres text-sm font-semibold text-texte-principal">Installation solaire</p>
+              <p className="font-titres text-sm font-semibold text-texte-principal">{t("installation.titre")}</p>
               <p className="mt-1 text-sm text-texte-secondaire">
-                {new Date(installation.date_prevue).toLocaleString("fr-FR", { dateStyle: "long", timeStyle: "short" })}
+                {new Date(installation.date_prevue).toLocaleString(LOCALE_INTL[langue], { dateStyle: "long", timeStyle: "short" })}
               </p>
               {installation.statut === "planifie" && (
-                <p className="mt-1 text-xs text-texte-secondaire">En attente de confirmation par notre équipe.</p>
+                <p className="mt-1 text-xs text-texte-secondaire">{t("installation.attente")}</p>
               )}
             </div>
           </div>
@@ -61,9 +64,9 @@ export function PlanificationInstallation({ commandeId, lignes }: { commandeId: 
       <div className="flex items-start gap-3">
         <Wrench size={20} className="mt-0.5 shrink-0 text-primaire-clair" />
         <div className="flex-1">
-          <p className="font-titres text-sm font-semibold text-texte-principal">Planifier l&apos;installation</p>
+          <p className="font-titres text-sm font-semibold text-texte-principal">{t("installation.planifier")}</p>
           <p className="mt-1 text-sm text-texte-secondaire">
-            Votre équipement solaire est éligible à l&apos;assistance à l&apos;installation par notre équipe interne.
+            {t("installation.eligible")}
           </p>
           <div className="mt-3 flex flex-wrap items-center gap-3">
             <input
@@ -78,7 +81,7 @@ export function PlanificationInstallation({ commandeId, lignes }: { commandeId: 
               onClick={() => planifierInstallation(commandeId, new Date(dateProposee).toISOString())}
               className="inline-flex items-center gap-1.5 rounded-lg bg-primaire px-4 py-2 text-sm font-semibold text-white hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              Proposer cette date
+              {t("installation.proposer")}
             </button>
           </div>
         </div>

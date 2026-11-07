@@ -16,7 +16,7 @@ const LANGUES: { code: Langue; label: string }[] = [
 // les langues actives (BF-12-015, Cahier 9 §5) — administrables depuis /admin/parametres.
 export function LanguageSelector() {
   const [ouvert, setOuvert] = useState(false);
-  const { langue, definirLangue } = useTranslation();
+  const { t, langue, definirLangue } = useTranslation();
   const languesActives = useParametresStore((s) => s.langues_actives);
   const languesDisponibles = LANGUES.filter((l) => languesActives.includes(l.code));
 
@@ -26,6 +26,7 @@ export function LanguageSelector() {
         type="button"
         className="inline-flex h-11 items-center gap-1 rounded-lg px-2 text-sm font-medium text-texte-principal hover:bg-fond"
         aria-haspopup="listbox"
+        aria-label={t("nav.langue")}
         aria-expanded={ouvert}
         onClick={() => setOuvert((v) => !v)}
       >

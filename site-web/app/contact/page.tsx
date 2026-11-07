@@ -2,13 +2,15 @@
 import { MessageCircle, Store } from "lucide-react";
 import { FormulaireContact } from "@/components/contact/FormulaireContact";
 import { WHATSAPP_LIEN, WHATSAPP_NUMERO_AFFICHE } from "@/lib/constants/contact";
+import { obtenirTraduction } from "@/lib/i18n/serveur";
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const { t } = await obtenirTraduction();
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-12 md:px-6">
-      <h1 className="mb-2 font-titres text-3xl font-bold text-texte-principal">Contact</h1>
+      <h1 className="mb-2 font-titres text-3xl font-bold text-texte-principal">{t("contact.titre")}</h1>
       <p className="mb-8 text-texte-secondaire">
-        Une question sur un produit, un devis ou une commande ? Notre équipe vous répond.
+        {t("contact.intro")}
       </p>
 
       <div className="grid gap-6 sm:grid-cols-2">
@@ -27,8 +29,8 @@ export default function ContactPage() {
         <div className="flex items-center gap-3 rounded-xl border border-bordure bg-background p-5">
           <Store size={22} className="shrink-0 text-primaire-clair" />
           <div>
-            <p className="font-titres text-sm font-semibold text-texte-principal">Retrait en magasin</p>
-            <p className="text-sm text-texte-secondaire">Adresse communiquée à la confirmation de commande</p>
+            <p className="font-titres text-sm font-semibold text-texte-principal">{t("contact.retrait")}</p>
+            <p className="text-sm text-texte-secondaire">{t("contact.retraitTexte")}</p>
           </div>
         </div>
       </div>

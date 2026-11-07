@@ -1,9 +1,11 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ArrowRightCircle, PackageCheck } from "lucide-react";
+import Link from "next/link";
+import { ArrowRightCircle, Landmark, PackageCheck } from "lucide-react";
 import { StatutCommandeBadge } from "@/components/commande/StatutCommandeBadge";
 import { useCommandeStore } from "@/lib/store/commande-store";
+import { useSessionStore } from "@/lib/store/session-store";
 import { utilisateurs } from "@/lib/mock-data/utilisateurs";
 import type { Commande, StatutCommande } from "@/lib/types/entities";
 
@@ -15,14 +17,18 @@ const FILTRES: { valeur: StatutCommande | "tous"; label: string }[] = [
   { valeur: "en_preparation", label: "En préparation" },
   { valeur: "prete_retrait", label: "Prêtes pour retrait" },
   { valeur: "retiree", label: "Retirées" },
+  { valeur: "attente_paiement", label: "Paiement à vérifier" },
   { valeur: "tous", label: "Toutes" },
 ];
 
 // RG-05-001 — statut de commande et retrait (décision actée n°27) : en_preparation → prete_retrait →
-// retiree. Aucune étape de livraison.
+// retiree. Aucune étape de livraison. Une commande réglée par virement commence en attente_paiement et
+// n'entre dans ce cycle qu'après validation du virement (app/admin/virements, Administrateur Général).
 function LigneCommande({ commande }: { commande: Commande }) {
   const marquerPreteRetrait = useCommandeStore((s) => s.marquerPreteRetrait);
   const marquerRetiree = useCommandeStore((s) => s.marquerRetiree);
+  const session = useSessionStore((s) => s.session);
+  const estGeneral = session?.type === "admin" && session.administrateur.role === "general";
 
   return (
     <div className="flex items-center justify-between rounded-xl border border-bordure bg-background p-4">
@@ -36,6 +42,14 @@ function LigneCommande({ commande }: { commande: Commande }) {
       </div>
       <div className="flex items-center gap-3">
         <StatutCommandeBadge statut={commande.statut} />
+        {commande.statut === "attente_paiement" && estGeneral && (
+          <Link
+            href="/admin/virements"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-bordure px-3 py-1.5 text-xs font-semibold text-texte-principal hover:bg-fond"
+          >
+            <Landmark size={14} /> Vérifier le virement
+          </Link>
+        )}
         {commande.statut === "en_preparation" && (
           <button
             type="button"

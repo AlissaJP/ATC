@@ -35,7 +35,7 @@ export function Footer() {
           <p className="font-titres text-xs font-semibold uppercase tracking-wide text-texte-secondaire">
             {t("footer.colonneEntreprise")}
           </p>
-          <nav className="flex flex-col gap-2 text-sm text-texte-principal" aria-label="Entreprise">
+          <nav className="flex flex-col gap-2 text-sm text-texte-principal" aria-label={t("footer.navEntreprise")}>
             <Link href="/a-propos" className="hover:text-primaire">{t("footer.aPropos")}</Link>
             <Link href="/compte/inscription-entreprise" className="hover:text-primaire">{t("nav.devenirPro")}</Link>
           </nav>
@@ -45,7 +45,7 @@ export function Footer() {
           <p className="font-titres text-xs font-semibold uppercase tracking-wide text-texte-secondaire">
             {t("footer.colonneAide")}
           </p>
-          <nav className="flex flex-col gap-2 text-sm text-texte-principal" aria-label="Aide">
+          <nav className="flex flex-col gap-2 text-sm text-texte-principal" aria-label={t("footer.navAide")}>
             <Link href="/faq" className="hover:text-primaire">{t("footer.faq")}</Link>
             <Link href="/contact" className="hover:text-primaire">{t("footer.contact")}</Link>
             <Link href="/cgv" className="hover:text-primaire">{t("footer.cgv")}</Link>

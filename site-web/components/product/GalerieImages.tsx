@@ -3,11 +3,13 @@
 import { useState } from "react";
 import Image from "next/image";
 import { VisuelProduit, type ProduitVisuel } from "./VisuelProduit";
+import { useTranslation } from "@/lib/i18n/useTranslation";
 
 // Intégration du catalogue ATC (étape 2) — photos carrées en `contain` sur fond blanc. Un produit sans
 // photo mais avec bannière l'affiche à son format 2:1 (pas de recadrage carré sur la fiche, contrairement
 // aux vignettes) ; sans aucune image, visuel neutre avec le nom (VisuelProduit).
 export function GalerieImages({ produit }: { produit: ProduitVisuel }) {
+  const { t } = useTranslation();
   const [indexActif, setIndexActif] = useState(0);
   const images = produit.images;
 
@@ -42,7 +44,7 @@ export function GalerieImages({ produit }: { produit: ProduitVisuel }) {
               key={src}
               type="button"
               onClick={() => setIndexActif(i)}
-              aria-label={`Voir l'image ${i + 1}`}
+              aria-label={t("produit.voirImage", { numero: i + 1 })}
               aria-current={i === indexActif}
               className={`relative h-16 w-16 shrink-0 overflow-hidden rounded-lg border-2 bg-white ${
                 i === indexActif ? "border-primaire" : "border-transparent"

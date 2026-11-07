@@ -7,6 +7,7 @@
 // même convention que les moyens de paiement déjà enregistrés (components/compte/MoyensPaiement.tsx).
 import { useId } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useTranslation } from "@/lib/i18n/useTranslation";
 
 export interface DonneesCarte {
   numero: string;
@@ -83,6 +84,7 @@ export function FormulaireNouvelleCarte({
   donnees: DonneesCarte;
   onChange: (donnees: DonneesCarte) => void;
 }) {
+  const { t } = useTranslation();
   const idNumero = useId();
   const idExpiration = useId();
   const idCvv = useId();
@@ -91,10 +93,10 @@ export function FormulaireNouvelleCarte({
 
   return (
     <div className="mt-4 flex flex-col gap-3 rounded-lg border border-bordure p-4">
-      <p className="text-sm font-semibold text-texte-principal">Nouvelle carte</p>
+      <p className="text-sm font-semibold text-texte-principal">{t("paiement.carte.titre")}</p>
 
       <label htmlFor={idNumero} className="flex flex-col gap-1">
-        <span className="text-xs font-medium text-texte-secondaire">Numéro de carte</span>
+        <span className="text-xs font-medium text-texte-secondaire">{t("paiement.carte.numero")}</span>
         <div className="relative">
           <input
             id={idNumero}
@@ -115,7 +117,7 @@ export function FormulaireNouvelleCarte({
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.8 }}
                   transition={{ duration: 0.15 }}
-                  aria-label={typeCarte === "visa" ? "Carte Visa détectée" : "Carte Mastercard détectée"}
+                  aria-label={typeCarte === "visa" ? t("paiement.carte.visaDetectee") : t("paiement.carte.mastercardDetectee")}
                 >
                   {typeCarte === "visa" ? <LogoVisa /> : <LogoMastercard />}
                 </motion.span>
@@ -127,13 +129,13 @@ export function FormulaireNouvelleCarte({
 
       <div className="grid grid-cols-2 gap-3">
         <label htmlFor={idExpiration} className="flex flex-col gap-1">
-          <span className="text-xs font-medium text-texte-secondaire">Expiration (MM/AA)</span>
+          <span className="text-xs font-medium text-texte-secondaire">{t("paiement.carte.expiration")}</span>
           <input
             id={idExpiration}
             type="text"
             inputMode="numeric"
             autoComplete="cc-exp"
-            placeholder="MM/AA"
+            placeholder={t("paiement.carte.formatExpiration")}
             value={donnees.expiration}
             onChange={(e) => onChange({ ...donnees, expiration: formaterExpiration(e.target.value) })}
             className="rounded-lg border border-bordure px-3 py-2 text-sm text-texte-principal focus:outline-none focus:ring-2 focus:ring-primaire-clair"
@@ -155,12 +157,12 @@ export function FormulaireNouvelleCarte({
       </div>
 
       <label htmlFor={idTitulaire} className="flex flex-col gap-1">
-        <span className="text-xs font-medium text-texte-secondaire">Nom du titulaire</span>
+        <span className="text-xs font-medium text-texte-secondaire">{t("paiement.carte.titulaire")}</span>
         <input
           id={idTitulaire}
           type="text"
           autoComplete="cc-name"
-          placeholder="Tel qu'inscrit sur la carte"
+          placeholder={t("paiement.carte.titulaireAide")}
           value={donnees.titulaire}
           onChange={(e) => onChange({ ...donnees, titulaire: e.target.value })}
           className="rounded-lg border border-bordure px-3 py-2 text-sm text-texte-principal focus:outline-none focus:ring-2 focus:ring-primaire-clair"
@@ -174,7 +176,7 @@ export function FormulaireNouvelleCarte({
           onChange={(e) => onChange({ ...donnees, enregistrer: e.target.checked })}
           className="h-4 w-4 rounded border-bordure accent-primaire"
         />
-        Enregistrer cette carte pour mes prochaines commandes
+        {t("paiement.carte.enregistrer")}
       </label>
     </div>
   );

@@ -1,0 +1,389 @@
+{
+  "_note": "Traductions EN/ES du catalogue client (catalogue-atc.json), rédigées pour le site et À FAIRE VALIDER PAR LE CLIENT. Le français de catalogue-atc.json reste la source de vérité ; un champ absent ici s'affiche en français. Les caractéristiques « Aucune donnée » / « Aucune fiche fournie » ne sont pas traduites (section masquée).",
+  "en": {
+    "ES-01": {
+      "nom": "Trina Solar Vertex N high-performance solar panel, 630 to 650 W",
+      "description": "Grade A high-performance commercial panel, next-generation monocrystalline, bifacial double glass. It also captures light reflected from the ground and produces up to 20% more energy. Built to withstand sea salt, sand and hot climates, it is ideal for rooftops and solar farms in Haiti.",
+      "caracteristiques": "Grade A, max system voltage 1500 V DC, N-type i-TOPCon (TSM-NEG20C.20), 120 cells, efficiency up to 23%, 2172 × 1303 × 33 mm, 34.9 kg, IP68 junction box, coefficient -0.29%/°C, 30-year power warranty (87.4% at 30 years)"
+    },
+    "ES-02": {
+      "nom": "SMA Sunny Island 6048-US inverter-charger, 6,000 W",
+      "description": "6,000 W SMA inverter-charger, the benchmark for off-grid and backup systems. It manages batteries, panels and generator, and can be connected in parallel to scale up power. 10-year warranty.",
+      "caracteristiques": "6,000 W, 48 V battery, 110 V output (SMA datasheet: 120 V nominal, range 105 to 132 V; 120/240 V with 2 units), up to 69 kW in multicluster, lithium compatible with external BMS, max efficiency 96%, 63 kg, indoor use, 10-year warranty"
+    },
+    "ES-03": {
+      "nom": "SMA Sunny Boy grid-tie inverter",
+      "description": "Reliable grid-tie inverter that converts panel output into usable power, for residential and commercial installations."
+    },
+    "ES-04": {
+      "nom": "UL-certified Solis hybrid inverters, 6 to 16 kW, 120/240 V",
+      "description": "UL-certified Solis hybrid inverters, 120/240 V, for 48 V batteries. Ideal for homes and small businesses: panels, battery and grid are managed by a single device. Four power ratings to match every consumption level.",
+      "caracteristiques": "UL version, 120/240 V AC"
+    },
+    "ES-05": {
+      "nom": "Solis S6-EH3P30K-H-LV 30 kW three-phase hybrid inverter",
+      "description": "Three-phase hybrid inverter for high-voltage batteries, designed for businesses. It switches to backup in less than 10 ms and accepts up to 60 kW of panels.",
+      "caracteristiques": "30 kW, three-phase 220/230 V, PV up to 60 kW, 3 MPPT, battery 150 to 800 V, charge/discharge 33 kW, switchover < 10 ms, 160% overload, up to 10 in parallel, IP66, 7-inch display, efficiency 96.3%, 73 kg"
+    },
+    "ES-06": {
+      "nom": "Solis 60 kW high-voltage hybrid inverter",
+      "description": "Three-phase high-voltage hybrid solution for commercial and industrial buildings with high energy consumption."
+    },
+    "ES-07": {
+      "nom": "Deye low-voltage hybrid inverters",
+      "description": "Versatile hybrid inverters for 48 V lithium batteries, widely used in residential installations."
+    },
+    "ES-08": {
+      "nom": "Deye high-voltage hybrid inverter",
+      "description": "Hybrid inverter for high-voltage batteries, suited to homes and businesses that want more storage power."
+    },
+    "ES-09": {
+      "nom": "Schneider XW Pro 6.8 kW inverter-charger",
+      "description": "Rugged inverter-charger that can be installed in parallel to build large systems, such as the 40.8 kW backup system installed by ATC.",
+      "caracteristiques": "6.8 kW (only data provided)"
+    },
+    "ES-10": {
+      "nom": "ATESS HPS50-US commercial hybrid inverter",
+      "description": "Commercial hybrid inverter with a high-voltage battery bank, for factories, hotels and professional buildings."
+    },
+    "ES-11": {
+      "nom": "SMART+ 17 kWh vertical lithium battery",
+      "description": "All-in-one battery on wheels, with quality EVE cells and a touchscreen to monitor the charge in real time. It is easy to move, connects to most hybrid inverters and lasts up to 8,000 cycles.",
+      "caracteristiques": "17 kWh, 51.2 V, EVE LFP (LiFePO4) cells, 8,000 cycles, built-in monitoring display"
+    },
+    "ES-12": {
+      "nom": "PYTES V16 16 kWh battery",
+      "description": "Very rugged wall- or floor-mounted battery, protected against water, dust and corrosion. It can be installed outdoors and lasts up to 8,000 cycles.",
+      "caracteristiques": "16 kWh, 51.2 V, 314 Ah, 8,000 cycles at 0.5 C, IP66, C4-M anti-corrosion, UL9540, UL9540A, UL1973 certifications"
+    },
+    "ES-13": {
+      "nom": "PYTES 5.12 kWh rack-mount battery",
+      "description": "Compact rack-mount lithium battery, to install in a cabinet or stack. Modules can be added as needs grow to expand storage, and it lasts up to 8,000 cycles.",
+      "caracteristiques": "5.12 kWh, 51.2 V, LiFePO4 cells, 8,000 cycles (i.e. about 100 Ah, derived from 5.12 kWh at 51.2 V)"
+    },
+    "ES-14": {
+      "nom": "Unity+ Energy Storage 16 / 17 kWh battery",
+      "description": "Battery on wheels with grade A LiFePO4 cells and smart control, ready to plug in. Two capacities to choose from depending on consumption.",
+      "caracteristiques": "Grade A LiFePO4, 51.2 V, 8,000+ cycles, 5-year warranty (shown on the product visual)"
+    },
+    "ES-15": {
+      "nom": "WAVER Energy Storage Plug N Play 17 kWh battery",
+      "description": "Premium lithium battery on wheels, with a monitoring display (voltage, current, charge). It can be installed indoors or outdoors, connects without a cabinet and lasts up to 8,000 cycles.",
+      "caracteristiques": "17 kWh, 51.2 V, 320 Ah, 8,000 cycles, UL certification (Premium), indoor and outdoor use"
+    },
+    "ES-16": {
+      "nom": "48 V rack-mount lithium battery",
+      "description": "Stackable lithium module supplied with its communication cables, to expand storage as needs grow.",
+      "caracteristiques": "48 V"
+    },
+    "ES-17": {
+      "nom": "Modular lithium battery bank",
+      "description": "Stacked rack-mount modules with power and communication connections, to build a large storage bank."
+    },
+    "ES-18": {
+      "nom": "25.6 V lithium batteries (black and yellow)",
+      "description": "Stackable 24 V batteries for small installations: homes, shops, kiosks. Two versions to choose from, black or yellow.",
+      "caracteristiques": "25.6 V. Stack of 4 modules: 400 × 659 × 1040 mm. Advertised capacities: 200, 230, 280, 314 Ah",
+      "variantes": { "ES-18-noire": "Black", "ES-18-jaune": "Yellow" }
+    },
+    "ES-19": {
+      "nom": "Solis EverCore 261 kWh ESS storage system",
+      "description": "All-in-one storage cabinet for businesses: batteries, power conversion and safety combined in a single outdoor unit.",
+      "caracteristiques": "261 kWh"
+    },
+    "ES-20": {
+      "nom": "DAA Solar containerized storage systems",
+      "description": "Industrial storage solutions integrated into containers, for sites with very high energy consumption."
+    },
+    "ES-21": {
+      "nom": "Rooftop mounting structure",
+      "description": "Metal structure that securely fastens panels to flat or pitched roofs."
+    },
+    "ES-22": {
+      "nom": "Ground-mount structure and solar carport",
+      "description": "Supporting structure that also serves as a vehicle shelter or a ground-mounted solar array.",
+      "caracteristiques": "3D rendering only"
+    },
+    "ES-23": {
+      "nom": "DC distribution bars (+ and − busbars)",
+      "description": "Copper bars to cleanly connect several batteries in parallel."
+    },
+    "ES-24": {
+      "nom": "Installation accessories (cables, connectors, protection)",
+      "description": "Planned in the website specifications, but missing from the client's documents."
+    },
+    "CL-01": {
+      "nom": "TGM split air conditioners",
+      "description": "Wall-mounted air conditioners available in an Inverter version, energy-efficient and ideal with solar power, or in a conventional, more affordable version.",
+      "caracteristiques": "9,000 to 60,000 BTU/h, Inverter or conventional, 220 VAC, installation kit included (boxes)"
+    },
+    "CL-02": {
+      "nom": "Premium Inverter split air conditioners",
+      "description": "High-end Inverter range for quiet comfort and low energy consumption.",
+      "caracteristiques": "6,000 to 60,000 BTU/h, Inverter, 220 VAC"
+    },
+    "CL-03": {
+      "nom": "Central air conditioners, 5 to 20 tons",
+      "description": "Central units for villas, offices and shops, connected to a duct network.",
+      "caracteristiques": "5; 7.5; 10; 12.5; 15; 20 tons"
+    },
+    "CL-04": {
+      "nom": "Industrial central air conditioners, 40 to 60 tons and more",
+      "description": "Centralized solutions for large commercial and industrial buildings.",
+      "caracteristiques": "40 to 60 tons and more"
+    },
+    "CL-05": {
+      "nom": "Mitsubishi Electric VRF systems",
+      "description": "Modular outdoor units that cool several rooms or floors with a single system, room by room."
+    },
+    "CL-06": {
+      "nom": "Indoor units and air handling units",
+      "description": "Units that filter and distribute air in central systems."
+    },
+    "CL-07": {
+      "nom": "Metal ventilation ducts",
+      "description": "Custom manufacturing and installation of air distribution networks."
+    },
+    "CL-08": {
+      "nom": "Insulated ducts and AIRMAX units",
+      "description": "Thermally insulated ducts to limit cooling losses, with AIRMAX units."
+    },
+    "CL-S": {
+      "nom": "Air conditioner installation and maintenance",
+      "description": "Professional residential and commercial service, to be offered as an option on each air conditioner page, like the installation assistance provided for in the specifications."
+    },
+    "SE-01": {
+      "nom": "IP65 solar PTZ security camera",
+      "description": "Stand-alone outdoor camera with its own solar panel: no power cable to run. It rotates to cover the whole area and withstands rain, dust and heat.",
+      "caracteristiques": "IP65, built-in solar panel, pan-tilt-zoom (PTZ) head, 2 antennas"
+    },
+    "PK-01": {
+      "nom": "Solis + PYTES V16 home kit",
+      "description": "Turnkey kit for the home: a Solis hybrid inverter and a PYTES V16 battery built for outdoor use.",
+      "caracteristiques": "Solis low-voltage inverter + 1 to 2 PYTES batteries · Target: Households, diaspora"
+    },
+    "PK-02": {
+      "nom": "Deye + PYTES kit",
+      "description": "Hybrid system for the energy independence of a home or a small business.",
+      "caracteristiques": "2 Deye inverters + 4 PYTES batteries (installation photographed) · Target: Households, SMEs"
+    },
+    "PK-03": {
+      "nom": "Deye + rack-mount lithium batteries kit",
+      "description": "Scalable solution: battery modules can be added as needs grow.",
+      "caracteristiques": "Deye inverters + rack-mount batteries · Target: Households, SMEs"
+    },
+    "PK-04": {
+      "nom": "Schneider XW Pro + SMART+ kit",
+      "description": "Rugged multi-inverter installation for high-consumption users.",
+      "caracteristiques": "Several XW Pro 6.8 kW + DC busbars + SMART+ batteries · Target: Businesses"
+    },
+    "PK-05": {
+      "nom": "SMA Sunny Island + Sunny Boy kit",
+      "description": "German-brand off-grid or backup system, expandable up to 69 kW.",
+      "caracteristiques": "2 Sunny Island + 2 Sunny Boy + batteries (SMA datasheet diagram and photo) · Target: Affluent households, businesses"
+    },
+    "PK-06": {
+      "nom": "ATESS HPS50 + high-voltage storage commercial kit",
+      "description": "Complete commercial power conversion and storage system.",
+      "caracteristiques": "ATESS HPS50-US + high-voltage battery bank · Target: Businesses, industry"
+    },
+    "PK-07": {
+      "nom": "Solar + Air Conditioning package",
+      "description": "Combined offer featured in the client's flyer: produce your own energy and power your air conditioning.",
+      "caracteristiques": "Panels + hybrid inverter + Solis EverCore 261 kWh + Inverter air conditioners (flyer) · Target: Businesses"
+    }
+  },
+  "es": {
+    "ES-01": {
+      "nom": "Panel solar de alto rendimiento Trina Solar Vertex N de 630 a 650 W",
+      "description": "Panel comercial de alto rendimiento de categoría A, monocristalino de nueva generación, bifacial de doble vidrio. También capta la luz reflejada por el suelo y produce hasta un 20 % más de energía. Diseñado para resistir la sal marina, la arena y los climas cálidos, es ideal para tejados y parques solares en Haití.",
+      "caracteristiques": "Categoría A, tensión máx. del sistema 1500 V DC, N-type i-TOPCon (TSM-NEG20C.20), 120 células, rendimiento de hasta el 23 %, 2172 × 1303 × 33 mm, 34,9 kg, caja IP68, coeficiente -0,29 %/°C, garantía de potencia de 30 años (87,4 % a los 30 años)"
+    },
+    "ES-02": {
+      "nom": "Inversor-cargador SMA Sunny Island 6048-US, 6000 W",
+      "description": "Inversor-cargador SMA de 6000 W, la referencia para sistemas autónomos o de respaldo. Gestiona baterías, paneles y grupo electrógeno, y se conecta en paralelo para aumentar la potencia. Garantía de 10 años.",
+      "caracteristiques": "6000 W, batería de 48 V, salida de 110 V (ficha SMA: 120 V nominal, rango de 105 a 132 V; 120/240 V con 2 unidades), hasta 69 kW en multicluster, compatible con litio con BMS externo, rendimiento máx. 96 %, 63 kg, uso interior, garantía de 10 años"
+    },
+    "ES-03": {
+      "nom": "Inversor fotovoltaico SMA Sunny Boy",
+      "description": "Inversor de red fiable que convierte la producción de los paneles en corriente utilizable, para instalaciones residenciales y comerciales."
+    },
+    "ES-04": {
+      "nom": "Inversores híbridos Solis con certificación UL, de 6 a 16 kW, 120/240 V",
+      "description": "Inversores híbridos Solis con certificación UL, en 120/240 V, para baterías de 48 V. Ideales para el hogar y el pequeño comercio: paneles, batería y red se gestionan en un solo equipo. Cuatro potencias para adaptarse a cada consumo.",
+      "caracteristiques": "Versión UL, tensión 120/240 V AC"
+    },
+    "ES-05": {
+      "nom": "Inversor híbrido Solis S6-EH3P30K-H-LV 30 kW trifásico",
+      "description": "Inversor híbrido trifásico para baterías de alta tensión, pensado para empresas. Pasa a modo de respaldo en menos de 10 ms y admite hasta 60 kW de paneles.",
+      "caracteristiques": "30 kW, trifásico 220/230 V, FV hasta 60 kW, 3 MPPT, batería de 150 a 800 V, carga/descarga 33 kW, conmutación < 10 ms, sobrecarga del 160 %, hasta 10 en paralelo, IP66, pantalla de 7 pulgadas, rendimiento 96,3 %, 73 kg"
+    },
+    "ES-06": {
+      "nom": "Inversor híbrido Solis 60 kW de alta tensión",
+      "description": "Solución híbrida trifásica de alta tensión para edificios comerciales e industriales con alto consumo."
+    },
+    "ES-07": {
+      "nom": "Inversores híbridos Deye de baja tensión",
+      "description": "Inversores híbridos versátiles para baterías de litio de 48 V, muy extendidos en el sector residencial."
+    },
+    "ES-08": {
+      "nom": "Inversor híbrido Deye de alta tensión",
+      "description": "Inversor híbrido para baterías de alta tensión, adaptado a viviendas y comercios que buscan más capacidad de almacenamiento."
+    },
+    "ES-09": {
+      "nom": "Inversor-cargador Schneider XW Pro 6,8 kW",
+      "description": "Inversor-cargador robusto que se instala en paralelo para construir grandes instalaciones, como el sistema de respaldo de 40,8 kW realizado por ATC.",
+      "caracteristiques": "6,8 kW (único dato proporcionado)"
+    },
+    "ES-10": {
+      "nom": "Inversor híbrido comercial ATESS HPS50-US",
+      "description": "Inversor híbrido comercial con banco de baterías de alta tensión, para fábricas, hoteles y edificios profesionales."
+    },
+    "ES-11": {
+      "nom": "Batería de litio vertical SMART+ 17 kWh",
+      "description": "Batería todo en uno sobre ruedas, con células EVE de calidad y pantalla táctil para seguir la carga en tiempo real. Se desplaza fácilmente, se conecta a la mayoría de los inversores híbridos y dura hasta 8000 ciclos.",
+      "caracteristiques": "17 kWh, 51,2 V, células LFP (LiFePO4) EVE, 8000 ciclos, pantalla de control integrada"
+    },
+    "ES-12": {
+      "nom": "Batería PYTES V16 16 kWh",
+      "description": "Batería de pared o de suelo muy resistente, protegida contra el agua, el polvo y la corrosión. Puede instalarse en exterior y dura hasta 8000 ciclos.",
+      "caracteristiques": "16 kWh, 51,2 V, 314 Ah, 8000 ciclos a 0,5 C, IP66, anticorrosión C4-M, certificaciones UL9540, UL9540A, UL1973"
+    },
+    "ES-13": {
+      "nom": "Batería PYTES en rack 5,12 kWh",
+      "description": "Batería de litio compacta en formato rack, para instalar en un armario o apilar. Se añaden módulos según las necesidades para ampliar el almacenamiento, y dura hasta 8000 ciclos.",
+      "caracteristiques": "5,12 kWh, 51,2 V, células LiFePO4, 8000 ciclos (es decir, unos 100 Ah, deducido de 5,12 kWh a 51,2 V)"
+    },
+    "ES-14": {
+      "nom": "Batería Unity+ Energy Storage 16 / 17 kWh",
+      "description": "Batería sobre ruedas con células LiFePO4 de grado A y control inteligente, lista para conectar. Dos capacidades a elegir según el consumo.",
+      "caracteristiques": "LiFePO4 grado A, 51,2 V, 8000 ciclos o más, garantía de 5 años (indicada en el visual)"
+    },
+    "ES-15": {
+      "nom": "Batería WAVER Energy Storage Plug N Play 17 kWh",
+      "description": "Batería de litio Premium sobre ruedas, con pantalla de supervisión (tensión, corriente, carga). Se instala tanto en interior como en exterior, se conecta sin armario y dura hasta 8000 ciclos.",
+      "caracteristiques": "17 kWh, 51,2 V, 320 Ah, 8000 ciclos, certificación UL (Premium), uso interior y exterior"
+    },
+    "ES-16": {
+      "nom": "Batería de litio en rack de 48 V",
+      "description": "Módulo de litio apilable suministrado con sus cables de comunicación, para ampliar el almacenamiento según las necesidades.",
+      "caracteristiques": "48 V"
+    },
+    "ES-17": {
+      "nom": "Banco de baterías de litio modular",
+      "description": "Módulos en rack apilados con conexiones de potencia y de comunicación, para formar un gran banco de almacenamiento."
+    },
+    "ES-18": {
+      "nom": "Baterías de litio de 25,6 V (negras y amarillas)",
+      "description": "Baterías de 24 V apilables para pequeñas instalaciones: hogar, tienda, quiosco. Dos versiones a elegir, negra o amarilla.",
+      "caracteristiques": "25,6 V. Pila de 4 módulos: 400 × 659 × 1040 mm. Capacidades anunciadas: 200, 230, 280, 314 Ah",
+      "variantes": { "ES-18-noire": "Negra", "ES-18-jaune": "Amarilla" }
+    },
+    "ES-19": {
+      "nom": "Sistema de almacenamiento Solis EverCore 261 kWh ESS",
+      "description": "Armario de almacenamiento todo en uno para empresas: baterías, conversión y seguridad reunidas en un solo equipo exterior.",
+      "caracteristiques": "261 kWh"
+    },
+    "ES-20": {
+      "nom": "Sistemas de almacenamiento en contenedor DAA Solar",
+      "description": "Soluciones industriales de almacenamiento integradas en contenedores, para sitios con un consumo muy elevado."
+    },
+    "ES-21": {
+      "nom": "Estructura de montaje en tejado",
+      "description": "Estructura metálica que fija con firmeza los paneles en tejado plano o inclinado."
+    },
+    "ES-22": {
+      "nom": "Estructura en suelo y marquesina solar (carport)",
+      "description": "Estructura portante que también sirve de cubierta para vehículos o de campo solar en suelo.",
+      "caracteristiques": "Solo render 3D"
+    },
+    "ES-23": {
+      "nom": "Barras de distribución DC (busbars + y −)",
+      "description": "Barras de cobre para conectar limpiamente varias baterías en paralelo."
+    },
+    "ES-24": {
+      "nom": "Accesorios de instalación (cables, conectores, protecciones)",
+      "description": "Previstos en el pliego de condiciones del sitio, pero ausentes de los documentos del cliente."
+    },
+    "CL-01": {
+      "nom": "Aires acondicionados split TGM",
+      "description": "Aires acondicionados de pared disponibles en versión Inverter, de bajo consumo e ideal con energía solar, o en versión convencional, más económica.",
+      "caracteristiques": "9000 a 60 000 BTU/h, Inverter o convencional, 220 VAC, kit de instalación incluido (cajas)"
+    },
+    "CL-02": {
+      "nom": "Aires acondicionados split Premium Inverter",
+      "description": "Gama alta Inverter para un confort silencioso y un bajo consumo.",
+      "caracteristiques": "6000 a 60 000 BTU/h, Inverter, 220 VAC"
+    },
+    "CL-03": {
+      "nom": "Aires acondicionados centrales de 5 a 20 toneladas",
+      "description": "Unidades centrales para villas, oficinas y comercios, conectadas a una red de conductos.",
+      "caracteristiques": "5; 7,5; 10; 12,5; 15; 20 toneladas"
+    },
+    "CL-04": {
+      "nom": "Aires acondicionados centrales industriales de 40 a 60 toneladas y más",
+      "description": "Soluciones centralizadas para grandes edificios comerciales e industriales.",
+      "caracteristiques": "40 a 60 toneladas y más"
+    },
+    "CL-05": {
+      "nom": "Sistemas VRF Mitsubishi Electric",
+      "description": "Unidades exteriores modulares que climatizan varias habitaciones o plantas con un solo sistema, habitación por habitación."
+    },
+    "CL-06": {
+      "nom": "Unidades interiores y unidades de tratamiento de aire",
+      "description": "Unidades que filtran y distribuyen el aire en los sistemas centrales."
+    },
+    "CL-07": {
+      "nom": "Conductos de ventilación metálicos",
+      "description": "Fabricación e instalación a medida de redes de distribución de aire."
+    },
+    "CL-08": {
+      "nom": "Conductos aislados y unidades AIRMAX",
+      "description": "Conductos con aislamiento térmico para limitar las pérdidas de frío, con unidades AIRMAX."
+    },
+    "CL-S": {
+      "nom": "Instalación y mantenimiento de aires acondicionados",
+      "description": "Servicio profesional residencial y comercial, para proponer como opción en cada ficha de aire acondicionado, como la asistencia a la instalación prevista en el pliego de condiciones."
+    },
+    "SE-01": {
+      "nom": "Cámara de vigilancia solar PTZ IP65",
+      "description": "Cámara exterior autónoma con su propio panel solar: no hay que tender ningún cable eléctrico. Gira para cubrir toda la zona y resiste la lluvia, el polvo y el calor.",
+      "caracteristiques": "IP65, panel solar integrado, cabezal orientable (PTZ), 2 antenas"
+    },
+    "PK-01": {
+      "nom": "Kit residencial Solis + PYTES V16",
+      "description": "Kit llave en mano para el hogar: un inversor híbrido Solis y una batería PYTES V16 resistente al exterior.",
+      "caracteristiques": "Inversor Solis de baja tensión + 1 a 2 baterías PYTES · Público: Particulares, diáspora"
+    },
+    "PK-02": {
+      "nom": "Kit Deye + PYTES",
+      "description": "Sistema híbrido para la autonomía energética de una vivienda o de un pequeño comercio.",
+      "caracteristiques": "2 inversores Deye + 4 baterías PYTES (instalación fotografiada) · Público: Particulares, pymes"
+    },
+    "PK-03": {
+      "nom": "Kit Deye + baterías de litio en rack",
+      "description": "Solución escalable: se añaden módulos de batería según las necesidades.",
+      "caracteristiques": "Inversores Deye + baterías en rack · Público: Particulares, pymes"
+    },
+    "PK-04": {
+      "nom": "Kit Schneider XW Pro + SMART+",
+      "description": "Instalación multiinversor robusta para grandes consumidores.",
+      "caracteristiques": "Varios XW Pro 6,8 kW + busbars DC + baterías SMART+ · Público: Empresas"
+    },
+    "PK-05": {
+      "nom": "Kit SMA Sunny Island + Sunny Boy",
+      "description": "Sistema autónomo o de respaldo de marca alemana, ampliable hasta 69 kW.",
+      "caracteristiques": "2 Sunny Island + 2 Sunny Boy + baterías (esquema de la ficha SMA y foto) · Público: Particulares acomodados, empresas"
+    },
+    "PK-06": {
+      "nom": "Kit comercial ATESS HPS50 + almacenamiento de alta tensión",
+      "description": "Sistema comercial completo de conversión y almacenamiento.",
+      "caracteristiques": "ATESS HPS50-US + banco de baterías de alta tensión · Público: Empresas, industria"
+    },
+    "PK-07": {
+      "nom": "Paquete Solar + Climatización",
+      "description": "Oferta combinada destacada en el folleto del cliente: producir su propia energía y alimentar su climatización.",
+      "caracteristiques": "Paneles + inversor híbrido + Solis EverCore 261 kWh + aires acondicionados Inverter (folleto) · Público: Empresas"
+    }
+  }
+}

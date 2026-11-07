@@ -7,7 +7,9 @@
 import { determinerNiveauAlerteStock } from "@/lib/business-rules/stock-alerte";
 import type { Categorie, NiveauAlerteStock, Produit, Stock } from "@/lib/types/entities";
 
-export type PanierStock = "vert" | "jaune" | "rouge";
+// gris : stock non suivi (quantité jamais communiquée) — distinct du vert, qui affirmerait une
+// disponibilité (audit A-11).
+export type PanierStock = "vert" | "jaune" | "rouge" | "gris";
 
 export interface LigneSuiviStock {
   id: string;
@@ -18,12 +20,13 @@ export interface LigneSuiviStock {
   nom: string;
   categorieId: string;
   categorieNom: string;
-  // undefined = stock non suivi pour cette variante (point #29) — toujours considéré "vert" (disponible).
+  // undefined = stock non suivi (point #29, ou quantité non communiquée) — panier "gris".
   quantite?: number;
   panier: PanierStock;
 }
 
 function panierDepuisNiveau(niveau: NiveauAlerteStock): PanierStock {
+  if (niveau === "non_suivi") return "gris";
   if (niveau === "en_stock") return "vert";
   if (niveau === "alerte_orange") return "jaune";
   return "rouge"; // alerte_rouge + rupture
@@ -42,7 +45,7 @@ export function construireSuiviStock(produits: Produit[], stock: Stock[], catego
     if (produit.variantes && produit.variantes.length > 0) {
       for (const variante of produit.variantes) {
         const niveau =
-          variante.stock === undefined ? "en_stock" : determinerNiveauAlerteStock(variante.stock, REFERENCE_PAR_DEFAUT_VARIANTE);
+          variante.stock === undefined ? "non_suivi" : determinerNiveauAlerteStock(variante.stock, REFERENCE_PAR_DEFAUT_VARIANTE);
         lignes.push({
           id: variante.id,
           produitId: produit.id,

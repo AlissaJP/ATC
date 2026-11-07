@@ -19,7 +19,7 @@ export const questionsFAQ: QuestionFAQ[] = [
     id: "faq-paiement",
     question: "Quels moyens de paiement acceptez-vous ?",
     reponse:
-      "MonCash, carte Visa/Mastercard et PayPal. Le virement bancaire et les codes promotionnels ne sont pas proposés.",
+      "MonCash, carte Visa/Mastercard, PayPal et virement bancaire. Pour un virement, joignez la preuve de la transaction : votre commande est validée après vérification par notre équipe. Les codes promotionnels ne sont pas proposés.",
   },
   {
     id: "faq-b2b",

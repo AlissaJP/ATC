@@ -4,6 +4,7 @@
 // client : sans composition définitive ni prix, donc composition vide et « Prix sur demande ».
 import type { PackagePreconfigure } from "@/lib/types/entities";
 import { entreesCatalogueAtc, produits, slugifier } from "./produits";
+import { masquerNotesInternes } from "./catalogue-masquages";
 
 // null dès qu'un total « tout compris » serait faux : composition vide ou composant sans prix.
 function prixPackage(composition: { produit_id: string; quantite: number }[]): number | null {
@@ -28,8 +29,9 @@ export const packagesPreconfigures: PackagePreconfigure[] = entreesCatalogueAtc
       ref: e.ref,
       slug: slugifier(e.nom),
       nom: e.nom,
-      description: e.description,
-      caracteristiques: e.caracteristiques,
+      // Notes internes (« Cible : … », renvoi à la fiche SMA) masquées à l'affichage — audit A-12.
+      description: masquerNotesInternes(e.ref, "fr", "description", e.description) ?? "",
+      caracteristiques: masquerNotesInternes(e.ref, "fr", "caracteristiques", e.caracteristiques),
       produits: [],
       prix_total: null,
       image,

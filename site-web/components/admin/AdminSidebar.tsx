@@ -34,6 +34,7 @@ import {
 } from "lucide-react";
 import { useSessionStore } from "@/lib/store/session-store";
 import { useComptesStore } from "@/lib/store/comptes-store";
+import { useFactureStore } from "@/lib/store/facture-store";
 import { profilsEntreprise as profilsEntrepriseSeed } from "@/lib/mock-data/utilisateurs";
 import type { RoleAdmin } from "@/lib/types/entities";
 
@@ -115,6 +116,7 @@ const GROUPES: { titre: string; liens: LienAdmin[] }[] = [
           { href: "/admin/commandes?statut=en_preparation", label: "En préparation" },
           { href: "/admin/commandes?statut=prete_retrait", label: "Prêtes pour retrait" },
           { href: "/admin/commandes?statut=retiree", label: "Retirées" },
+          { href: "/admin/commandes?statut=attente_paiement", label: "Paiement à vérifier" },
           { href: "/admin/commandes?statut=tous", label: "Toutes" },
         ],
       },
@@ -124,10 +126,12 @@ const GROUPES: { titre: string; liens: LienAdmin[] }[] = [
         icone: CreditCard,
         rolesAutorises: ["general"],
         sousLiens: [
+          { href: "/admin/virements", label: "Virements à vérifier", badge: true },
           { href: "/admin/transactions", label: "Tous les paiements" },
           { href: "/admin/transactions?methode=moncash", label: "MonCash" },
           { href: "/admin/transactions?methode=carte", label: "Carte" },
           { href: "/admin/transactions?methode=paypal", label: "PayPal" },
+          { href: "/admin/transactions?methode=virement", label: "Virement" },
         ],
       },
     ],
@@ -412,6 +416,10 @@ export function AdminSidebar({ role }: { role: RoleAdmin }) {
     const seedsNonAdoptes = profilsEntrepriseSeed.filter((p) => !idsDynamiques.has(p.id));
     return [...seedsNonAdoptes, ...profilsDynamiques].filter((p) => p.statut_validation === "en_attente").length;
   })();
+  const paiements = useFactureStore((s) => s.paiements);
+  const nombreVirementsAVerifier = paiements.filter(
+    (p) => p.methode === "virement" && p.statut_transaction === "en cours"
+  ).length;
 
   function filtrerParRole(liens: LienAdmin[]): LienAdmin[] {
     return liens.filter((l) => l.rolesAutorises.includes(role));
@@ -476,7 +484,13 @@ export function AdminSidebar({ role }: { role: RoleAdmin }) {
                   sectionsRepliees={sectionsRepliees}
                   onBasculerSection={basculerSection}
                   onEntreeSection={entrerDansSection}
-                  badge={chemin(l.href) === "/admin/clients" ? nombreEnAttente : undefined}
+                  badge={
+                    chemin(l.href) === "/admin/clients"
+                      ? nombreEnAttente
+                      : chemin(l.href) === "/admin/transactions"
+                        ? nombreVirementsAVerifier
+                        : undefined
+                  }
                 />
               ))}
             </div>

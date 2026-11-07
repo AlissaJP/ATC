@@ -7,6 +7,7 @@ import { ChevronLeft, ChevronRight, LayoutGrid, List, SlidersHorizontal, X } fro
 import { ProductCard } from "./ProductCard";
 import { ProductListItem } from "./ProductListItem";
 import type { ProduitEnrichi } from "@/lib/services/catalogue";
+import { useTranslation } from "@/lib/i18n/useTranslation";
 
 // Raffinement Design (#24) — pagination du résultat filtré. Sans backend réel dans cette démo (décision
 // actée n°41, pas de NestJS/PostgreSQL) le catalogue complet de la catégorie est déjà nécessairement
@@ -24,24 +25,12 @@ type Tri = "pertinence" | "prix-asc" | "prix-desc" | "nouveautes";
 type Vue = "grille" | "liste";
 
 // Libellés lisibles pour les clés de specifications (dynamiques par catégorie — n'importe quelle clé
-// présente dans les produits affichés devient un filtre, pas de liste figée par catégorie).
-const LIBELLES_SPEC: Record<string, string> = {
-  puissance: "Puissance",
-  capacite: "Capacité",
-  technologie: "Technologie",
-  courant: "Courant",
-  cycles: "Cycles",
-  type: "Type",
-  usage: "Usage",
-  taille: "Taille",
-  stockage: "Stockage",
-  connectivite: "Connectivité",
-  installation: "Installation",
-  alimentation: "Alimentation",
-};
-
-function libelleSpec(cle: string): string {
-  return LIBELLES_SPEC[cle] ?? cle.charAt(0).toUpperCase() + cle.slice(1);
+// présente dans les produits affichés devient un filtre, pas de liste figée par catégorie). Traduits via
+// les dictionnaires (catalogue.spec.<clé>) ; clé inconnue : la clé elle-même, capitalisée.
+function libelleSpec(cle: string, t: (cle: string) => string): string {
+  const cleTraduction = `catalogue.spec.${cle}`;
+  const traduit = t(cleTraduction);
+  return traduit === cleTraduction ? cle.charAt(0).toUpperCase() + cle.slice(1) : traduit;
 }
 
 function clesSpecDisponibles(produits: ProduitEnrichi[]): string[] {
@@ -68,6 +57,7 @@ function comparerPrix(a: number | null, b: number | null, sens: 1 | -1): number 
 }
 
 export function CatalogueBrowser({ produits }: { produits: ProduitEnrichi[] }) {
+  const { t } = useTranslation();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -183,7 +173,7 @@ export function CatalogueBrowser({ produits }: { produits: ProduitEnrichi[] }) {
     <div className="flex flex-col gap-6">
       {marquesDisponibles.length > 0 && (
         <fieldset>
-          <legend className="mb-2 font-titres text-sm font-semibold text-texte-principal">Marque</legend>
+          <legend className="mb-2 font-titres text-sm font-semibold text-texte-principal">{t("catalogue.marque")}</legend>
           <div className="flex flex-col gap-2">
             {marquesDisponibles.map(([id, nom]) => (
               <label key={id} className="flex items-center gap-2 text-sm text-texte-principal">
@@ -206,7 +196,7 @@ export function CatalogueBrowser({ produits }: { produits: ProduitEnrichi[] }) {
         return (
           <fieldset key={cle}>
             <legend className="mb-2 font-titres text-sm font-semibold text-texte-principal">
-              {libelleSpec(cle)}
+              {libelleSpec(cle, t)}
             </legend>
             <div className="flex flex-col gap-2">
               {valeurs.map((v) => (
@@ -229,7 +219,7 @@ export function CatalogueBrowser({ produits }: { produits: ProduitEnrichi[] }) {
           un curseur « Jusqu'à $0 » n'aurait aucun sens. */}
       {prixPlafondCatalogue > 0 && (
         <fieldset>
-          <legend className="mb-2 font-titres text-sm font-semibold text-texte-principal">Prix maximum</legend>
+          <legend className="mb-2 font-titres text-sm font-semibold text-texte-principal">{t("catalogue.prixMax")}</legend>
           <input
             type="range"
             min={0}
@@ -238,12 +228,14 @@ export function CatalogueBrowser({ produits }: { produits: ProduitEnrichi[] }) {
             onChange={(e) => setPrixMax(Number(e.target.value))}
             className="w-full accent-primaire"
           />
-          <p className="text-sm text-texte-secondaire">Jusqu&apos;à ${prixMax ?? prixPlafondCatalogue}</p>
+          <p className="text-sm text-texte-secondaire">
+            {t("catalogue.jusqua", { prix: `$${prixMax ?? prixPlafondCatalogue}` })}
+          </p>
         </fieldset>
       )}
 
       <fieldset>
-        <legend className="mb-2 font-titres text-sm font-semibold text-texte-principal">Disponibilité</legend>
+        <legend className="mb-2 font-titres text-sm font-semibold text-texte-principal">{t("catalogue.disponibilite")}</legend>
         <label className="flex items-center gap-2 text-sm text-texte-principal">
           <input
             type="checkbox"
@@ -251,7 +243,7 @@ export function CatalogueBrowser({ produits }: { produits: ProduitEnrichi[] }) {
             checked={uniquementEnStock}
             onChange={(e) => setUniquementEnStock(e.target.checked)}
           />
-          En stock uniquement
+          {t("catalogue.enStockSeulement")}
         </label>
       </fieldset>
 
@@ -263,7 +255,7 @@ export function CatalogueBrowser({ produits }: { produits: ProduitEnrichi[] }) {
             checked={uniquementPackage}
             onChange={(e) => setUniquementPackage(e.target.checked)}
           />
-          Disponible en package personnalisé
+          {t("catalogue.packageSeulement")}
         </label>
       )}
 
@@ -279,7 +271,7 @@ export function CatalogueBrowser({ produits }: { produits: ProduitEnrichi[] }) {
             setPrixMax(null);
           }}
         >
-          Réinitialiser les filtres
+          {t("catalogue.reinitialiser")}
         </button>
       )}
     </div>
@@ -296,27 +288,27 @@ export function CatalogueBrowser({ produits }: { produits: ProduitEnrichi[] }) {
             className="inline-flex items-center gap-2 rounded-lg border border-bordure px-3 py-2 text-sm font-medium text-texte-principal lg:hidden"
             onClick={() => setFiltresOuverts(true)}
           >
-            <SlidersHorizontal size={16} /> Filtres
+            <SlidersHorizontal size={16} /> {t("catalogue.filtres")}
           </button>
-          <p className="hidden text-sm text-texte-secondaire sm:block">{resultats.length} produit(s)</p>
+          <p className="hidden text-sm text-texte-secondaire sm:block">{t("catalogue.nombreProduits", { nombre: resultats.length })}</p>
 
           <div className="ml-auto flex items-center gap-2">
             <select
               value={tri}
               onChange={(e) => setTri(e.target.value as Tri)}
               className="rounded-lg border border-bordure bg-background px-3 py-2 text-sm text-texte-principal"
-              aria-label="Trier les produits"
+              aria-label={t("catalogue.trier")}
             >
-              <option value="pertinence">Pertinence</option>
-              <option value="prix-asc">Prix croissant</option>
-              <option value="prix-desc">Prix décroissant</option>
-              <option value="nouveautes">Nouveautés</option>
+              <option value="pertinence">{t("catalogue.triPertinence")}</option>
+              <option value="prix-asc">{t("catalogue.triPrixAsc")}</option>
+              <option value="prix-desc">{t("catalogue.triPrixDesc")}</option>
+              <option value="nouveautes">{t("catalogue.triNouveautes")}</option>
             </select>
 
             <div className="hidden items-center gap-1 rounded-lg border border-bordure p-1 sm:flex">
               <button
                 type="button"
-                aria-label="Vue grille"
+                aria-label={t("catalogue.vueGrille")}
                 aria-pressed={vue === "grille"}
                 onClick={() => setVue("grille")}
                 className={`flex h-8 w-8 items-center justify-center rounded-md ${
@@ -327,7 +319,7 @@ export function CatalogueBrowser({ produits }: { produits: ProduitEnrichi[] }) {
               </button>
               <button
                 type="button"
-                aria-label="Vue liste"
+                aria-label={t("catalogue.vueListe")}
                 aria-pressed={vue === "liste"}
                 onClick={() => setVue("liste")}
                 className={`flex h-8 w-8 items-center justify-center rounded-md ${
@@ -343,9 +335,9 @@ export function CatalogueBrowser({ produits }: { produits: ProduitEnrichi[] }) {
         {resultats.length === 0 ? (
           <div className="rounded-xl border border-dashed border-bordure py-16 text-center">
             <p className="font-titres text-sm font-semibold text-texte-principal">
-              Aucun produit ne correspond à ces filtres
+              {t("catalogue.aucunTitre")}
             </p>
-            <p className="mt-1 text-sm text-texte-secondaire">Essayez d&apos;élargir vos critères de recherche.</p>
+            <p className="mt-1 text-sm text-texte-secondaire">{t("catalogue.aucunTexte")}</p>
           </div>
         ) : (
           // key={vue} — transition douce (Raffinement Design) à la bascule grille/liste, plutôt qu'un
@@ -376,10 +368,10 @@ export function CatalogueBrowser({ produits }: { produits: ProduitEnrichi[] }) {
         )}
 
         {totalPages > 1 && (
-          <nav aria-label="Pagination des produits" className="mt-8 flex items-center justify-center gap-1">
+          <nav aria-label={t("catalogue.pagination")} className="mt-8 flex items-center justify-center gap-1">
             <button
               type="button"
-              aria-label="Page précédente"
+              aria-label={t("catalogue.pagePrecedente")}
               disabled={pageActuelle === 1}
               onClick={() => allerALaPage(pageActuelle - 1)}
               className="flex h-9 w-9 items-center justify-center rounded-lg border border-bordure text-texte-principal disabled:cursor-not-allowed disabled:opacity-40"
@@ -403,7 +395,7 @@ export function CatalogueBrowser({ produits }: { produits: ProduitEnrichi[] }) {
             ))}
             <button
               type="button"
-              aria-label="Page suivante"
+              aria-label={t("catalogue.pageSuivante")}
               disabled={pageActuelle === totalPages}
               onClick={() => allerALaPage(pageActuelle + 1)}
               className="flex h-9 w-9 items-center justify-center rounded-lg border border-bordure text-texte-principal disabled:cursor-not-allowed disabled:opacity-40"
@@ -419,7 +411,7 @@ export function CatalogueBrowser({ produits }: { produits: ProduitEnrichi[] }) {
           <div className="fixed inset-0 z-50 lg:hidden">
             <motion.button
               type="button"
-              aria-label="Fermer les filtres"
+              aria-label={t("catalogue.fermerFiltres")}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -435,8 +427,8 @@ export function CatalogueBrowser({ produits }: { produits: ProduitEnrichi[] }) {
               className="absolute inset-x-0 bottom-0 max-h-[80vh] overflow-y-auto rounded-t-2xl bg-background p-6"
             >
               <div className="mb-4 flex items-center justify-between">
-                <p className="font-titres text-base font-semibold text-texte-principal">Filtres</p>
-                <button type="button" aria-label="Fermer" onClick={() => setFiltresOuverts(false)}>
+                <p className="font-titres text-base font-semibold text-texte-principal">{t("catalogue.filtres")}</p>
+                <button type="button" aria-label={t("commun.fermer")} onClick={() => setFiltresOuverts(false)}>
                   <X size={22} />
                 </button>
               </div>
@@ -446,7 +438,7 @@ export function CatalogueBrowser({ produits }: { produits: ProduitEnrichi[] }) {
                 className="mt-6 w-full rounded-lg bg-primaire py-3 text-sm font-semibold text-white"
                 onClick={() => setFiltresOuverts(false)}
               >
-                Voir {resultats.length} résultat(s)
+                {t("catalogue.voirResultats", { nombre: resultats.length })}
               </button>
             </motion.div>
           </div>

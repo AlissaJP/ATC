@@ -20,6 +20,7 @@ const LIBELLES_MOYEN_PAIEMENT: Record<MethodePaiement, string> = {
   moncash: "MonCash",
   carte: "Carte Visa/Mastercard",
   paypal: "PayPal",
+  virement: "Virement bancaire",
 };
 
 const NOMS_MOIS = [

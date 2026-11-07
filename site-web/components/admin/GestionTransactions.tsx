@@ -18,6 +18,7 @@ const LIBELLES_METHODE: Record<MethodePaiement, string> = {
   moncash: "MonCash",
   carte: "Carte Visa/Mastercard",
   paypal: "PayPal",
+  virement: "Virement bancaire",
 };
 
 function nomClient(utilisateurId: string | undefined, utilisateursDynamiques: typeof utilisateursSeed): string {
@@ -65,13 +66,16 @@ export function GestionTransactions({ filtreInitial = "tous" }: { filtreInitial?
     [paiements, filtre]
   );
 
-  const totalUsd = paiementsFiltres.reduce((s, p) => s + p.montant_usd, 0);
+  // Seuls les règlements aboutis comptent : un virement en vérification ou refusé n'est pas encaissé.
+  const totalUsd = paiementsFiltres
+    .filter((p) => p.statut_transaction === "réussie")
+    .reduce((s, p) => s + p.montant_usd, 0);
 
   return (
     <div>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap gap-2">
-          {(["tous", "moncash", "carte", "paypal"] as const).map((f) => (
+          {(["tous", "moncash", "carte", "paypal", "virement"] as const).map((f) => (
             <button
               key={f}
               type="button"
@@ -84,7 +88,7 @@ export function GestionTransactions({ filtreInitial = "tous" }: { filtreInitial?
             </button>
           ))}
         </div>
-        <p className="text-sm font-semibold text-texte-principal">Total : ${totalUsd.toFixed(2)}</p>
+        <p className="text-sm font-semibold text-texte-principal">Total encaissé : ${totalUsd.toFixed(2)}</p>
       </div>
 
       {paiementsFiltres.length === 0 ? (
@@ -114,8 +118,13 @@ export function GestionTransactions({ filtreInitial = "tous" }: { filtreInitial?
                           : "bg-avertissement/10 text-avertissement"
                     }`}
                   >
-                    {p.statut_transaction}
+                    {p.methode === "virement" && p.statut_transaction === "en cours" ? "à vérifier" : p.statut_transaction}
                   </span>
+                  {p.methode === "virement" && p.statut_transaction === "en cours" && (
+                    <Link href="/admin/virements" className="text-xs font-medium text-primaire hover:underline">
+                      Vérifier
+                    </Link>
+                  )}
                   {facture && (
                     <Link
                       href={`/facture/${facture.id}`}

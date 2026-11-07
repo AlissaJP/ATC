@@ -139,7 +139,7 @@ export function GestionCatalogue({
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {produitsFiltres.map((p) => {
           const s = stock.find((st) => st.produit_id === p.id);
-          // Sans ligne de stock = rupture (historique) ; stock_actuel null = non suivi (en stock).
+          // Sans ligne de stock = rupture (historique) ; stock_actuel null = non suivi (aucune alerte).
           const niveau = determinerNiveauAlerteStock(s ? s.stock_actuel : 0, s?.stock_reference ?? 100);
           return (
             <button

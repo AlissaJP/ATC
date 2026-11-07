@@ -20,11 +20,17 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Bot, Send, X } from "lucide-react";
 import { questionsFAQ, type QuestionFAQ } from "@/lib/mock-data/faq";
 import { lienWhatsApp } from "@/lib/constants/contact";
+import { useTranslation } from "@/lib/i18n/useTranslation";
+import { localiserFAQ } from "@/lib/i18n/contenu";
+import type { Langue } from "@/lib/types/entities";
 
 const MOTS_VIDES = new Set([
   "le", "la", "les", "de", "des", "du", "un", "une", "et", "est", "que", "qui", "pour", "avec", "dans", "sur",
   "vous", "je", "ai", "mon", "ma", "mes", "au", "aux", "ou", "en", "ce", "cette", "comment", "quel", "quelle",
   "quels", "quelles", "proposez", "vos", "votre", "nos", "notre", "combien", "temps", "faire", "puis",
+  // EN / ES (RG-14-001 : la question est comparée à la FAQ dans la langue du visiteur)
+  "the", "and", "for", "you", "your", "what", "how", "can", "are", "does", "with", "long", "los", "las",
+  "del", "por", "para", "una", "como", "cual", "sus", "este", "esta", "puedo", "cuanto",
 ]);
 
 // Déstemming naïf (retire un -s final sur les mots de plus de 4 lettres) — les pluriels français
@@ -41,13 +47,14 @@ function normaliser(texte: string): string[] {
     .map((mot) => (mot.length > 4 && mot.endsWith("s") ? mot.slice(0, -1) : mot));
 }
 
-function trouverMeilleureReponse(saisie: string): QuestionFAQ | undefined {
+function trouverMeilleureReponse(saisie: string, langue: Langue): QuestionFAQ | undefined {
   const motsSaisie = new Set(normaliser(saisie));
   if (motsSaisie.size === 0) return undefined;
 
   let meilleur: { faq: QuestionFAQ; score: number } | undefined;
   for (const faq of questionsFAQ) {
-    const motsFaq = normaliser(`${faq.question} ${faq.reponse}`);
+    const local = localiserFAQ(faq, langue);
+    const motsFaq = normaliser(`${local.question} ${local.reponse}`);
     const score = motsFaq.filter((mot) => motsSaisie.has(mot)).length;
     if (score > 0 && (!meilleur || score > meilleur.score)) meilleur = { faq, score };
   }
@@ -56,10 +63,15 @@ function trouverMeilleureReponse(saisie: string): QuestionFAQ | undefined {
 
 const DELAI_REPONSE_MS = 700;
 
+// Les messages du bot gardent leur nature (accueil, repli, réponse FAQ) plutôt qu'un texte figé : ils
+// s'affichent ainsi toujours dans la langue courante, même après un changement de langue en cours de
+// conversation. Seule la saisie de l'utilisateur est stockée telle quelle.
 interface Message {
   id: string;
   role: "bot" | "utilisateur";
-  texte: string;
+  texte?: string;
+  type?: "accueil" | "repli" | "faq";
+  faqId?: string;
   estRepli?: boolean;
 }
 
@@ -69,18 +81,11 @@ function idMessage(): string {
   return `msg-${compteurMessage}`;
 }
 
-const MESSAGE_ACCUEIL: Message = {
-  id: idMessage(),
-  role: "bot",
-  texte:
-    "Bonjour ! Je suis l'assistant automatisé d'ATC. Posez-moi une question sur nos produits, garanties, moyens de paiement, retrait en magasin ou compte professionnel.",
-};
-
-const MESSAGE_REPLI =
-  "Cette question dépasse ce que je peux traiter. Contactez notre support via WhatsApp pour une réponse personnalisée.";
+const MESSAGE_ACCUEIL: Message = { id: idMessage(), role: "bot", type: "accueil" };
 
 export function Chatbot() {
   const pathname = usePathname();
+  const { t, langue } = useTranslation();
   const [ouvert, setOuvert] = useState(false);
   const [aDejaOuvert, setADejaOuvert] = useState(false);
   const [messages, setMessages] = useState<Message[]>([MESSAGE_ACCUEIL]);
@@ -104,7 +109,7 @@ export function Chatbot() {
     const texteQuestion = question.trim();
     if (!texteQuestion || enTrainDecrire) return;
 
-    const correspondance = trouverMeilleureReponse(texteQuestion);
+    const correspondance = trouverMeilleureReponse(texteQuestion, langue);
     setMessages((etat) => [...etat, { id: idMessage(), role: "utilisateur", texte: texteQuestion }]);
     setSaisie("");
     setEnTrainDecrire(true);
@@ -113,11 +118,21 @@ export function Chatbot() {
       setMessages((etat) => [
         ...etat,
         correspondance
-          ? { id: idMessage(), role: "bot", texte: correspondance.reponse }
-          : { id: idMessage(), role: "bot", texte: MESSAGE_REPLI, estRepli: true },
+          ? { id: idMessage(), role: "bot", type: "faq", faqId: correspondance.id }
+          : { id: idMessage(), role: "bot", type: "repli", estRepli: true },
       ]);
       setEnTrainDecrire(false);
     }, DELAI_REPONSE_MS);
+  }
+
+  function texteMessage(m: Message): string {
+    if (m.type === "accueil") return t("chatbot.accueil");
+    if (m.type === "repli") return t("chatbot.repli");
+    if (m.type === "faq") {
+      const faq = questionsFAQ.find((q) => q.id === m.faqId);
+      return faq ? localiserFAQ(faq, langue).reponse : "";
+    }
+    return m.texte ?? "";
   }
 
   return (
@@ -125,7 +140,7 @@ export function Chatbot() {
       <motion.button
         type="button"
         onClick={ouvrirFermer}
-        aria-label={ouvert ? "Fermer l'assistant ATC" : "Ouvrir l'assistant ATC"}
+        aria-label={ouvert ? t("chatbot.fermer") : t("chatbot.ouvrir")}
         aria-expanded={ouvert}
         initial={{ opacity: 0, scale: 0.5 }}
         animate={
@@ -170,8 +185,8 @@ export function Chatbot() {
                 <Bot size={18} className="text-white" />
               </div>
               <div>
-                <p className="font-titres text-sm font-semibold text-white">Assistant ATC</p>
-                <p className="text-xs text-white/80">Assistant automatisé — pas un conseiller en direct</p>
+                <p className="font-titres text-sm font-semibold text-white">{t("chatbot.titre")}</p>
+                <p className="text-xs text-white/80">{t("chatbot.sousTitre")}</p>
               </div>
             </div>
 
@@ -187,15 +202,15 @@ export function Chatbot() {
                         : "self-start bg-fond text-texte-principal"
                   }`}
                 >
-                  <p>{m.texte}</p>
+                  <p>{texteMessage(m)}</p>
                   {m.estRepli && (
                     <a
-                      href={lienWhatsApp("Bonjour, j'ai une question qui n'a pas trouvé de réponse via l'assistant du site.")}
+                      href={lienWhatsApp(t("chatbot.messageWhatsapp"))}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-primaire hover:underline"
                     >
-                      Contacter le support WhatsApp →
+                      {t("chatbot.contacterSupport")}
                     </a>
                   )}
                 </div>
@@ -205,7 +220,7 @@ export function Chatbot() {
                 <div
                   className="flex items-center gap-1 self-start rounded-xl bg-fond px-3 py-2.5 shadow-sm"
                   aria-live="polite"
-                  aria-label="L'assistant est en train d'écrire"
+                  aria-label={t("chatbot.ecrit")}
                 >
                   {[0, 1, 2].map((i) => (
                     <motion.span
@@ -229,20 +244,20 @@ export function Chatbot() {
               className="flex items-center gap-2 border-t border-bordure p-3"
             >
               <label htmlFor={idChamp} className="sr-only">
-                Votre question
+                {t("chatbot.votreQuestion")}
               </label>
               <input
                 id={idChamp}
                 type="text"
                 value={saisie}
                 onChange={(e) => setSaisie(e.target.value)}
-                placeholder="Posez votre question…"
+                placeholder={t("chatbot.placeholder")}
                 disabled={enTrainDecrire}
                 className="w-full rounded-lg border border-bordure bg-fond px-3 py-2 text-sm text-texte-principal placeholder:text-texte-secondaire focus:outline-none focus:ring-2 focus:ring-primaire-clair disabled:opacity-60"
               />
               <motion.button
                 type="submit"
-                aria-label="Envoyer"
+                aria-label={t("chatbot.envoyer")}
                 disabled={enTrainDecrire}
                 whileTap={{ scale: 0.9 }}
                 className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primaire text-white transition-opacity hover:opacity-90 disabled:opacity-50"

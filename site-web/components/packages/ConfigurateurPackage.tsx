@@ -9,6 +9,8 @@ import { produits } from "@/lib/mock-data/produits";
 import { categories } from "@/lib/mock-data/categories";
 import { quantiteDisponible } from "@/lib/mock-data/stock";
 import { formaterPrix } from "@/lib/services/prix";
+import { useTranslation } from "@/lib/i18n/useTranslation";
+import { localiserProduit, nomCategorie } from "@/lib/i18n/catalogue";
 import { paliersParProduit } from "@/lib/mock-data/paliers-prix-b2b";
 import { trouverPalierApplicable } from "@/lib/business-rules/bareme-b2b";
 import {
@@ -41,6 +43,7 @@ function prixUnitairePourSession(produitId: string, quantite: number, estB2B: bo
 // ECR-04-002 — Configurateur de package personnalisé. RG-04-002, RG-04-006, RG-03-004.
 export function ConfigurateurPackage() {
   const router = useRouter();
+  const { t, langue } = useTranslation();
   const session = useSessionStore((s) => s.session);
   const estB2B = estClientB2BVerifie(session);
   const creerDevis = useDevisStore((s) => s.creerDevis);
@@ -106,16 +109,15 @@ export function ConfigurateurPackage() {
   if (!session || session.type !== "client") {
     return (
       <div className="mx-auto max-w-md rounded-xl border border-bordure bg-background p-8 text-center">
-        <p className="font-titres text-lg font-semibold text-texte-principal">Connexion requise</p>
+        <p className="font-titres text-lg font-semibold text-texte-principal">{t("garde.connexionRequise")}</p>
         <p className="mt-2 text-sm text-texte-secondaire">
-          Le configurateur de package personnalisé est réservé aux clients connectés (Particulier ou
-          Entreprise).
+          {t("configurateur.connexionTexte")}
         </p>
         <Link
           href="/compte/connexion"
           className="mt-5 inline-flex items-center gap-2 rounded-lg bg-primaire px-5 py-2.5 text-sm font-semibold text-white hover:opacity-90"
         >
-          Se connecter
+          {t("commun.seConnecter")}
         </Link>
       </div>
     );
@@ -130,10 +132,11 @@ export function ConfigurateurPackage() {
           return (
             <section key={cat.id}>
               <h2 className="mb-4 font-titres text-lg font-semibold text-texte-principal">
-                {categorie?.nom ?? cat.titre}
+                {categorie ? nomCategorie(categorie, langue) : cat.titre}
               </h2>
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-                {produitsCategorie.map((produit) => {
+                {produitsCategorie.map((produitSource) => {
+                  const produit = localiserProduit(produitSource, langue);
                   const stockMax = quantiteDisponible(produit.id) ?? Number.POSITIVE_INFINITY; // undefined = non suivi
                   // « Prix sur demande » : non sélectionnable, la réponse au devis tarifie chaque ligne au prix
                   // catalogue (devis-store, prixApplicablePourUtilisateur) et ne saurait pas le chiffrer.
@@ -151,18 +154,18 @@ export function ConfigurateurPackage() {
                         <VisuelProduit produit={produit} sizes="200px" />
                         {rupture && (
                           <span className="absolute left-1.5 top-1.5 rounded-full bg-danger px-2 py-0.5 text-[10px] font-semibold text-white">
-                            Rupture
+                            {t("configurateur.rupture")}
                           </span>
                         )}
                       </div>
                       <div className="flex flex-1 flex-col gap-1.5 p-2.5">
                         <p className="text-xs font-medium leading-snug text-texte-principal">{produit.nom}</p>
-                        <p className="text-xs text-texte-secondaire">{formaterPrix(produit.prix_public)}</p>
+                        <p className="text-xs text-texte-secondaire">{formaterPrix(produit.prix_public, langue)}</p>
                         <div className="mt-auto flex items-center justify-between pt-1">
                           <button
                             type="button"
                             disabled={indisponible || quantite === 0}
-                            aria-label={`Retirer ${produit.nom}`}
+                            aria-label={t("configurateur.retirer", { produit: produit.nom })}
                             onClick={() => modifierQuantite(produit.id, -1)}
                             className="flex h-7 w-7 items-center justify-center rounded-md border border-bordure text-texte-principal disabled:opacity-30"
                           >
@@ -172,7 +175,7 @@ export function ConfigurateurPackage() {
                           <button
                             type="button"
                             disabled={indisponible || quantite >= stockMax}
-                            aria-label={`Ajouter ${produit.nom}`}
+                            aria-label={t("configurateur.ajouter", { produit: produit.nom })}
                             onClick={() => modifierQuantite(produit.id, 1)}
                             className="flex h-7 w-7 items-center justify-center rounded-md border border-bordure text-texte-principal disabled:opacity-30"
                           >
@@ -192,14 +195,14 @@ export function ConfigurateurPackage() {
       {/* Récapitulatif fixe (sticky) — Cahier 7, ECR-04-002 */}
       <aside className="h-fit lg:sticky lg:top-20">
         <div className="rounded-xl border border-bordure bg-background p-5">
-          <p className="font-titres text-sm font-semibold text-texte-principal">Récapitulatif</p>
-          <p className="mt-1 text-sm text-texte-secondaire">{nombreElements} élément(s) sélectionné(s)</p>
+          <p className="font-titres text-sm font-semibold text-texte-principal">{t("configurateur.recapitulatif")}</p>
+          <p className="mt-1 text-sm text-texte-secondaire">{t("configurateur.elements", { nombre: nombreElements })}</p>
           <p className="mt-3 font-titres text-2xl font-bold text-primaire">${prixTotal.toFixed(2)}</p>
-          <p className="mt-1 text-xs text-texte-secondaire">Estimation indicative, hors coût d&apos;installation.</p>
+          <p className="mt-1 text-xs text-texte-secondaire">{t("configurateur.estimation")}</p>
 
           {!validable && nombreElements > 0 && (
             <p className="mt-3 rounded-lg bg-avertissement/10 px-3 py-2 text-xs text-avertissement">
-              Au moins un panneau solaire et une batterie sont requis pour envoyer la demande.
+              {t("configurateur.requis")}
             </p>
           )}
 
@@ -210,7 +213,7 @@ export function ConfigurateurPackage() {
             className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-accent px-4 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
           >
             <Send size={16} />
-            {envoye ? "Demande envoyée !" : "Envoyer ma demande de devis"}
+            {envoye ? t("configurateur.envoye") : t("configurateur.envoyer")}
           </button>
         </div>
       </aside>

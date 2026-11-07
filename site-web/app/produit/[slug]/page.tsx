@@ -10,6 +10,8 @@ import { obtenirStock } from "@/lib/services/stock";
 import { listerCategories } from "@/lib/services/produits";
 import { trouverGarantieParCategorie } from "@/lib/mock-data/garanties";
 import { listerCaracteristiques } from "@/lib/services/caracteristiques";
+import { obtenirTraduction } from "@/lib/i18n/serveur";
+import { localiserProduit, nomCategorie } from "@/lib/i18n/catalogue";
 
 export default async function ProduitPage(props: PageProps<"/produit/[slug]">) {
   const { slug } = await props.params;
@@ -17,7 +19,10 @@ export default async function ProduitPage(props: PageProps<"/produit/[slug]">) {
 
   if (!resultat) notFound();
 
-  const { produit, niveauStock, paliers, marque } = resultat;
+  const { t, langue } = await obtenirTraduction();
+  // Traduction à l'affichage : seuls les textes changent, les identifiants (panier, avis, favoris) restent.
+  const produit = localiserProduit(resultat.produit, langue);
+  const { niveauStock, paliers, marque } = resultat;
   const [stock, categories, produitsAssocies] = await Promise.all([
     obtenirStock(produit.id),
     listerCategories(),
@@ -39,9 +44,9 @@ export default async function ProduitPage(props: PageProps<"/produit/[slug]">) {
       <Breadcrumb
         items={[
           ...(categorieParente
-            ? [{ label: categorieParente.nom, href: `/categorie/${categorieParente.slug}` }]
+            ? [{ label: nomCategorie(categorieParente, langue), href: `/categorie/${categorieParente.slug}` }]
             : []),
-          ...(categorie ? [{ label: categorie.nom, href: `/categorie/${categorie.slug}` }] : []),
+          ...(categorie ? [{ label: nomCategorie(categorie, langue), href: `/categorie/${categorie.slug}` }] : []),
           { label: produit.nom },
         ]}
       />
@@ -52,7 +57,7 @@ export default async function ProduitPage(props: PageProps<"/produit/[slug]">) {
         <div>
           {marque && <p className="text-sm font-semibold text-primaire-clair">{marque.nom}</p>}
           <h1 className="mt-1 font-titres text-2xl font-bold text-texte-principal md:text-3xl">{produit.nom}</h1>
-          {produit.ref && <p className="mt-1 text-sm text-texte-secondaire">Réf. {produit.ref}</p>}
+          {produit.ref && <p className="mt-1 text-sm text-texte-secondaire">{t("produit.reference", { ref: produit.ref })}</p>}
           {/* Description générale toujours affichée (catalogue ATC : les variantes n'ont pas de description
               propre) ; une description « points forts » de variante (#29), si elle existe, s'ajoute sous le
               sélecteur dans AchatProduit. */}
@@ -71,7 +76,7 @@ export default async function ProduitPage(props: PageProps<"/produit/[slug]">) {
 
           {caracteristiques.length > 0 && (
             <div className="mt-8">
-              <h2 className="mb-3 font-titres text-base font-semibold text-texte-principal">Caractéristiques</h2>
+              <h2 className="mb-3 font-titres text-base font-semibold text-texte-principal">{t("produit.caracteristiques")}</h2>
               <ul className="divide-y divide-bordure rounded-lg border border-bordure text-sm text-texte-principal">
                 {caracteristiques.map((ligne, i) => (
                   <li key={i} className="px-3 py-2">
@@ -85,7 +90,7 @@ export default async function ProduitPage(props: PageProps<"/produit/[slug]">) {
           {produit.specifications && Object.keys(produit.specifications).length > 0 && (
             <div className="mt-8">
               <h2 className="mb-3 font-titres text-base font-semibold text-texte-principal">
-                Spécifications techniques
+                {t("produit.specifications")}
               </h2>
               <dl className="divide-y divide-bordure rounded-lg border border-bordure text-sm">
                 {Object.entries(produit.specifications).map(([cle, valeur]) => (
@@ -96,8 +101,8 @@ export default async function ProduitPage(props: PageProps<"/produit/[slug]">) {
                 ))}
                 {garantie && (
                   <div className="flex justify-between px-3 py-2">
-                    <dt className="text-texte-secondaire">Garantie</dt>
-                    <dd className="font-medium text-texte-principal">{garantie.duree_mois} mois</dd>
+                    <dt className="text-texte-secondaire">{t("produit.garantie")}</dt>
+                    <dd className="font-medium text-texte-principal">{t("produit.garantieMois", { nombre: garantie.duree_mois })}</dd>
                   </div>
                 )}
               </dl>

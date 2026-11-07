@@ -8,6 +8,7 @@ import { produits } from "@/lib/mock-data/produits";
 import { stardom } from "@/lib/fonts/stardom";
 import { VisuelProduit } from "@/components/product/VisuelProduit";
 import { formaterPrix } from "@/lib/services/prix";
+import { localiserProduit } from "@/lib/i18n/catalogue";
 import type { Produit } from "@/lib/types/entities";
 
 // Vitrine : deux vrais produits du catalogue ATC avec prix et photo produit (panneau Trina, batterie SMART+).
@@ -57,7 +58,7 @@ export function BanniereSolaire() {
         <div className="relative min-h-[320px] md:min-h-[520px] md:w-[57%]">
           <Image
             src="/images/energie-solaire/energie-16-retouche.webp"
-            alt="Techniciens ATC installant un champ de panneaux solaires, Port-au-Prince"
+            alt={t("accueil.heroAlt")}
             fill
             priority
             className="object-cover"
@@ -81,12 +82,15 @@ export function BanniereSolaire() {
 }
 
 function CarteProduitVitrine({
-  produit,
+  produit: produitSource,
   taille = "grande",
 }: {
   produit: Produit;
   taille?: "petite" | "grande";
 }) {
+  const { t, langue } = useTranslation();
+  const produit = localiserProduit(produitSource, langue);
+  const prix = formaterPrix(produit.prix_public, langue);
   return (
     <Link
       href={`/produit/${produit.slug}`}
@@ -100,8 +104,9 @@ function CarteProduitVitrine({
       <div className="p-2.5">
         <p className="truncate font-titres text-xs font-semibold text-texte-principal">{produit.nom}</p>
         <p className="text-xs text-texte-secondaire">
-          {produit.prix_public !== null && produit.variantes && produit.variantes.length > 1 && "À partir de "}
-          {formaterPrix(produit.prix_public)}
+          {produit.prix_public !== null && produit.variantes && produit.variantes.length > 1
+            ? t("prix.aPartirDe", { prix })
+            : prix}
         </p>
       </div>
     </Link>

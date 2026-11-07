@@ -7,7 +7,14 @@
     "devenirPro": "Devenir client professionnel",
     "recherche": "Rechercher un produit...",
     "compte": "Mon compte",
-    "panier": "Panier"
+    "panier": "Panier",
+    "ouvrirMenu": "Ouvrir le menu",
+    "fermerMenu": "Fermer le menu",
+    "accueilAtc": "Accueil ATC",
+    "favoris": "Favoris ({nombre})",
+    "categories": "Catégories",
+    "categoriesMobile": "Catégories (mobile)",
+    "langue": "Langue"
   },
   "accueil": {
     "heroAccroche": "Énergie solaire · Installation incluse",
@@ -38,7 +45,14 @@
     "chiffresSousTitre": "Des particuliers aux entreprises, un même engagement de qualité.",
     "chiffresLabel1": "Clients satisfaits",
     "chiffresLabel2": "Comptes professionnels vérifiés",
-    "chiffresLabel3": "Installations solaires réalisées"
+    "chiffresLabel3": "Installations solaires réalisées",
+    "heroAlt": "Techniciens ATC installant un champ de panneaux solaires, Port-au-Prince",
+    "proAvantage1": "Barème de prix par palier de quantité",
+    "proAvantage2": "Facturation pro forma automatique",
+    "proAvantage3": "Devis pour packages solaires sur-mesure",
+    "proEnValidation": "Votre compte professionnel est en cours de validation.",
+    "proAlt": "Équipe professionnelle analysant ses données de vente et d'achat en réunion",
+    "whatsappQuestion": "Bonjour, j'ai une question."
   },
   "produit": {
     "ajouterPanier": "Ajouter au panier",
@@ -47,7 +61,32 @@
     "alerteOrange": "Stock faible",
     "alerteRouge": "Stock critique",
     "rupture": "Rupture de stock",
-    "baremeB2B": "Barème professionnel"
+    "baremeB2B": "Barème professionnel",
+    "ajoute": "Ajouté au panier",
+    "connexionPanier": "Connectez-vous pour ajouter ce produit à votre panier.",
+    "connexionFavoris": "Connectez-vous pour ajouter ce produit à vos favoris.",
+    "ajouterFavoris": "Ajouter aux favoris",
+    "retirerFavoris": "Retirer des favoris",
+    "badgePackage": "Package",
+    "disponiblePackage": "Disponible en package personnalisé",
+    "reference": "Réf. {ref}",
+    "caracteristiques": "Caractéristiques",
+    "specifications": "Spécifications techniques",
+    "garantie": "Garantie",
+    "garantieMois": "{nombre} mois",
+    "varianteRupture": "rupture",
+    "parUnite": "/ unité",
+    "baremeLegende": "Barème de prix professionnel par palier de quantité",
+    "plageQuantite": "Plage de quantité",
+    "prixUnitaire": "Prix unitaire",
+    "diminuer": "Diminuer la quantité",
+    "augmenter": "Augmenter la quantité",
+    "total": "Total : {montant}",
+    "demanderPrix": "Demander un prix",
+    "messagePrixProduit": "Bonjour ATC, je souhaite connaître le prix du produit {produit}.",
+    "messagePrixPackage": "Bonjour ATC, je souhaite connaître le prix du package {produit}.",
+    "voirImage": "Voir l'image {numero}",
+    "associes": "Produits associés & accessoires compatibles"
   },
   "footer": {
     "description": "ATC (Alpha Tech Center) — Énergie solaire, sécurité et climatisation, en Haïti et pour la diaspora.",
@@ -64,7 +103,9 @@
     "cgv": "CGV",
     "confidentialite": "Politique de confidentialité",
     "mentionsLegales": "Mentions légales",
-    "droitsReserves": "Tous droits réservés."
+    "droitsReserves": "Tous droits réservés.",
+    "navEntreprise": "Entreprise",
+    "navAide": "Aide"
   },
   "compte": {
     "seConnecter": "Se connecter",
@@ -76,10 +117,18 @@
     "seDeconnecter": "Se déconnecter",
     "backOffice": "Back-office",
     "compteParticulier": "Compte Particulier",
-    "compteEntreprise": "Compte Entreprise"
+    "compteEntreprise": "Compte Entreprise",
+    "savAssistance": "SAV & Assistance",
+    "adminGeneral": "Administrateur Général",
+    "agentSav": "Agent SAV",
+    "menu": "Menu du compte"
   },
   "garde": {
-    "connexionRequise": "Connexion requise"
+    "connexionRequise": "Connexion requise",
+    "messagePanier": "Connectez-vous pour accéder à votre panier.",
+    "messageFavoris": "Connectez-vous pour consulter vos favoris.",
+    "messageDevis": "Connectez-vous pour consulter vos devis.",
+    "messageSav": "Connectez-vous pour ouvrir ou suivre un ticket SAV."
   },
   "aPropos": {
     "bannerTitre": "À propos d'ATC",
@@ -97,6 +146,600 @@
     "valeur4Texte": "Des centaines de clients particuliers et professionnels déjà accompagnés.",
     "ctaTitre": "Prêt à démarrer votre projet ?",
     "ctaProduits": "Découvrir nos produits",
-    "ctaContact": "Nous contacter"
+    "ctaContact": "Nous contacter",
+    "banniereAlt": "Technicien ATC en intervention sur une installation solaire en toiture"
+  },
+  "meta": {
+    "description": "Énergie solaire, sécurité et climatisation en Haïti — vente au détail et professionnelle."
+  },
+  "commun": {
+    "fermer": "Fermer",
+    "accueil": "Accueil",
+    "filAriane": "Fil d'Ariane",
+    "seConnecter": "Se connecter",
+    "imageAVenir": "Image à venir",
+    "annuler": "Annuler",
+    "confirmer": "Confirmer",
+    "produit": "Produit",
+    "client": "Client",
+    "quantiteAbregee": "Qté",
+    "total": "Total",
+    "sousTotal": "Sous-total",
+    "taxe": "Taxe ({taux} %)",
+    "telechargerPdf": "Télécharger (PDF)",
+    "parUnite": "{prix} / unité",
+    "autres": "Autres",
+    "nonRenseigne": "Non renseigné"
+  },
+  "recherche": {
+    "voirTout": "Voir tous les résultats pour « {requete} »",
+    "titreUn": "{nombre} résultat pour « {requete} »",
+    "titrePlusieurs": "{nombre} résultats pour « {requete} »",
+    "aucun": "Aucun résultat",
+    "aucunTexte": "Essayez un autre terme ou parcourez nos catégories depuis le menu."
+  },
+  "categories": {
+    "cat-energie-solaire": "Énergie solaire",
+    "cat-panneaux": "Panneaux solaires",
+    "cat-onduleurs": "Onduleurs",
+    "cat-batteries-lithium": "Batteries lithium",
+    "cat-stockage-commercial": "Stockage commercial et industriel",
+    "cat-structures-accessoires": "Structures et accessoires",
+    "cat-securite": "Sécurité",
+    "cat-cameras": "Caméras",
+    "cat-climatisation": "Climatisation",
+    "cat-climatiseurs-residentiels": "Climatiseurs résidentiels (split mural)",
+    "cat-climatisation-centrale": "Climatisation centrale et commerciale",
+    "cat-gaines": "Gaines et distribution d'air",
+    "cat-service-climatisation": "Service associé"
+  },
+  "variantes": {
+    "Puissance": "Puissance",
+    "Capacité": "Capacité",
+    "Couleur": "Couleur",
+    "Résolution": "Résolution"
+  },
+  "prix": {
+    "surDemande": "Prix sur demande",
+    "aPartirDe": "À partir de {prix}"
+  },
+  "avis": {
+    "titre": "Avis clients",
+    "aucun": "Aucun avis pour le moment — soyez le premier à donner votre avis.",
+    "surCinq": "{note} sur 5",
+    "basesUn": "Basé sur {nombre} avis",
+    "basesPlusieurs": "Basé sur {nombre} avis",
+    "etoileUn": "{nombre} étoile",
+    "etoilePlusieurs": "{nombre} étoiles",
+    "achatVerifie": "Achat vérifié",
+    "laisser": "Laisser un avis",
+    "noteSurCinq": "Note sur 5 étoiles",
+    "placeholderTitre": "Titre de votre avis",
+    "placeholderCommentaire": "Votre commentaire (facultatif)",
+    "envoyer": "Envoyer mon avis",
+    "publie": "Votre avis a été publié.",
+    "enAttente": "Votre avis a bien été envoyé et est en attente de modération.",
+    "auteurDefaut": "Client ATC"
+  },
+  "catalogue": {
+    "marque": "Marque",
+    "prixMax": "Prix maximum",
+    "jusqua": "Jusqu'à {prix}",
+    "disponibilite": "Disponibilité",
+    "enStockSeulement": "En stock uniquement",
+    "packageSeulement": "Disponible en package personnalisé",
+    "reinitialiser": "Réinitialiser les filtres",
+    "filtres": "Filtres",
+    "nombreProduits": "{nombre} produit(s)",
+    "trier": "Trier les produits",
+    "triPertinence": "Pertinence",
+    "triPrixAsc": "Prix croissant",
+    "triPrixDesc": "Prix décroissant",
+    "triNouveautes": "Nouveautés",
+    "vueGrille": "Vue grille",
+    "vueListe": "Vue liste",
+    "aucunTitre": "Aucun produit ne correspond à ces filtres",
+    "aucunTexte": "Essayez d'élargir vos critères de recherche.",
+    "pagination": "Pagination des produits",
+    "pagePrecedente": "Page précédente",
+    "pageSuivante": "Page suivante",
+    "fermerFiltres": "Fermer les filtres",
+    "voirResultats": "Voir {nombre} résultat(s)",
+    "spec": {
+      "puissance": "Puissance",
+      "capacite": "Capacité",
+      "technologie": "Technologie",
+      "courant": "Courant",
+      "cycles": "Cycles",
+      "type": "Type",
+      "usage": "Usage",
+      "taille": "Taille",
+      "stockage": "Stockage",
+      "connectivite": "Connectivité",
+      "installation": "Installation",
+      "alimentation": "Alimentation"
+    }
+  },
+  "categorie": {
+    "titreUn": "{nombre} produit dans {categorie}",
+    "titrePlusieurs": "{nombre} produits dans {categorie}",
+    "tous": "Tous",
+    "sousCategories": "Sous-catégories : {categorie}"
+  },
+  "packages": {
+    "titre": "Packages solaires pré-configurés",
+    "sousTitre": "Des kits solaires complets, pour la maison comme pour l'entreprise. Demandez le prix d'un kit sur WhatsApp, ou composez votre propre package sur mesure.",
+    "composer": "Composer un package sur-mesure",
+    "aucun": "Aucun package disponible pour le moment",
+    "disponible": "Disponible",
+    "toutCompris": "tout compris",
+    "composantRupture": "Un ou plusieurs composants sont actuellement en rupture de stock.",
+    "composition": "Composition",
+    "indisponible": "Indisponible actuellement",
+    "connexionPanier": "Connectez-vous pour ajouter ce package à votre panier."
+  },
+  "configurateur": {
+    "filAriane": "Configurateur",
+    "titre": "Composez votre package solaire",
+    "intro": "Sélectionnez vos composants — au moins un panneau et une batterie sont nécessaires pour envoyer votre demande.",
+    "connexionTexte": "Le configurateur de package personnalisé est réservé aux clients connectés (Particulier ou Entreprise).",
+    "recapitulatif": "Récapitulatif",
+    "elements": "{nombre} élément(s) sélectionné(s)",
+    "estimation": "Estimation indicative, hors coût d'installation.",
+    "requis": "Au moins un panneau solaire et une batterie sont requis pour envoyer la demande.",
+    "envoye": "Demande envoyée !",
+    "envoyer": "Envoyer ma demande de devis",
+    "retirer": "Retirer {produit}",
+    "ajouter": "Ajouter {produit}",
+    "rupture": "Rupture"
+  },
+  "temoignages": {
+    "temoin-1": {
+      "commentaire": "Installation de panneaux solaires impeccable, l'équipe a tout géré du début à la fin. Je recommande vivement.",
+      "localisation": "Port-au-Prince, Haïti"
+    },
+    "temoin-2": {
+      "commentaire": "Le paiement par MonCash a rendu tout le processus tellement simple, et le retrait en magasin a été rapide.",
+      "localisation": "Cap-Haïtien, Haïti"
+    },
+    "temoin-3": {
+      "commentaire": "Très bon service pour notre compte professionnel — les tarifs par palier nous font vraiment économiser.",
+      "localisation": "Pétion-Ville, Haïti"
+    },
+    "temoin-4": {
+      "commentaire": "J'ai pu commander un système solaire pour ma famille en Haïti directement depuis la Floride. Service excellent.",
+      "localisation": "Miami, États-Unis"
+    },
+    "temoin-5": {
+      "commentaire": "La climatisation Carrier fonctionne parfaitement, installation propre et rapide par l'équipe technique.",
+      "localisation": "New York, États-Unis"
+    },
+    "temoin-6": {
+      "commentaire": "Bon accompagnement pour la validation de mon compte Entreprise — un peu de patience nécessaire mais ça vaut le coup.",
+      "localisation": "Montréal, Canada"
+    }
+  },
+  "paiement": {
+    "methode": {
+      "moncash": "MonCash",
+      "carte": "Carte Visa/Mastercard",
+      "paypal": "PayPal",
+      "virement": "Virement bancaire"
+    },
+    "titre": "Paiement",
+    "devisIntrouvable": "Devis introuvable.",
+    "devisDejaRegle": "Ce devis est déjà réglé",
+    "commandeDejaReglee": "Cette commande est déjà réglée",
+    "voirFacture": "Voir la facture pro forma",
+    "devisPasPret": "Ce devis n'est pas encore prêt pour le paiement.",
+    "traitement": "Traitement en cours…",
+    "nePasFermer": "Ne fermez pas cette page.",
+    "echec": "Le paiement a échoué",
+    "echecTexte": "Veuillez vérifier vos informations et réessayer.",
+    "reessayer": "Réessayer",
+    "confirme": "Paiement confirmé",
+    "confirmeDevis": "Notre équipe va convertir votre devis en commande et vous notifiera dès qu'elle sera prête pour le retrait.",
+    "confirmeCommande": "Votre commande est en préparation — vous serez notifié dès qu'elle sera prête pour le retrait.",
+    "retourDevis": "Retour à mes devis",
+    "voirCommande": "Voir ma commande",
+    "montantARegler": "Montant à régler",
+    "dontTaxe": "Dont taxe ({taux} %) : {montant}",
+    "nouvelleCarteBouton": "Ajouter une nouvelle carte",
+    "montantConverti": "Montant converti (taux interne HTG/USD)",
+    "tauxApplique": "Taux appliqué : 1 USD = {taux} HTG",
+    "confirmer": "Confirmer le paiement",
+    "carte": {
+      "titre": "Nouvelle carte",
+      "numero": "Numéro de carte",
+      "visaDetectee": "Carte Visa détectée",
+      "mastercardDetectee": "Carte Mastercard détectée",
+      "expiration": "Expiration (MM/AA)",
+      "formatExpiration": "MM/AA",
+      "titulaire": "Nom du titulaire",
+      "titulaireAide": "Tel qu'inscrit sur la carte",
+      "enregistrer": "Enregistrer cette carte pour mes prochaines commandes"
+    },
+    "paypal": {
+      "connecte": "Connecté à PayPal",
+      "changer": "Changer de compte",
+      "titre": "Connexion à PayPal",
+      "intro": "Connectez-vous avec le compte PayPal que vous souhaitez utiliser pour cette commande.",
+      "email": "E-mail du compte PayPal",
+      "exemple": "vous@exemple.com",
+      "enregistrer": "Enregistrer ce compte pour mes prochaines commandes",
+      "seConnecter": "Se connecter à PayPal"
+    },
+    "moncash": {
+      "titre": "Numéro MonCash",
+      "numero": "Numéro à débiter pour cette commande",
+      "enregistrer": "Enregistrer ce numéro pour mes prochaines commandes"
+    },
+    "virement": {
+      "titre": "Virement bancaire",
+      "intro": "Effectuez le virement depuis votre banque vers l'un des comptes ATC ci-dessous, puis joignez la preuve de la transaction. Votre commande sera validée dès qu'un agent aura vérifié le paiement.",
+      "demo": "Coordonnées bancaires de démonstration — à remplacer par celles d'ATC.",
+      "beneficiaire": "Bénéficiaire",
+      "banque": "Banque",
+      "compteHtg": "Compte en gourdes (HTG)",
+      "compteUsd": "Compte en dollars (USD)",
+      "reference": "Référence à indiquer",
+      "referenceCommande": "Commande {numero}",
+      "referenceDevis": "Devis {numero}",
+      "copier": "Copier : {element}",
+      "compteUtilise": "Compte sur lequel vous effectuez le virement",
+      "compte": {
+        "usd": "En dollars (USD)",
+        "htg": "En gourdes (HTG)"
+      },
+      "montantAVirer": "Montant exact à virer",
+      "preuve": "Preuve de paiement",
+      "preuveAide": "Photo ou capture d'écran du reçu de virement, sur laquelle on voit le montant, la date et le compte crédité.",
+      "choisirFichier": "Choisir une image",
+      "formats": "JPG, PNG, HEIC… — 10 Mo maximum",
+      "apercu": "Aperçu de la preuve de paiement",
+      "retirerPreuve": "Retirer la preuve",
+      "erreurFormat": "Seules les images (photo ou capture d'écran) sont acceptées.",
+      "erreurTaille": "Ce fichier dépasse 10 Mo.",
+      "erreurLecture": "Impossible de lire cette image. Essayez avec une autre capture.",
+      "envoyer": "Envoyer la preuve de virement",
+      "preuveEnvoyee": "Preuve de virement envoyée",
+      "enVerification": "Virement en cours de vérification",
+      "enVerificationTexte": "Un agent ATC va vérifier votre virement. Votre commande sera validée dès que le paiement sera confirmé.",
+      "refuse": "Virement refusé",
+      "motif": "Motif : {motif}",
+      "refuseAide": "Vous pouvez régler à nouveau, par virement ou avec un autre moyen de paiement.",
+      "payerANouveau": "Régler à nouveau"
+    }
+  },
+  "magasin": {
+    "horaires": "Lundi–Vendredi 8h–17h, Samedi 8h–13h"
+  },
+  "panier": {
+    "titre": "Panier",
+    "vide": "Votre panier est vide",
+    "retourCatalogue": "Retour au catalogue",
+    "retirer": "Retirer {produit}",
+    "recapitulatif": "Récapitulatif",
+    "articles": "{nombre} article(s)",
+    "payer": "Procéder au paiement",
+    "payerMontant": "Procéder au paiement — {montant}",
+    "produitRetire": "Produit retiré du panier"
+  },
+  "commandes": {
+    "titre": "Mes commandes",
+    "sousTitre": "Suivez le statut de retrait de vos commandes.",
+    "aucune": "Aucune commande pour le moment",
+    "statut": {
+      "en_preparation": "En préparation",
+      "prete_retrait": "Prête pour retrait",
+      "retiree": "Retirée",
+      "attente_paiement": "Paiement en vérification"
+    },
+    "enAttenteTitre": "Paiement en cours de vérification",
+    "enAttenteTexte": "Ces commandes réglées par virement seront validées dès qu'un agent aura vérifié votre paiement.",
+    "valideesTitre": "Commandes validées"
+  },
+  "commande": {
+    "filPaiement": "Paiement",
+    "filConfirmation": "Confirmation",
+    "titre": "Confirmation de commande",
+    "introuvable": "Commande introuvable.",
+    "recue": "Nous avons bien reçu votre commande !",
+    "statutPhrase": {
+      "en_preparation": "Votre commande {numero} est confirmée et en cours de préparation. Vous serez averti dès qu'elle sera prête pour le retrait.",
+      "prete_retrait": "Votre commande {numero} est prête pour le retrait !",
+      "retiree": "Votre commande {numero} a été retirée. Merci pour votre confiance !",
+      "attente_paiement": "Votre commande {numero} sera validée dès qu'un agent ATC aura vérifié votre virement."
+    },
+    "telechargerFacture": "Télécharger la facture pro forma",
+    "telechargerRecu": "Télécharger le reçu",
+    "modalitesRetrait": "Modalités de retrait",
+    "moyenPaiement": "Moyen de paiement",
+    "regleLe": "Réglé le {date}",
+    "signaler": "Signaler un problème avec cette commande",
+    "attenteValidation": "Commande en attente de validation",
+    "preuveEnvoyeeLe": "Preuve envoyée le {date} — en vérification",
+    "virementRefuseLe": "Refusé le {date}"
+  },
+  "installation": {
+    "titre": "Installation solaire",
+    "attente": "En attente de confirmation par notre équipe.",
+    "planifier": "Planifier l'installation",
+    "eligible": "Votre équipement solaire est éligible à l'assistance à l'installation par notre équipe interne.",
+    "proposer": "Proposer cette date",
+    "statut": {
+      "planifie": "Planifiée",
+      "realise": "Réalisée",
+      "annule": "Annulée"
+    }
+  },
+  "recu": {
+    "introuvable": "Reçu introuvable.",
+    "titre": "Reçu de commande",
+    "reglePar": "Réglé par {methode} le {date}",
+    "mention": "Reçu généré automatiquement à la commande — sans valeur fiscale définitive. Retrait en magasin uniquement, aucun service de livraison."
+  },
+  "facture": {
+    "introuvable": "Facture introuvable.",
+    "titre": "Facture pro forma",
+    "nif": "NIF : {nif}",
+    "conditions": "Conditions de paiement",
+    "moyens": "MonCash, carte Visa/Mastercard ou PayPal",
+    "devise": "Devise : USD",
+    "installation": "Installation",
+    "sousTotalHt": "Sous-total (HT)",
+    "totalTtc": "Total (TTC)",
+    "mentionDevis": "Document généré automatiquement à l'acceptation du devis — sans valeur fiscale définitive. Retrait en magasin uniquement, aucun service de livraison.",
+    "mentionCommande": "Document généré automatiquement à la commande — sans valeur fiscale définitive. Retrait en magasin uniquement, aucun service de livraison."
+  },
+  "devis": {
+    "titre": "Mes devis",
+    "sousTitre": "Suivez l'état de vos demandes de package solaire.",
+    "aucun": "Aucun devis pour le moment",
+    "composer": "Composer un package personnalisé",
+    "statut": {
+      "en_attente": "En attente",
+      "repondu": "Répondu",
+      "accepte": "Accepté",
+      "refuse": "Refusé",
+      "expire": "Expiré",
+      "converti": "Converti en commande"
+    },
+    "expireErreur": "Ce devis a expiré — veuillez soumettre une nouvelle demande.",
+    "accepter": "Accepter",
+    "refuser": "Refuser",
+    "regle": "Réglé",
+    "payer": "Payer maintenant",
+    "facture": "Facture pro forma",
+    "confirmerTitre": "Confirmer l'acceptation du devis",
+    "confirmerTexte": "En acceptant, vous vous engagez sur le montant de {montant}. Notre équipe préparera votre commande.",
+    "expireDelai": "Expiré",
+    "expireDansHeures": "Expire dans {nombre} h",
+    "expireDansJour": "Expire dans {nombre} jour",
+    "expireDansJours": "Expire dans {nombre} jours"
+  },
+  "sav": {
+    "statut": {
+      "ouvert": "Ouvert",
+      "en_cours": "En cours",
+      "resolu": "Résolu",
+      "ferme": "Fermé"
+    },
+    "titre": "SAV & Assistance",
+    "sousTitre": "Ouvrez un ticket pour une panne ou une réclamation.",
+    "nouveau": "Nouveau ticket",
+    "sujet": "Sujet",
+    "sujetExemple": "Ex. : Panne, réclamation…",
+    "description": "Description",
+    "commandeConcernee": "Commande concernée (facultatif)",
+    "aucuneCommande": "— Aucune —",
+    "envoyer": "Envoyer le ticket",
+    "aucunTicket": "Aucun ticket pour le moment",
+    "commandeRef": "Commande {numero}"
+  },
+  "favoris": {
+    "aucun": "Aucun favori pour le moment",
+    "parcourir": "Parcourir le catalogue"
+  },
+  "contact": {
+    "titre": "Contact",
+    "intro": "Une question sur un produit, un devis ou une commande ? Notre équipe vous répond.",
+    "retrait": "Retrait en magasin",
+    "retraitTexte": "Adresse communiquée à la confirmation de commande",
+    "nom": "Nom",
+    "email": "Email",
+    "sujet": "Sujet",
+    "message": "Message",
+    "envoyer": "Envoyer",
+    "envoye": "Message envoyé",
+    "merci": "Merci, {nom} — notre équipe vous répondra sous 24 à 48h ouvrées."
+  },
+  "faqPage": {
+    "titre": "Foire aux questions",
+    "introAvant": "Vous ne trouvez pas de réponse ?",
+    "contactez": "Contactez-nous",
+    "generales": "Questions générales"
+  },
+  "faq": {
+    "faq-retrait": {
+      "question": "Proposez-vous la livraison à domicile ?",
+      "reponse": "Non — toutes les commandes sont exclusivement retirées en magasin. Vous êtes notifié dès que votre commande est prête pour le retrait."
+    },
+    "faq-paiement": {
+      "question": "Quels moyens de paiement acceptez-vous ?",
+      "reponse": "MonCash, carte Visa/Mastercard, PayPal et virement bancaire. Pour un virement, joignez la preuve de la transaction : votre commande est validée après vérification par notre équipe. Les codes promotionnels ne sont pas proposés."
+    },
+    "faq-b2b": {
+      "question": "Comment bénéficier des tarifs professionnels (B2B) ?",
+      "reponse": "Créez un compte Entreprise et soumettez vos documents (NIF, registre de commerce, pièce d'identité). Une fois votre dossier validé par notre équipe, le barème par palier de quantité s'applique automatiquement, sans négociation individuelle."
+    },
+    "faq-garantie": {
+      "question": "Quelle est la durée de garantie de mes produits ?",
+      "reponse": "Elle varie par catégorie : 24 mois pour l'énergie solaire, 12 mois pour la sécurité et la climatisation. Le détail est indiqué sur chaque fiche produit."
+    },
+    "faq-devis-validite": {
+      "question": "Combien de temps un devis reste-t-il valable ?",
+      "reponse": "Un devis répondu par notre équipe reste valable 3 jours à compter de sa réponse."
+    },
+    "faq-panneaux-install": {
+      "question": "Puis-je faire installer mes panneaux solaires par ATC ?",
+      "reponse": "Notre équipe interne assure l'assistance à l'installation pour les équipements solaires achetés via un package ou un devis. Contactez notre support pour en discuter."
+    },
+    "faq-securite-install": {
+      "question": "Les caméras de sécurité sont-elles faciles à installer ?",
+      "reponse": "Nos caméras PTZ et sonnettes connectées sont conçues pour une installation simple. Un guide est fourni avec chaque produit."
+    },
+    "faq-clim-entretien": {
+      "question": "Quel entretien pour un climatiseur ATC ?",
+      "reponse": "Un nettoyage des filtres tous les 2 à 3 mois est recommandé pour préserver la performance et la garantie."
+    }
+  },
+  "legal": {
+    "miseAJour": "Dernière mise à jour : {date}",
+    "versionFrancaise": "La version française de ce document fait foi."
+  },
+  "chatbot": {
+    "accueil": "Bonjour ! Je suis l'assistant automatisé d'ATC. Posez-moi une question sur nos produits, garanties, moyens de paiement, retrait en magasin ou compte professionnel.",
+    "repli": "Cette question dépasse ce que je peux traiter. Contactez notre support via WhatsApp pour une réponse personnalisée.",
+    "messageWhatsapp": "Bonjour, j'ai une question qui n'a pas trouvé de réponse via l'assistant du site.",
+    "contacterSupport": "Contacter le support WhatsApp →",
+    "ouvrir": "Ouvrir l'assistant ATC",
+    "fermer": "Fermer l'assistant ATC",
+    "titre": "Assistant ATC",
+    "sousTitre": "Assistant automatisé — pas un conseiller en direct",
+    "ecrit": "L'assistant est en train d'écrire",
+    "votreQuestion": "Votre question",
+    "placeholder": "Posez votre question…",
+    "envoyer": "Envoyer"
+  },
+  "connexion": {
+    "creerCompte": "Créer un compte",
+    "titre": "Connexion",
+    "email": "Email",
+    "motDePasse": "Mot de passe",
+    "oublie": "Mot de passe oublié ?",
+    "pasDeCompte": "Pas encore de compte ?",
+    "comptePro": "Compte professionnel ?",
+    "inscriptionEntreprise": "Inscription Entreprise",
+    "nomComplet": "Nom complet",
+    "creerMonCompte": "Créer mon compte",
+    "dejaCompte": "Déjà un compte ?",
+    "erreurMotDePasse": "Veuillez saisir votre mot de passe.",
+    "erreurNouveauMotDePasse": "Veuillez saisir un mot de passe.",
+    "erreurCompte": "Aucun compte ne correspond à cet email.",
+    "comptesDemo": "Comptes de démonstration",
+    "comptesClients": "Comptes clients",
+    "comptesAdmins": "Comptes administrateurs",
+    "particulier": "Particulier",
+    "entrepriseStatut": "Entreprise — {statut}",
+    "statutVerifie": "B2B vérifié",
+    "statutAttente": "en attente",
+    "statutComplement": "complément demandé",
+    "agentSavSupport": "Agent SAV / Support",
+    "ou": "OU",
+    "continuerGoogle": "Continuer avec Google",
+    "continuerFacebook": "Continuer avec Facebook",
+    "continuerApple": "Continuer avec Apple",
+    "bientot": "Connexion avec {fournisseur} — bientôt disponible."
+  },
+  "inscription": {
+    "titre": "Créer un compte",
+    "dejaInscrit": "Déjà inscrit ?",
+    "particulierTexte": "Achats au détail, devis et suivi de commandes.",
+    "entrepriseTexte": "Barème de prix par palier, facturation pro forma — sous réserve de validation."
+  },
+  "motDePasse": {
+    "titre": "Mot de passe oublié",
+    "envoye": "Si un compte existe avec cette adresse email, un lien de réinitialisation vient de lui être envoyé.",
+    "intro": "Indiquez votre email — nous vous enverrons un lien pour réinitialiser votre mot de passe.",
+    "envoyer": "Envoyer le lien",
+    "retour": "← Retour à la connexion"
+  },
+  "entreprise": {
+    "titre": "Devenir client professionnel",
+    "intro": "Quatre étapes pour accéder au barème de prix par palier et à la facturation pro forma.",
+    "etape": {
+      "inscription": "Inscription",
+      "documents": "Documents",
+      "verification": "Vérification",
+      "activation": "Activation"
+    },
+    "champ": {
+      "nom_legal": "Nom légal de l'entreprise",
+      "nom_commercial": "Nom commercial (si différent)",
+      "nif": "NIF",
+      "nifInfo": "Numéro d'Identification Fiscale, délivré par la DGI.",
+      "registre_commerce": "Registre de commerce (si disponible)",
+      "adresse_entreprise": "Adresse",
+      "telephone_professionnel": "Téléphone professionnel",
+      "email_professionnel": "Email professionnel",
+      "representant_nom": "Nom du représentant",
+      "representant_fonction": "Fonction du représentant",
+      "secteur_activite": "Secteur d'activité",
+      "taille_entreprise": "Taille de l'entreprise (optionnel)"
+    },
+    "document": {
+      "patente": "Patente ou licence commerciale",
+      "nif": "NIF",
+      "registre_commerce": "Registre de commerce (si applicable)",
+      "piece_identite": "Pièce d'identité du représentant"
+    },
+    "formatNonSupporte": "Format non supporté pour \"{fichier}\" — formats acceptés : PDF, JPG, PNG.",
+    "tropLourd": "\"{fichier}\" dépasse la taille maximale de 5 Mo.",
+    "obligatoire": "Ce champ est obligatoire.",
+    "continuer": "Continuer →",
+    "retirer": "Retirer {fichier}",
+    "ajouterFichier": "Ajouter un fichier (PDF, JPG, PNG — 5 Mo max)",
+    "precedent": "← Précédent",
+    "soumettre": "Soumettre le dossier",
+    "envoyeTitre": "Dossier envoyé, vérification sous quelques jours",
+    "envoyeTexte": "Vous pouvez dès maintenant naviguer sur le site et consulter les prix publics. Les barèmes professionnels et la facturation pro forma seront accessibles après validation de votre dossier par notre équipe.",
+    "allerAccueil": "Aller à l'accueil"
+  },
+  "dossier": {
+    "formatNonSupporte": "Format non supporté — PDF, JPG ou PNG uniquement.",
+    "tropLourd": "Ce fichier dépasse 5 Mo.",
+    "envoye": "Documents complémentaires envoyés — votre dossier repasse en attente de vérification.",
+    "motif": "Motif : {motif}",
+    "ajouter": "Ajouter un document (PDF, JPG, PNG — 5 Mo max)",
+    "envoyer": "Envoyer le complément"
+  },
+  "tableau": {
+    "statut": {
+      "valide": "Entreprise — B2B vérifié",
+      "en_attente": "Entreprise — en attente de vérification",
+      "rejete": "Entreprise — dossier rejeté",
+      "complement_demande": "Entreprise — complément requis"
+    },
+    "complementTitre": "Complément de dossier requis",
+    "devisTexte": "Suivre mes demandes de package",
+    "commandesTexte": "Suivre le statut de retrait",
+    "favorisTexte": "Produits enregistrés",
+    "savTexte": "Ouvrir ou suivre un ticket",
+    "proTexte": "Accéder au barème B2B",
+    "moyensPaiement": "Moyens de paiement enregistrés"
+  },
+  "adresses": {
+    "titre": "Carnet d'adresses",
+    "ajouter": "Ajouter",
+    "libelle": "Libellé (ex. Domicile, Bureau)",
+    "complete": "Adresse complète",
+    "enregistrer": "Enregistrer",
+    "aucune": "Aucune adresse enregistrée.",
+    "supprimer": "Supprimer"
+  },
+  "moyens": {
+    "enregistres": "Vos moyens enregistrés",
+    "parDefaut": "Par défaut",
+    "ouAutre": "— OU choisissez un autre moyen ci-dessous —",
+    "aucun": "Aucun moyen de paiement enregistré pour le moment.",
+    "definirDefaut": "Définir par défaut",
+    "modifier": "Modifier",
+    "ajouter": "Ajouter un moyen de paiement",
+    "libelle": "Libellé",
+    "libelleExemple": "Libellé (ex. Carte •••• 1234)",
+    "infoSecondaire": "Information secondaire (facultatif)",
+    "enregistrer": "Enregistrer",
+    "ajouterBouton": "Ajouter"
   }
 }

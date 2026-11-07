@@ -6,8 +6,10 @@
 // pour ces messages, donc aucune n'est construite ici (voir AUDIT-REPORT.md).
 import { useState } from "react";
 import { Send } from "lucide-react";
+import { useTranslation } from "@/lib/i18n/useTranslation";
 
 export function FormulaireContact() {
+  const { t } = useTranslation();
   const [nom, setNom] = useState("");
   const [email, setEmail] = useState("");
   const [sujet, setSujet] = useState("");
@@ -23,9 +25,9 @@ export function FormulaireContact() {
   if (envoye) {
     return (
       <div className="rounded-xl border border-succes/30 bg-succes/5 p-6 text-center">
-        <p className="font-titres text-base font-semibold text-texte-principal">Message envoyé</p>
+        <p className="font-titres text-base font-semibold text-texte-principal">{t("contact.envoye")}</p>
         <p className="mt-1 text-sm text-texte-secondaire">
-          Merci, {nom} — notre équipe vous répondra sous 24 à 48h ouvrées.
+          {t("contact.merci", { nom })}
         </p>
       </div>
     );
@@ -34,7 +36,7 @@ export function FormulaireContact() {
   return (
     <form onSubmit={soumettre} className="flex flex-col gap-4 rounded-xl border border-bordure bg-background p-6">
       <label className="block text-sm">
-        <span className="text-texte-secondaire">Nom</span>
+        <span className="text-texte-secondaire">{t("contact.nom")}</span>
         <input
           type="text"
           required
@@ -44,7 +46,7 @@ export function FormulaireContact() {
         />
       </label>
       <label className="block text-sm">
-        <span className="text-texte-secondaire">Email</span>
+        <span className="text-texte-secondaire">{t("contact.email")}</span>
         <input
           type="email"
           required
@@ -54,7 +56,7 @@ export function FormulaireContact() {
         />
       </label>
       <label className="block text-sm">
-        <span className="text-texte-secondaire">Sujet</span>
+        <span className="text-texte-secondaire">{t("contact.sujet")}</span>
         <input
           type="text"
           value={sujet}
@@ -63,7 +65,7 @@ export function FormulaireContact() {
         />
       </label>
       <label className="block text-sm">
-        <span className="text-texte-secondaire">Message</span>
+        <span className="text-texte-secondaire">{t("contact.message")}</span>
         <textarea
           required
           rows={5}
@@ -76,7 +78,7 @@ export function FormulaireContact() {
         type="submit"
         className="mt-1 inline-flex w-fit items-center gap-2 rounded-lg bg-primaire px-5 py-2.5 text-sm font-semibold text-white hover:opacity-90"
       >
-        <Send size={16} /> Envoyer
+        <Send size={16} /> {t("contact.envoyer")}
       </button>
     </form>
   );

@@ -4,11 +4,13 @@ import { produits } from "@/lib/mock-data/produits";
 import { paliersParProduit } from "@/lib/mock-data/paliers-prix-b2b";
 import { trouverPalierApplicable } from "@/lib/business-rules/bareme-b2b";
 import { resoudreProduitEtVariante } from "@/lib/services/variantes";
+import { traduire } from "@/lib/i18n/traduire";
+import type { Langue } from "@/lib/types/entities";
 
-// Libellé d'un prix au format du site ("$151.00", USD uniquement) ; null = prix non communiqué par le
-// client. Intégration du catalogue ATC.
-export function formaterPrix(prix: number | null): string {
-  return prix === null ? "Prix sur demande" : `$${prix.toFixed(2)}`;
+// Libellé d'un prix au format du site ("$151.00", USD uniquement, quelle que soit la langue) ; null = prix
+// non communiqué par le client (« Prix sur demande », traduit). Langue par défaut FR : l'admin reste en français.
+export function formaterPrix(prix: number | null, langue: Langue = "fr"): string {
+  return prix === null ? traduire(langue, "prix.surDemande") : `$${prix.toFixed(2)}`;
 }
 
 export function resoudrePrixUnitaire(produitId: string, quantite: number, estB2BVerifie: boolean): number {

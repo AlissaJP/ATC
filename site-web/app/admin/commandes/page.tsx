@@ -1,7 +1,7 @@
 import { GestionCommandes } from "@/components/admin/GestionCommandes";
 import type { StatutCommande } from "@/lib/types/entities";
 
-const STATUTS_VALIDES: StatutCommande[] = ["en_preparation", "prete_retrait", "retiree"];
+const STATUTS_VALIDES: StatutCommande[] = ["attente_paiement", "en_preparation", "prete_retrait", "retiree"];
 
 export default async function AdminCommandesPage(props: PageProps<"/admin/commandes">) {
   const { statut } = await props.searchParams;

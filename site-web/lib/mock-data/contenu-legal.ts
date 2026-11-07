@@ -44,7 +44,7 @@ export const pagesLegales: PageLegale[] = [
         id: "cgv-4",
         titre: "4. Moyens de paiement",
         corps:
-          "Les commandes et devis acceptés se règlent par MonCash, carte bancaire (Visa/Mastercard) ou PayPal. Le virement bancaire et les codes promotionnels ne sont pas proposés. Pour un règlement par MonCash, le montant est converti en gourdes haïtiennes (HTG) au taux de change en vigueur au moment de la transaction ; ce taux est fixé manuellement par ATC et journalisé sur la transaction, il n'est jamais recalculé a posteriori.",
+          "Les commandes et devis acceptés se règlent par MonCash, carte bancaire (Visa/Mastercard), PayPal ou virement bancaire. Les codes promotionnels ne sont pas proposés. Pour un règlement par MonCash ou par virement sur le compte en gourdes d'ATC, le montant est converti en gourdes haïtiennes (HTG) au taux de change en vigueur au moment de la transaction ; ce taux est fixé manuellement par ATC et journalisé sur la transaction, il n'est jamais recalculé a posteriori. Un règlement par virement doit être accompagné de la preuve de la transaction : la commande n'est validée qu'après vérification de cette preuve et de la réception des fonds par ATC.",
       },
       {
         id: "cgv-5",

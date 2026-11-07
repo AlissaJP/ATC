@@ -18,6 +18,8 @@ import { useGardeClient } from "@/lib/hooks/useGardeClient";
 import { prixDepart } from "@/lib/services/variantes";
 import { formaterPrix } from "@/lib/services/prix";
 import { Toast } from "@/components/ui/Toast";
+import { useTranslation } from "@/lib/i18n/useTranslation";
+import { localiserProduit } from "@/lib/i18n/catalogue";
 
 // RG-03-001 / RG-03-004 — prix public par défaut, ou prix de départ du barème si client B2B vérifié.
 interface ProductCardProps {
@@ -26,7 +28,10 @@ interface ProductCardProps {
   paliers: PalierPrixB2B[];
 }
 
-export function ProductCard({ produit, niveauStock, paliers }: ProductCardProps) {
+export function ProductCard({ produit: produitSource, niveauStock, paliers }: ProductCardProps) {
+  const { t, langue } = useTranslation();
+  // Traduction à l'affichage (nom, variantes) ; les identifiants restent ceux du produit source.
+  const produit = localiserProduit(produitSource, langue);
   const session = useSessionStore((s) => s.session);
   const estB2B = estClientB2BVerifie(session);
   const palierDepart = estB2B && paliers.length > 0 ? trouverPalierApplicable(paliers, 1) : undefined;
@@ -54,9 +59,9 @@ export function ProductCard({ produit, niveauStock, paliers }: ProductCardProps)
         {produit.eligible_package && (
           <span
             className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-full bg-background/90 px-2 py-1 text-[11px] font-semibold text-primaire shadow-sm"
-            title="Disponible en package personnalisé"
+            title={t("produit.disponiblePackage")}
           >
-            <PackagePlus size={12} /> Package
+            <PackagePlus size={12} /> {t("produit.badgePackage")}
           </span>
         )}
         <BoutonFavori produitId={produit.id} className="absolute right-2 top-2 h-8 w-8" />
@@ -74,8 +79,9 @@ export function ProductCard({ produit, niveauStock, paliers }: ProductCardProps)
         <div className="mt-auto flex items-center justify-between gap-2">
           <div className="flex flex-col">
             <p className="font-titres text-base font-bold text-primaire">
-              {prixAffiche !== null && (aDesVariantes || palierDepart) && "À partir de "}
-              {formaterPrix(prixAffiche)}
+              {prixAffiche !== null && (aDesVariantes || palierDepart)
+                ? t("prix.aPartirDe", { prix: formaterPrix(prixAffiche) })
+                : formaterPrix(prixAffiche, langue)}
             </p>
             {/* « Prix sur demande » : pas de badge de stock, comme sur la fiche produit. */}
             {produit.prix_disponible && <StockBadge niveau={niveauStock} />}
@@ -85,7 +91,7 @@ export function ProductCard({ produit, niveauStock, paliers }: ProductCardProps)
           {!aDesVariantes && produit.prix_disponible && (
             <motion.button
               type="button"
-              aria-label="Ajouter au panier"
+              aria-label={t("produit.ajouterPanier")}
               disabled={niveauStock === "rupture"}
               whileTap={{ scale: 0.85 }}
               onClick={(e) => {
@@ -95,7 +101,7 @@ export function ProductCard({ produit, niveauStock, paliers }: ProductCardProps)
                   ajouterLigne(produit.id, 1);
                   setConfirmationVisible(true);
                   setTimeout(() => setConfirmationVisible(false), 1200);
-                }, "Connectez-vous pour ajouter ce produit à votre panier.");
+                }, t("produit.connexionPanier"));
               }}
               className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primaire text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
             >
@@ -116,7 +122,7 @@ export function ProductCard({ produit, niveauStock, paliers }: ProductCardProps)
         </div>
       </div>
       {messageToast && (
-        <Toast message={messageToast} actionLabel="Se connecter" onAction={allerALaConnexion} onFermer={fermerToast} />
+        <Toast message={messageToast} actionLabel={t("commun.seConnecter")} onAction={allerALaConnexion} onFermer={fermerToast} />
       )}
     </Link>
   );

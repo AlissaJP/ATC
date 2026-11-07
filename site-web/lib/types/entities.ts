@@ -168,7 +168,9 @@ export interface LigneDevis {
   prix_unitaire_applique: number; // figé au palier applicable au moment de la réponse
 }
 
-export type StatutCommande = "en_preparation" | "prete_retrait" | "retiree";
+// attente_paiement : commande réglée par virement bancaire dont la preuve n'a pas encore été vérifiée par un
+// administrateur. Elle ne devient une commande validée (en_preparation) qu'après cette vérification.
+export type StatutCommande = "attente_paiement" | "en_preparation" | "prete_retrait" | "retiree";
 
 export interface Commande {
   id: string;
@@ -189,8 +191,19 @@ export interface LigneCommande {
   prix_unitaire_applique: number;
 }
 
-export type MethodePaiement = "moncash" | "carte" | "paypal"; // RG-06-001 — jamais virement
+// RG-06-001 révisée à la demande du client (décision n°23 levée) : le virement bancaire est accepté, avec
+// vérification manuelle de la preuve par l'Administrateur Général avant validation de la commande.
+export type MethodePaiement = "moncash" | "carte" | "paypal" | "virement";
 export type StatutTransaction = "réussie" | "échouée" | "en cours";
+export type CompteVirement = "htg" | "usd";
+
+export interface DetailVirement {
+  compte: CompteVirement; // compte ATC crédité, choisi par le client
+  preuve: { nom: string; donnees: string }; // photo ou capture de la transaction, en data URL (démo sans serveur)
+  date_verification?: string;
+  verifie_par?: string; // nom de l'administrateur qui a validé ou refusé
+  motif_refus?: string;
+}
 
 export interface Paiement {
   id: string;
@@ -201,10 +214,12 @@ export interface Paiement {
   devis_id?: string;
   methode: MethodePaiement;
   montant_usd: number;
-  montant_htg?: number; // renseigné si moncash
+  montant_htg?: number; // renseigné si moncash, ou virement sur le compte en gourdes
   taux_change_applique?: number; // journalisé, jamais recalculé a posteriori
+  // Virement : "en cours" tant que la preuve n'est pas vérifiée, "réussie" une fois validé, "échouée" si refusé.
   statut_transaction: StatutTransaction;
   date_transaction: string;
+  virement?: DetailVirement;
 }
 
 export interface FactureProForma {
@@ -384,7 +399,9 @@ export interface LogAudit {
 }
 
 // Calculé dynamiquement, jamais stocké — RG-03-002
-export type NiveauAlerteStock = "en_stock" | "alerte_orange" | "alerte_rouge" | "rupture";
+// non_suivi : quantité non communiquée par le client (stock_actuel null, ou variante sans stock) — aucune
+// disponibilité n'est affirmée au visiteur (audit A-11), mais le produit reste achetable.
+export type NiveauAlerteStock = "en_stock" | "alerte_orange" | "alerte_rouge" | "rupture" | "non_suivi";
 
 export type TypeMouvementStock = "entree" | "sortie";
 

@@ -10,12 +10,14 @@ import { produits } from "@/lib/mock-data/produits";
 import { trouverStockParProduit } from "@/lib/mock-data/stock";
 import { paliersParProduit } from "@/lib/mock-data/paliers-prix-b2b";
 import { determinerNiveauAlerteStock } from "@/lib/business-rules/stock-alerte";
+import { useTranslation } from "@/lib/i18n/useTranslation";
 
 export default function FavorisPage() {
+  const { t } = useTranslation();
   const tousLesFavoris = useComptesStore((s) => s.favoris);
 
   return (
-    <GardeClient message="Connectez-vous pour consulter vos favoris.">
+    <GardeClient cleMessage="garde.messageFavoris">
       {(session) => {
         const idsFavoris = new Set(
           tousLesFavoris.filter((f) => f.utilisateur_id === session.utilisateur_id).map((f) => f.produit_id)
@@ -34,14 +36,14 @@ export default function FavorisPage() {
 
         return (
           <main className="mx-auto w-full max-w-6xl px-4 py-8 md:px-6">
-            <h1 className="mb-6 font-titres text-2xl font-bold text-texte-principal">Mes favoris</h1>
+            <h1 className="mb-6 font-titres text-2xl font-bold text-texte-principal">{t("compte.mesFavoris")}</h1>
 
             {produitsFavoris.length === 0 ? (
               <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-bordure py-16 text-center">
                 <Heart size={28} className="text-texte-secondaire" />
-                <p className="font-titres text-sm font-semibold text-texte-principal">Aucun favori pour le moment</p>
+                <p className="font-titres text-sm font-semibold text-texte-principal">{t("favoris.aucun")}</p>
                 <Link href="/" className="text-sm font-medium text-primaire hover:underline">
-                  Parcourir le catalogue
+                  {t("favoris.parcourir")}
                 </Link>
               </div>
             ) : (

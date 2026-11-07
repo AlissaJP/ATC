@@ -6,6 +6,7 @@ import { Search } from "lucide-react";
 import { VisuelProduit } from "@/components/product/VisuelProduit";
 import { rechercherProduits } from "@/lib/services/recherche";
 import { formaterPrix } from "@/lib/services/prix";
+import { localiserProduit } from "@/lib/i18n/catalogue";
 import type { Produit } from "@/lib/types/entities";
 import { useTranslation } from "@/lib/i18n/useTranslation";
 
@@ -22,7 +23,7 @@ export function SearchBar({
   valeurInitiale?: string;
 }) {
   const router = useRouter();
-  const { t } = useTranslation();
+  const { t, langue } = useTranslation();
   const [requete, setRequete] = useState(valeurInitiale);
   const [suggestions, setSuggestions] = useState<Produit[]>([]);
   const [ouvert, setOuvert] = useState(false);
@@ -31,13 +32,13 @@ export function SearchBar({
   useEffect(() => {
     if (requete.trim().length < 2) return;
     let annule = false;
-    rechercherProduits(requete, 6).then((resultats) => {
+    rechercherProduits(requete, 6, langue).then((resultats) => {
       if (!annule) setSuggestions(resultats);
     });
     return () => {
       annule = true;
     };
-  }, [requete]);
+  }, [requete, langue]);
 
   useEffect(() => {
     function surClicExterieur(e: MouseEvent) {
@@ -82,7 +83,7 @@ export function SearchBar({
       {ouvert && requete.trim().length >= 2 && suggestions.length > 0 && (
         <div className="absolute left-0 right-0 top-full z-30 mt-2 max-h-96 overflow-y-auto rounded-xl border border-bordure bg-background shadow-lg">
           <ul>
-            {suggestions.map((produit) => (
+            {suggestions.map((produitSource) => localiserProduit(produitSource, langue)).map((produit) => (
               <li key={produit.id}>
                 <a
                   href={`/produit/${produit.slug}`}
@@ -97,7 +98,7 @@ export function SearchBar({
                   </div>
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium text-texte-principal">{produit.nom}</p>
-                    <p className="text-xs text-texte-secondaire">{formaterPrix(produit.prix_public)}</p>
+                    <p className="text-xs text-texte-secondaire">{formaterPrix(produit.prix_public, langue)}</p>
                   </div>
                 </a>
               </li>
@@ -107,7 +108,7 @@ export function SearchBar({
             type="submit"
             className="block w-full border-t border-bordure px-3 py-2 text-left text-sm font-medium text-primaire hover:bg-fond"
           >
-            Voir tous les résultats pour « {requete} »
+            {t("recherche.voirTout", { requete })}
           </button>
         </div>
       )}

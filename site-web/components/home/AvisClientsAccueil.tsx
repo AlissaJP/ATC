@@ -20,6 +20,13 @@ function initiales(nom: string): string {
 // de sens réel. Ce résumé reste pertinent PAR PRODUIT, où il existe déjà (AvisProduit.tsx, fiche produit).
 export function AvisClientsAccueil() {
   const { t } = useTranslation();
+  // Témoignages (lib/mock-data/temoignages.ts) traduits via les dictionnaires (temoignages.<id>.<champ>),
+  // repli sur le texte d'origine pour un témoignage ajouté sans traduction.
+  const traduireTemoignage = (id: string, champ: string, original: string) => {
+    const cle = `temoignages.${id}.${champ}`;
+    const traduit = t(cle);
+    return traduit === cle ? original : traduit;
+  };
 
   return (
     <section>
@@ -31,7 +38,7 @@ export function AvisClientsAccueil() {
             className="flex w-72 shrink-0 snap-start flex-col gap-3 rounded-xl border border-bordure bg-background p-5 sm:w-auto"
           >
             <Etoiles note={temoin.note} taille={15} />
-            <p className="flex-1 text-sm text-texte-principal">« {temoin.commentaire} »</p>
+            <p className="flex-1 text-sm text-texte-principal">« {traduireTemoignage(temoin.id, "commentaire", temoin.commentaire)} »</p>
             <div className="flex items-center gap-3 border-t border-bordure pt-3">
               <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primaire-clair text-xs font-semibold text-white">
                 {initiales(temoin.nom)}
@@ -41,7 +48,7 @@ export function AvisClientsAccueil() {
                 {temoin.localisation && (
                   <p className="flex items-center gap-1 truncate text-xs text-texte-secondaire">
                     <MapPin size={11} className="shrink-0" />
-                    {temoin.localisation}
+                    {traduireTemoignage(temoin.id, "localisation", temoin.localisation)}
                   </p>
                 )}
               </div>

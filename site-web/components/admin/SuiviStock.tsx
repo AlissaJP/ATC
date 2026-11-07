@@ -21,6 +21,7 @@ const LIBELLES_PANIER: Record<PanierStock, { label: string; classe: string }> = 
   vert: { label: "En stock", classe: "bg-succes/10 text-succes" },
   jaune: { label: "Stock faible", classe: "bg-avertissement/10 text-avertissement" },
   rouge: { label: "Stock critique", classe: "bg-danger/10 text-danger" },
+  gris: { label: "Non suivi", classe: "bg-texte-secondaire/10 text-texte-secondaire" },
 };
 
 type Periode = "30" | "90" | "tout";

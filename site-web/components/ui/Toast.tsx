@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { X } from "lucide-react";
+import { useTranslation } from "@/lib/i18n/useTranslation";
 
 // Notification (toast) — Cahier 7 §4. Auto-fermeture après `dureeMs`, action optionnelle (ex. Annuler).
 export function Toast({
@@ -18,6 +19,7 @@ export function Toast({
   onFermer: () => void;
   dureeMs?: number;
 }) {
+  const { t } = useTranslation();
   useEffect(() => {
     const minuteur = setTimeout(onFermer, dureeMs);
     return () => clearTimeout(minuteur);
@@ -50,7 +52,7 @@ export function Toast({
       )}
       <button
         type="button"
-        aria-label="Fermer"
+        aria-label={t("commun.fermer")}
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();

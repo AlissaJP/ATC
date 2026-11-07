@@ -3,7 +3,7 @@ import type { MethodePaiement } from "@/lib/types/entities";
 
 // BF-12-008 — Suivi des paiements par méthode + factures pro forma (back-office). Renommé
 // "Transactions" → "Paiements" dans la navigation (Raffinement Design, Section Administration).
-const METHODES_VALIDES: MethodePaiement[] = ["moncash", "carte", "paypal"];
+const METHODES_VALIDES: MethodePaiement[] = ["moncash", "carte", "paypal", "virement"];
 
 export default async function AdminTransactionsPage(props: PageProps<"/admin/transactions">) {
   const { methode } = await props.searchParams;

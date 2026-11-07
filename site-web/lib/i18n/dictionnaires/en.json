@@ -7,7 +7,14 @@
     "devenirPro": "Become a Business Customer",
     "recherche": "Search for a product...",
     "compte": "My Account",
-    "panier": "Cart"
+    "panier": "Cart",
+    "ouvrirMenu": "Open menu",
+    "fermerMenu": "Close menu",
+    "accueilAtc": "ATC home",
+    "favoris": "Favorites ({nombre})",
+    "categories": "Categories",
+    "categoriesMobile": "Categories (mobile)",
+    "langue": "Language"
   },
   "accueil": {
     "heroAccroche": "Solar Energy · Installation Included",
@@ -38,7 +45,14 @@
     "chiffresSousTitre": "From individuals to businesses, the same commitment to quality.",
     "chiffresLabel1": "Satisfied customers",
     "chiffresLabel2": "Verified business accounts",
-    "chiffresLabel3": "Solar installations completed"
+    "chiffresLabel3": "Solar installations completed",
+    "heroAlt": "ATC technicians installing a solar panel array, Port-au-Prince",
+    "proAvantage1": "Price tiers by quantity",
+    "proAvantage2": "Automatic pro forma invoicing",
+    "proAvantage3": "Quotes for custom solar packages",
+    "proEnValidation": "Your business account is being verified.",
+    "proAlt": "Business team reviewing sales and purchasing data in a meeting",
+    "whatsappQuestion": "Hello, I have a question."
   },
   "produit": {
     "ajouterPanier": "Add to Cart",
@@ -47,7 +61,32 @@
     "alerteOrange": "Low Stock",
     "alerteRouge": "Critical Stock",
     "rupture": "Out of Stock",
-    "baremeB2B": "Business Pricing"
+    "baremeB2B": "Business Pricing",
+    "ajoute": "Added to cart",
+    "connexionPanier": "Log in to add this product to your cart.",
+    "connexionFavoris": "Log in to add this product to your favorites.",
+    "ajouterFavoris": "Add to favorites",
+    "retirerFavoris": "Remove from favorites",
+    "badgePackage": "Package",
+    "disponiblePackage": "Available in a custom package",
+    "reference": "Ref. {ref}",
+    "caracteristiques": "Specifications",
+    "specifications": "Technical specifications",
+    "garantie": "Warranty",
+    "garantieMois": "{nombre} months",
+    "varianteRupture": "out of stock",
+    "parUnite": "/ unit",
+    "baremeLegende": "Professional price tiers by quantity",
+    "plageQuantite": "Quantity range",
+    "prixUnitaire": "Unit price",
+    "diminuer": "Decrease quantity",
+    "augmenter": "Increase quantity",
+    "total": "Total: {montant}",
+    "demanderPrix": "Request a price",
+    "messagePrixProduit": "Hello ATC, I would like to know the price of product {produit}.",
+    "messagePrixPackage": "Hello ATC, I would like to know the price of package {produit}.",
+    "voirImage": "View image {numero}",
+    "associes": "Related products & compatible accessories"
   },
   "footer": {
     "description": "ATC (Alpha Tech Center) — Solar energy, security, and air conditioning, in Haiti and for the diaspora.",
@@ -64,7 +103,9 @@
     "cgv": "Terms of Sale",
     "confidentialite": "Privacy Policy",
     "mentionsLegales": "Legal Notice",
-    "droitsReserves": "All rights reserved."
+    "droitsReserves": "All rights reserved.",
+    "navEntreprise": "Company",
+    "navAide": "Help"
   },
   "compte": {
     "seConnecter": "Log in",
@@ -76,10 +117,18 @@
     "seDeconnecter": "Log out",
     "backOffice": "Back Office",
     "compteParticulier": "Individual Account",
-    "compteEntreprise": "Business Account"
+    "compteEntreprise": "Business Account",
+    "savAssistance": "After-sales & Support",
+    "adminGeneral": "General Administrator",
+    "agentSav": "After-sales agent",
+    "menu": "Account menu"
   },
   "garde": {
-    "connexionRequise": "Login Required"
+    "connexionRequise": "Login Required",
+    "messagePanier": "Log in to access your cart.",
+    "messageFavoris": "Log in to view your favorites.",
+    "messageDevis": "Log in to view your quotes.",
+    "messageSav": "Log in to open or track an after-sales ticket."
   },
   "aPropos": {
     "bannerTitre": "About ATC",
@@ -97,6 +146,600 @@
     "valeur4Texte": "Hundreds of individual and business customers already served.",
     "ctaTitre": "Ready to start your project?",
     "ctaProduits": "Discover Our Products",
-    "ctaContact": "Contact Us"
+    "ctaContact": "Contact Us",
+    "banniereAlt": "ATC technician working on a rooftop solar installation"
+  },
+  "meta": {
+    "description": "Solar energy, security and air conditioning in Haiti — retail and professional sales."
+  },
+  "commun": {
+    "fermer": "Close",
+    "accueil": "Home",
+    "filAriane": "Breadcrumb",
+    "seConnecter": "Log in",
+    "imageAVenir": "Image coming soon",
+    "annuler": "Cancel",
+    "confirmer": "Confirm",
+    "produit": "Product",
+    "client": "Customer",
+    "quantiteAbregee": "Qty",
+    "total": "Total",
+    "sousTotal": "Subtotal",
+    "taxe": "Tax ({taux}%)",
+    "telechargerPdf": "Download (PDF)",
+    "parUnite": "{prix} / unit",
+    "autres": "Other",
+    "nonRenseigne": "Not provided"
+  },
+  "recherche": {
+    "voirTout": "See all results for “{requete}”",
+    "titreUn": "{nombre} result for “{requete}”",
+    "titrePlusieurs": "{nombre} results for “{requete}”",
+    "aucun": "No results",
+    "aucunTexte": "Try another term or browse our categories from the menu."
+  },
+  "categories": {
+    "cat-energie-solaire": "Solar energy",
+    "cat-panneaux": "Solar panels",
+    "cat-onduleurs": "Inverters",
+    "cat-batteries-lithium": "Lithium batteries",
+    "cat-stockage-commercial": "Commercial and industrial storage",
+    "cat-structures-accessoires": "Structures and accessories",
+    "cat-securite": "Security",
+    "cat-cameras": "Cameras",
+    "cat-climatisation": "Air conditioning",
+    "cat-climatiseurs-residentiels": "Residential air conditioners (wall split)",
+    "cat-climatisation-centrale": "Central and commercial air conditioning",
+    "cat-gaines": "Ducts and air distribution",
+    "cat-service-climatisation": "Related service"
+  },
+  "variantes": {
+    "Puissance": "Power",
+    "Capacité": "Capacity",
+    "Couleur": "Color",
+    "Résolution": "Resolution"
+  },
+  "prix": {
+    "surDemande": "Price on request",
+    "aPartirDe": "From {prix}"
+  },
+  "avis": {
+    "titre": "Customer reviews",
+    "aucun": "No reviews yet — be the first to share your opinion.",
+    "surCinq": "{note} out of 5",
+    "basesUn": "Based on {nombre} review",
+    "basesPlusieurs": "Based on {nombre} reviews",
+    "etoileUn": "{nombre} star",
+    "etoilePlusieurs": "{nombre} stars",
+    "achatVerifie": "Verified purchase",
+    "laisser": "Leave a review",
+    "noteSurCinq": "Rating out of 5 stars",
+    "placeholderTitre": "Title of your review",
+    "placeholderCommentaire": "Your comment (optional)",
+    "envoyer": "Submit my review",
+    "publie": "Your review has been published.",
+    "enAttente": "Your review has been submitted and is awaiting moderation.",
+    "auteurDefaut": "ATC customer"
+  },
+  "catalogue": {
+    "marque": "Brand",
+    "prixMax": "Maximum price",
+    "jusqua": "Up to {prix}",
+    "disponibilite": "Availability",
+    "enStockSeulement": "In stock only",
+    "packageSeulement": "Available in a custom package",
+    "reinitialiser": "Reset filters",
+    "filtres": "Filters",
+    "nombreProduits": "{nombre} product(s)",
+    "trier": "Sort products",
+    "triPertinence": "Relevance",
+    "triPrixAsc": "Price: low to high",
+    "triPrixDesc": "Price: high to low",
+    "triNouveautes": "Newest",
+    "vueGrille": "Grid view",
+    "vueListe": "List view",
+    "aucunTitre": "No products match these filters",
+    "aucunTexte": "Try broadening your search criteria.",
+    "pagination": "Product pagination",
+    "pagePrecedente": "Previous page",
+    "pageSuivante": "Next page",
+    "fermerFiltres": "Close filters",
+    "voirResultats": "See {nombre} result(s)",
+    "spec": {
+      "puissance": "Power",
+      "capacite": "Capacity",
+      "technologie": "Technology",
+      "courant": "Current",
+      "cycles": "Cycles",
+      "type": "Type",
+      "usage": "Use",
+      "taille": "Size",
+      "stockage": "Storage",
+      "connectivite": "Connectivity",
+      "installation": "Installation",
+      "alimentation": "Power supply"
+    }
+  },
+  "categorie": {
+    "titreUn": "{nombre} product in {categorie}",
+    "titrePlusieurs": "{nombre} products in {categorie}",
+    "tous": "All",
+    "sousCategories": "Subcategories: {categorie}"
+  },
+  "packages": {
+    "titre": "Pre-configured solar packages",
+    "sousTitre": "Complete solar kits, for homes and businesses alike. Ask for a kit's price on WhatsApp, or build your own custom package.",
+    "composer": "Build a custom package",
+    "aucun": "No packages available at the moment",
+    "disponible": "Available",
+    "toutCompris": "all inclusive",
+    "composantRupture": "One or more components are currently out of stock.",
+    "composition": "Contents",
+    "indisponible": "Currently unavailable",
+    "connexionPanier": "Log in to add this package to your cart."
+  },
+  "configurateur": {
+    "filAriane": "Configurator",
+    "titre": "Build your solar package",
+    "intro": "Select your components — at least one panel and one battery are required to send your request.",
+    "connexionTexte": "The custom package configurator is reserved for logged-in customers (Individual or Business).",
+    "recapitulatif": "Summary",
+    "elements": "{nombre} item(s) selected",
+    "estimation": "Indicative estimate, excluding installation cost.",
+    "requis": "At least one solar panel and one battery are required to send the request.",
+    "envoye": "Request sent!",
+    "envoyer": "Send my quote request",
+    "retirer": "Remove {produit}",
+    "ajouter": "Add {produit}",
+    "rupture": "Out of stock"
+  },
+  "temoignages": {
+    "temoin-1": {
+      "commentaire": "Flawless solar panel installation, the team handled everything from start to finish. Highly recommended.",
+      "localisation": "Port-au-Prince, Haiti"
+    },
+    "temoin-2": {
+      "commentaire": "Paying with MonCash made the whole process so simple, and in-store pickup was quick.",
+      "localisation": "Cap-Haïtien, Haiti"
+    },
+    "temoin-3": {
+      "commentaire": "Very good service for our business account — the tiered pricing really saves us money.",
+      "localisation": "Pétion-Ville, Haiti"
+    },
+    "temoin-4": {
+      "commentaire": "I was able to order a solar system for my family in Haiti directly from Florida. Excellent service.",
+      "localisation": "Miami, United States"
+    },
+    "temoin-5": {
+      "commentaire": "The Carrier air conditioning works perfectly, clean and quick installation by the technical team.",
+      "localisation": "New York, United States"
+    },
+    "temoin-6": {
+      "commentaire": "Good support for verifying my Business account — a bit of patience needed but it's worth it.",
+      "localisation": "Montreal, Canada"
+    }
+  },
+  "paiement": {
+    "methode": {
+      "moncash": "MonCash",
+      "carte": "Visa/Mastercard card",
+      "paypal": "PayPal",
+      "virement": "Bank transfer"
+    },
+    "titre": "Payment",
+    "devisIntrouvable": "Quote not found.",
+    "devisDejaRegle": "This quote has already been paid",
+    "commandeDejaReglee": "This order has already been paid",
+    "voirFacture": "View the pro forma invoice",
+    "devisPasPret": "This quote is not ready for payment yet.",
+    "traitement": "Processing…",
+    "nePasFermer": "Do not close this page.",
+    "echec": "The payment failed",
+    "echecTexte": "Please check your details and try again.",
+    "reessayer": "Try again",
+    "confirme": "Payment confirmed",
+    "confirmeDevis": "Our team will convert your quote into an order and notify you as soon as it is ready for pickup.",
+    "confirmeCommande": "Your order is being prepared — you will be notified as soon as it is ready for pickup.",
+    "retourDevis": "Back to my quotes",
+    "voirCommande": "View my order",
+    "montantARegler": "Amount due",
+    "dontTaxe": "Including tax ({taux}%): {montant}",
+    "nouvelleCarteBouton": "Add a new card",
+    "montantConverti": "Converted amount (internal HTG/USD rate)",
+    "tauxApplique": "Rate applied: 1 USD = {taux} HTG",
+    "confirmer": "Confirm payment",
+    "carte": {
+      "titre": "New card",
+      "numero": "Card number",
+      "visaDetectee": "Visa card detected",
+      "mastercardDetectee": "Mastercard detected",
+      "expiration": "Expiry (MM/YY)",
+      "formatExpiration": "MM/YY",
+      "titulaire": "Cardholder name",
+      "titulaireAide": "As shown on the card",
+      "enregistrer": "Save this card for my next orders"
+    },
+    "paypal": {
+      "connecte": "Connected to PayPal",
+      "changer": "Change account",
+      "titre": "Log in to PayPal",
+      "intro": "Log in with the PayPal account you want to use for this order.",
+      "email": "PayPal account email",
+      "exemple": "you@example.com",
+      "enregistrer": "Save this account for my next orders",
+      "seConnecter": "Log in to PayPal"
+    },
+    "moncash": {
+      "titre": "MonCash number",
+      "numero": "Number to charge for this order",
+      "enregistrer": "Save this number for my next orders"
+    },
+    "virement": {
+      "titre": "Bank transfer",
+      "intro": "Send the transfer from your bank to one of the ATC accounts below, then attach proof of the transaction. Your order will be confirmed as soon as an agent has verified the payment.",
+      "demo": "Demo bank details — to be replaced with ATC's own.",
+      "beneficiaire": "Beneficiary",
+      "banque": "Bank",
+      "compteHtg": "Gourde account (HTG)",
+      "compteUsd": "Dollar account (USD)",
+      "reference": "Reference to include",
+      "referenceCommande": "Order {numero}",
+      "referenceDevis": "Quote {numero}",
+      "copier": "Copy: {element}",
+      "compteUtilise": "Account you are transferring to",
+      "compte": {
+        "usd": "In dollars (USD)",
+        "htg": "In gourdes (HTG)"
+      },
+      "montantAVirer": "Exact amount to transfer",
+      "preuve": "Proof of payment",
+      "preuveAide": "A photo or screenshot of the transfer receipt showing the amount, the date and the receiving account.",
+      "choisirFichier": "Choose an image",
+      "formats": "JPG, PNG, HEIC… — 10 MB max",
+      "apercu": "Proof of payment preview",
+      "retirerPreuve": "Remove proof",
+      "erreurFormat": "Only images (photo or screenshot) are accepted.",
+      "erreurTaille": "This file is larger than 10 MB.",
+      "erreurLecture": "This image could not be read. Please try another screenshot.",
+      "envoyer": "Send transfer proof",
+      "preuveEnvoyee": "Transfer proof sent",
+      "enVerification": "Transfer being verified",
+      "enVerificationTexte": "An ATC agent will verify your transfer. Your order will be confirmed as soon as the payment is confirmed.",
+      "refuse": "Transfer rejected",
+      "motif": "Reason: {motif}",
+      "refuseAide": "You can pay again, by bank transfer or with another payment method.",
+      "payerANouveau": "Pay again"
+    }
+  },
+  "magasin": {
+    "horaires": "Monday–Friday 8 a.m.–5 p.m., Saturday 8 a.m.–1 p.m."
+  },
+  "panier": {
+    "titre": "Cart",
+    "vide": "Your cart is empty",
+    "retourCatalogue": "Back to the catalog",
+    "retirer": "Remove {produit}",
+    "recapitulatif": "Summary",
+    "articles": "{nombre} item(s)",
+    "payer": "Proceed to payment",
+    "payerMontant": "Proceed to payment — {montant}",
+    "produitRetire": "Product removed from cart"
+  },
+  "commandes": {
+    "titre": "My orders",
+    "sousTitre": "Track the pickup status of your orders.",
+    "aucune": "No orders yet",
+    "statut": {
+      "en_preparation": "Being prepared",
+      "prete_retrait": "Ready for pickup",
+      "retiree": "Picked up",
+      "attente_paiement": "Payment being verified"
+    },
+    "enAttenteTitre": "Payment being verified",
+    "enAttenteTexte": "These orders paid by bank transfer will be confirmed as soon as an agent has verified your payment.",
+    "valideesTitre": "Confirmed orders"
+  },
+  "commande": {
+    "filPaiement": "Payment",
+    "filConfirmation": "Confirmation",
+    "titre": "Order confirmation",
+    "introuvable": "Order not found.",
+    "recue": "We have received your order!",
+    "statutPhrase": {
+      "en_preparation": "Your order {numero} is confirmed and being prepared. You will be notified as soon as it is ready for pickup.",
+      "prete_retrait": "Your order {numero} is ready for pickup!",
+      "retiree": "Your order {numero} has been picked up. Thank you for your trust!",
+      "attente_paiement": "Your order {numero} will be confirmed as soon as an ATC agent has verified your transfer."
+    },
+    "telechargerFacture": "Download the pro forma invoice",
+    "telechargerRecu": "Download the receipt",
+    "modalitesRetrait": "Pickup details",
+    "moyenPaiement": "Payment method",
+    "regleLe": "Paid on {date}",
+    "signaler": "Report a problem with this order",
+    "attenteValidation": "Order awaiting confirmation",
+    "preuveEnvoyeeLe": "Proof sent on {date} — being verified",
+    "virementRefuseLe": "Rejected on {date}"
+  },
+  "installation": {
+    "titre": "Solar installation",
+    "attente": "Awaiting confirmation by our team.",
+    "planifier": "Schedule the installation",
+    "eligible": "Your solar equipment is eligible for installation assistance by our in-house team.",
+    "proposer": "Propose this date",
+    "statut": {
+      "planifie": "Scheduled",
+      "realise": "Completed",
+      "annule": "Cancelled"
+    }
+  },
+  "recu": {
+    "introuvable": "Receipt not found.",
+    "titre": "Order receipt",
+    "reglePar": "Paid by {methode} on {date}",
+    "mention": "Receipt generated automatically when the order was placed — not a final tax document. In-store pickup only, no delivery service."
+  },
+  "facture": {
+    "introuvable": "Invoice not found.",
+    "titre": "Pro forma invoice",
+    "nif": "Tax ID (NIF): {nif}",
+    "conditions": "Payment terms",
+    "moyens": "MonCash, Visa/Mastercard card or PayPal",
+    "devise": "Currency: USD",
+    "installation": "Installation",
+    "sousTotalHt": "Subtotal (excl. tax)",
+    "totalTtc": "Total (incl. tax)",
+    "mentionDevis": "Document generated automatically when the quote was accepted — not a final tax document. In-store pickup only, no delivery service.",
+    "mentionCommande": "Document generated automatically when the order was placed — not a final tax document. In-store pickup only, no delivery service."
+  },
+  "devis": {
+    "titre": "My quotes",
+    "sousTitre": "Track the status of your solar package requests.",
+    "aucun": "No quotes yet",
+    "composer": "Build a custom package",
+    "statut": {
+      "en_attente": "Pending",
+      "repondu": "Answered",
+      "accepte": "Accepted",
+      "refuse": "Declined",
+      "expire": "Expired",
+      "converti": "Converted to an order"
+    },
+    "expireErreur": "This quote has expired — please submit a new request.",
+    "accepter": "Accept",
+    "refuser": "Decline",
+    "regle": "Paid",
+    "payer": "Pay now",
+    "facture": "Pro forma invoice",
+    "confirmerTitre": "Confirm acceptance of the quote",
+    "confirmerTexte": "By accepting, you commit to the amount of {montant}. Our team will prepare your order.",
+    "expireDelai": "Expired",
+    "expireDansHeures": "Expires in {nombre} h",
+    "expireDansJour": "Expires in {nombre} day",
+    "expireDansJours": "Expires in {nombre} days"
+  },
+  "sav": {
+    "statut": {
+      "ouvert": "Open",
+      "en_cours": "In progress",
+      "resolu": "Resolved",
+      "ferme": "Closed"
+    },
+    "titre": "After-sales & Support",
+    "sousTitre": "Open a ticket for a breakdown or a complaint.",
+    "nouveau": "New ticket",
+    "sujet": "Subject",
+    "sujetExemple": "E.g.: Breakdown, complaint…",
+    "description": "Description",
+    "commandeConcernee": "Related order (optional)",
+    "aucuneCommande": "— None —",
+    "envoyer": "Send the ticket",
+    "aucunTicket": "No tickets yet",
+    "commandeRef": "Order {numero}"
+  },
+  "favoris": {
+    "aucun": "No favorites yet",
+    "parcourir": "Browse the catalog"
+  },
+  "contact": {
+    "titre": "Contact",
+    "intro": "A question about a product, a quote or an order? Our team will answer you.",
+    "retrait": "In-store pickup",
+    "retraitTexte": "Address provided when your order is confirmed",
+    "nom": "Name",
+    "email": "Email",
+    "sujet": "Subject",
+    "message": "Message",
+    "envoyer": "Send",
+    "envoye": "Message sent",
+    "merci": "Thank you, {nom} — our team will reply within 24 to 48 business hours."
+  },
+  "faqPage": {
+    "titre": "Frequently asked questions",
+    "introAvant": "Can't find an answer?",
+    "contactez": "Contact us",
+    "generales": "General questions"
+  },
+  "faq": {
+    "faq-retrait": {
+      "question": "Do you offer home delivery?",
+      "reponse": "No — all orders are picked up in store only. You are notified as soon as your order is ready for pickup."
+    },
+    "faq-paiement": {
+      "question": "Which payment methods do you accept?",
+      "reponse": "MonCash, Visa/Mastercard, PayPal and bank transfer. For a bank transfer, attach proof of the transaction: your order is confirmed once our team has verified it. Promo codes are not available."
+    },
+    "faq-b2b": {
+      "question": "How can I get professional (B2B) pricing?",
+      "reponse": "Create a Business account and submit your documents (tax ID/NIF, trade register, ID). Once your file is approved by our team, the quantity-based price tiers apply automatically, with no individual negotiation."
+    },
+    "faq-garantie": {
+      "question": "How long is my products' warranty?",
+      "reponse": "It varies by category: 24 months for solar energy, 12 months for security and air conditioning. Details are shown on each product page."
+    },
+    "faq-devis-validite": {
+      "question": "How long is a quote valid?",
+      "reponse": "A quote answered by our team remains valid for 3 days from the answer."
+    },
+    "faq-panneaux-install": {
+      "question": "Can ATC install my solar panels?",
+      "reponse": "Our in-house team provides installation assistance for solar equipment purchased through a package or a quote. Contact our support to discuss it."
+    },
+    "faq-securite-install": {
+      "question": "Are the security cameras easy to install?",
+      "reponse": "Our PTZ cameras and smart doorbells are designed for easy installation. A guide is provided with each product."
+    },
+    "faq-clim-entretien": {
+      "question": "What maintenance does an ATC air conditioner need?",
+      "reponse": "Cleaning the filters every 2 to 3 months is recommended to maintain performance and the warranty."
+    }
+  },
+  "legal": {
+    "miseAJour": "Last updated: {date}",
+    "versionFrancaise": "This document is available in French only; the French version is the authoritative one."
+  },
+  "chatbot": {
+    "accueil": "Hello! I'm ATC's automated assistant. Ask me a question about our products, warranties, payment methods, in-store pickup or business accounts.",
+    "repli": "This question is beyond what I can handle. Contact our support on WhatsApp for a personalized answer.",
+    "messageWhatsapp": "Hello, I have a question that the website assistant could not answer.",
+    "contacterSupport": "Contact WhatsApp support →",
+    "ouvrir": "Open the ATC assistant",
+    "fermer": "Close the ATC assistant",
+    "titre": "ATC Assistant",
+    "sousTitre": "Automated assistant — not a live agent",
+    "ecrit": "The assistant is typing",
+    "votreQuestion": "Your question",
+    "placeholder": "Ask your question…",
+    "envoyer": "Send"
+  },
+  "connexion": {
+    "creerCompte": "Create an account",
+    "titre": "Log in",
+    "email": "Email",
+    "motDePasse": "Password",
+    "oublie": "Forgot your password?",
+    "pasDeCompte": "Don't have an account yet?",
+    "comptePro": "Business account?",
+    "inscriptionEntreprise": "Business sign-up",
+    "nomComplet": "Full name",
+    "creerMonCompte": "Create my account",
+    "dejaCompte": "Already have an account?",
+    "erreurMotDePasse": "Please enter your password.",
+    "erreurNouveauMotDePasse": "Please enter a password.",
+    "erreurCompte": "No account matches this email.",
+    "comptesDemo": "Demo accounts",
+    "comptesClients": "Customer accounts",
+    "comptesAdmins": "Administrator accounts",
+    "particulier": "Individual",
+    "entrepriseStatut": "Business — {statut}",
+    "statutVerifie": "verified B2B",
+    "statutAttente": "pending",
+    "statutComplement": "additional documents requested",
+    "agentSavSupport": "After-sales agent / Support",
+    "ou": "OR",
+    "continuerGoogle": "Continue with Google",
+    "continuerFacebook": "Continue with Facebook",
+    "continuerApple": "Continue with Apple",
+    "bientot": "Sign-in with {fournisseur} — coming soon."
+  },
+  "inscription": {
+    "titre": "Create an account",
+    "dejaInscrit": "Already registered?",
+    "particulierTexte": "Retail purchases, quotes and order tracking.",
+    "entrepriseTexte": "Tiered pricing, pro forma invoicing — subject to approval."
+  },
+  "motDePasse": {
+    "titre": "Forgot password",
+    "envoye": "If an account exists with this email address, a reset link has just been sent to it.",
+    "intro": "Enter your email — we will send you a link to reset your password.",
+    "envoyer": "Send the link",
+    "retour": "← Back to login"
+  },
+  "entreprise": {
+    "titre": "Become a business customer",
+    "intro": "Four steps to access tiered pricing and pro forma invoicing.",
+    "etape": {
+      "inscription": "Sign-up",
+      "documents": "Documents",
+      "verification": "Verification",
+      "activation": "Activation"
+    },
+    "champ": {
+      "nom_legal": "Company legal name",
+      "nom_commercial": "Trade name (if different)",
+      "nif": "Tax ID (NIF)",
+      "nifInfo": "Tax Identification Number, issued by the DGI (Haitian tax authority).",
+      "registre_commerce": "Trade register (if available)",
+      "adresse_entreprise": "Address",
+      "telephone_professionnel": "Business phone",
+      "email_professionnel": "Business email",
+      "representant_nom": "Representative's name",
+      "representant_fonction": "Representative's position",
+      "secteur_activite": "Business sector",
+      "taille_entreprise": "Company size (optional)"
+    },
+    "document": {
+      "patente": "Business license (patente)",
+      "nif": "Tax ID (NIF)",
+      "registre_commerce": "Trade register (if applicable)",
+      "piece_identite": "Representative's ID"
+    },
+    "formatNonSupporte": "Unsupported format for \"{fichier}\" — accepted formats: PDF, JPG, PNG.",
+    "tropLourd": "\"{fichier}\" exceeds the maximum size of 5 MB.",
+    "obligatoire": "This field is required.",
+    "continuer": "Continue →",
+    "retirer": "Remove {fichier}",
+    "ajouterFichier": "Add a file (PDF, JPG, PNG — 5 MB max)",
+    "precedent": "← Back",
+    "soumettre": "Submit the application",
+    "envoyeTitre": "Application sent, verification within a few days",
+    "envoyeTexte": "You can browse the site and see public prices right away. Business pricing and pro forma invoicing will be available once our team has approved your application.",
+    "allerAccueil": "Go to the home page"
+  },
+  "dossier": {
+    "formatNonSupporte": "Unsupported format — PDF, JPG or PNG only.",
+    "tropLourd": "This file exceeds 5 MB.",
+    "envoye": "Additional documents sent — your application is back pending verification.",
+    "motif": "Reason: {motif}",
+    "ajouter": "Add a document (PDF, JPG, PNG — 5 MB max)",
+    "envoyer": "Send the additional documents"
+  },
+  "tableau": {
+    "statut": {
+      "valide": "Business — verified B2B",
+      "en_attente": "Business — pending verification",
+      "rejete": "Business — application rejected",
+      "complement_demande": "Business — additional documents required"
+    },
+    "complementTitre": "Additional documents required",
+    "devisTexte": "Track my package requests",
+    "commandesTexte": "Track pickup status",
+    "favorisTexte": "Saved products",
+    "savTexte": "Open or track a ticket",
+    "proTexte": "Access B2B pricing",
+    "moyensPaiement": "Saved payment methods"
+  },
+  "adresses": {
+    "titre": "Address book",
+    "ajouter": "Add",
+    "libelle": "Label (e.g. Home, Office)",
+    "complete": "Full address",
+    "enregistrer": "Save",
+    "aucune": "No saved addresses.",
+    "supprimer": "Delete"
+  },
+  "moyens": {
+    "enregistres": "Your saved methods",
+    "parDefaut": "Default",
+    "ouAutre": "— OR choose another method below —",
+    "aucun": "No saved payment methods yet.",
+    "definirDefaut": "Set as default",
+    "modifier": "Edit",
+    "ajouter": "Add a payment method",
+    "libelle": "Label",
+    "libelleExemple": "Label (e.g. Card •••• 1234)",
+    "infoSecondaire": "Additional information (optional)",
+    "enregistrer": "Save",
+    "ajouterBouton": "Add"
   }
 }

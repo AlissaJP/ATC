@@ -6,6 +6,7 @@ import { Check, ShoppingCart } from "lucide-react";
 import { useCartStore } from "@/lib/store/cart-store";
 import { useGardeClient } from "@/lib/hooks/useGardeClient";
 import { Toast } from "@/components/ui/Toast";
+import { useTranslation } from "@/lib/i18n/useTranslation";
 import type { LigneCompositionPackage } from "@/lib/services/packages";
 
 export function AjouterPackageBouton({
@@ -15,6 +16,7 @@ export function AjouterPackageBouton({
   lignes: LigneCompositionPackage[];
   disponible: boolean;
 }) {
+  const { t } = useTranslation();
   const ajouterLigne = useCartStore((s) => s.ajouterLigne);
   const { executerSiConnecte, messageToast, fermerToast, allerALaConnexion } = useGardeClient();
   const [confirmationVisible, setConfirmationVisible] = useState(false);
@@ -29,7 +31,7 @@ export function AjouterPackageBouton({
       }
       setConfirmationVisible(true);
       setTimeout(() => setConfirmationVisible(false), 1500);
-    }, "Connectez-vous pour ajouter ce package à votre panier.");
+    }, t("packages.connexionPanier"));
   }
 
   return (
@@ -53,10 +55,10 @@ export function AjouterPackageBouton({
             {confirmationVisible ? <Check size={18} /> : <ShoppingCart size={18} />}
           </motion.span>
         </AnimatePresence>
-        {confirmationVisible ? "Ajouté au panier" : disponible ? "Ajouter au panier" : "Indisponible actuellement"}
+        {confirmationVisible ? t("produit.ajoute") : disponible ? t("produit.ajouterPanier") : t("packages.indisponible")}
       </motion.button>
       {messageToast && (
-        <Toast message={messageToast} actionLabel="Se connecter" onAction={allerALaConnexion} onFermer={fermerToast} />
+        <Toast message={messageToast} actionLabel={t("commun.seConnecter")} onAction={allerALaConnexion} onFermer={fermerToast} />
       )}
     </>
   );

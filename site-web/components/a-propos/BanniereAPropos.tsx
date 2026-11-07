@@ -13,7 +13,7 @@ export function BanniereAPropos() {
     <section className="relative h-[320px] overflow-hidden rounded-2xl md:h-[400px]">
       <Image
         src="/images/energie-solaire/energie-04.webp"
-        alt="Technicien ATC en intervention sur une installation solaire en toiture"
+        alt={t("aPropos.banniereAlt")}
         fill
         priority
         className="object-cover"

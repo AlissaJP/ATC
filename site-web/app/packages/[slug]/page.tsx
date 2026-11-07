@@ -11,12 +11,17 @@ import { ImageCatalogue, estPhotoProduit } from "@/components/ui/ImageCatalogue"
 import { obtenirPackageParSlug, packageEstDisponible, compositionDetaillee } from "@/lib/services/packages";
 import { listerCaracteristiques } from "@/lib/services/caracteristiques";
 import { formaterPrix } from "@/lib/services/prix";
+import { obtenirTraduction } from "@/lib/i18n/serveur";
+import { localiserPackage, localiserProduit } from "@/lib/i18n/catalogue";
 
 export default async function PackageDetailPage(props: PageProps<"/packages/[slug]">) {
   const { slug } = await props.params;
-  const pkg = await obtenirPackageParSlug(slug);
+  const pkgSource = await obtenirPackageParSlug(slug);
 
-  if (!pkg) notFound();
+  if (!pkgSource) notFound();
+
+  const { t, langue } = await obtenirTraduction();
+  const pkg = localiserPackage(pkgSource, langue);
 
   const disponible = packageEstDisponible(pkg);
   const composition = compositionDetaillee(pkg);
@@ -24,7 +29,7 @@ export default async function PackageDetailPage(props: PageProps<"/packages/[slu
 
   return (
     <main className="mx-auto w-full max-w-5xl px-4 py-8 md:px-6">
-      <Breadcrumb items={[{ label: "Packages solaires", href: "/packages" }, { label: pkg.nom }]} />
+      <Breadcrumb items={[{ label: t("nav.packages"), href: "/packages" }, { label: pkg.nom }]} />
 
       <div className="grid gap-10 lg:grid-cols-2">
         {/* Même règle que la fiche produit (GalerieImages) : photo carrée entière sur fond blanc, bannière
@@ -38,24 +43,26 @@ export default async function PackageDetailPage(props: PageProps<"/packages/[slu
             <ImageCatalogue src={pkg.image} alt={pkg.nom} preload sizes="(max-width: 1024px) 100vw, 50vw" />
           ) : (
             <div className="flex h-full w-full items-center justify-center text-sm text-texte-secondaire">
-              Image à venir
+              {t("commun.imageAVenir")}
             </div>
           )}
         </div>
 
         <div>
           <h1 className="font-titres text-2xl font-bold text-texte-principal md:text-3xl">{pkg.nom}</h1>
-          {pkg.ref && <p className="mt-1 text-sm text-texte-secondaire">Réf. {pkg.ref}</p>}
+          {pkg.ref && <p className="mt-1 text-sm text-texte-secondaire">{t("produit.reference", { ref: pkg.ref })}</p>}
           <p className="mt-3 text-texte-secondaire">{pkg.description}</p>
 
           <p className="mt-6 font-titres text-3xl font-bold text-primaire">
-            {formaterPrix(pkg.prix_total)}
-            {pkg.prix_total !== null && <span className="text-base font-normal text-texte-secondaire"> tout compris</span>}
+            {formaterPrix(pkg.prix_total, langue)}
+            {pkg.prix_total !== null && (
+              <span className="text-base font-normal text-texte-secondaire"> {t("packages.toutCompris")}</span>
+            )}
           </p>
           {/* Composition vide = package proposé, pas encore composé : rien à déclarer en rupture. */}
           {!disponible && pkg.produits.length > 0 && (
             <p className="mt-2 text-sm font-medium text-danger">
-              Un ou plusieurs composants sont actuellement en rupture de stock.
+              {t("packages.composantRupture")}
             </p>
           )}
 
@@ -69,7 +76,7 @@ export default async function PackageDetailPage(props: PageProps<"/packages/[slu
 
           {caracteristiques.length > 0 && (
             <>
-              <h2 className="mt-8 mb-3 font-titres text-base font-semibold text-texte-principal">Caractéristiques</h2>
+              <h2 className="mt-8 mb-3 font-titres text-base font-semibold text-texte-principal">{t("produit.caracteristiques")}</h2>
               <ul className="divide-y divide-bordure rounded-lg border border-bordure text-sm text-texte-principal">
                 {caracteristiques.map((ligne, i) => (
                   <li key={i} className="px-3 py-2.5">
@@ -82,11 +89,11 @@ export default async function PackageDetailPage(props: PageProps<"/packages/[slu
 
           {composition.length > 0 && (
             <>
-              <h2 className="mt-8 mb-3 font-titres text-base font-semibold text-texte-principal">Composition</h2>
+              <h2 className="mt-8 mb-3 font-titres text-base font-semibold text-texte-principal">{t("packages.composition")}</h2>
               <ul className="divide-y divide-bordure rounded-lg border border-bordure text-sm">
                 {composition.map(({ produit, quantite }) => (
                   <li key={produit.id} className="flex items-center justify-between px-3 py-2.5">
-                    <span className="text-texte-principal">{produit.nom}</span>
+                    <span className="text-texte-principal">{localiserProduit(produit, langue).nom}</span>
                     <span className="text-texte-secondaire">× {quantite}</span>
                   </li>
                 ))}

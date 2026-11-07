@@ -9,10 +9,10 @@ import { useSessionStore, type SessionClient } from "@/lib/store/session-store";
 import { useTranslation } from "@/lib/i18n/useTranslation";
 
 export function GardeClient({
-  message,
+  cleMessage,
   children,
 }: {
-  message?: string;
+  cleMessage?: string; // clé de traduction du message (ex. "garde.messagePanier")
   children: (session: SessionClient) => ReactNode;
 }) {
   const session = useSessionStore((s) => s.session);
@@ -22,7 +22,7 @@ export function GardeClient({
     return (
       <main className="mx-auto flex w-full max-w-md flex-1 flex-col items-center justify-center px-4 py-24 text-center">
         <p className="font-titres text-lg font-semibold text-texte-principal">{t("garde.connexionRequise")}</p>
-        {message && <p className="mt-2 text-sm text-texte-secondaire">{message}</p>}
+        {cleMessage && <p className="mt-2 text-sm text-texte-secondaire">{t(cleMessage)}</p>}
         <Link
           href="/compte/connexion"
           className="mt-5 inline-flex items-center gap-2 rounded-lg bg-primaire px-5 py-2.5 text-sm font-semibold text-white hover:opacity-90"

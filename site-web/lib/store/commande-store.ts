@@ -17,6 +17,10 @@ interface CommandeState {
     montantTotal: number,
     lignes: { produit_id: string; quantite: number; prix_unitaire_applique: number }[]
   ) => Commande;
+  // Virement bancaire : la commande attend la vérification de la preuve (attente_paiement), puis devient une
+  // commande validée (en_preparation) quand l'Administrateur Général confirme le paiement.
+  mettreEnAttentePaiement: (commandeId: string) => void;
+  confirmerPaiement: (commandeId: string) => void;
   marquerPreteRetrait: (commandeId: string) => void;
   marquerRetiree: (commandeId: string) => void;
   // ⚠️ Comme devis-store.ts / facture-store.ts : ne pas utiliser directement comme sélecteur d'un hook
@@ -81,6 +85,20 @@ export const useCommandeStore = create<CommandeState>()(
         }));
         return commande;
       },
+
+      mettreEnAttentePaiement: (commandeId) =>
+        set((state) => ({
+          commandes: state.commandes.map((c) =>
+            c.id === commandeId && c.statut === "en_preparation" ? { ...c, statut: "attente_paiement" as StatutCommande } : c
+          ),
+        })),
+
+      confirmerPaiement: (commandeId) =>
+        set((state) => ({
+          commandes: state.commandes.map((c) =>
+            c.id === commandeId && c.statut === "attente_paiement" ? { ...c, statut: "en_preparation" as StatutCommande } : c
+          ),
+        })),
 
       marquerPreteRetrait: (commandeId) =>
         set((state) => ({
